@@ -15,6 +15,10 @@
   psiImplUtilClass="com.durkiewicz.elmplugin.psi.impl.ElmPsiImplUtil"
 }
 
+// docs:
+// https://github.com/JetBrains/Grammar-Kit
+// https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md
+
 elmFile ::= item_*
 
 private item_ ::= (property|COMMENT|CRLF)
