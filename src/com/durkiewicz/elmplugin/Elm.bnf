@@ -11,8 +11,6 @@
   elementTypeHolderClass="com.durkiewicz.elmplugin.psi.ElmTypes"
   elementTypeClass="com.durkiewicz.elmplugin.psi.ElmElementType"
   tokenTypeClass="com.durkiewicz.elmplugin.psi.ElmTokenType"
-
-  psiImplUtilClass="com.durkiewicz.elmplugin.psi.impl.ElmPsiImplUtil"
 }
 
 // docs:
@@ -23,5 +21,4 @@ elmFile ::= item_*
 
 private item_ ::= (property|COMMENT|CRLF)
 
-property ::= (KEY? SEPARATOR VALUE?) | KEY {mixin="com.durkiewicz.elmplugin.psi.impl.ElmNamedElementImpl"
-  implements="com.durkiewicz.elmplugin.psi.ElmNamedElement" methods=[getKey getValue getName setName getNameIdentifier getPresentation]}
+property ::= (KEY? SEPARATOR VALUE?) | KEY
