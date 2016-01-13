@@ -1,7 +1,7 @@
-package com.durkiewicz.elmplugin.psi;
+package org.intellij.elmlang.elmplugin.psi;
 
 import com.intellij.psi.tree.IElementType;
-import com.durkiewicz.elmplugin.ElmLanguage;
+import org.intellij.elmlang.elmplugin.ElmLanguage;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 

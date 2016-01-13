@@ -1,0 +1,24 @@
+{
+  parserClass="org.intellij.elmlang.elmplugin.parser.ElmParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Elm"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.intellij.elmlang.elmplugin.psi"
+  psiImplPackage="org.intellij.elmlang.elmplugin.psi.impl"
+
+  elementTypeHolderClass="org.intellij.elmlang.elmplugin.psi.ElmTypes"
+  elementTypeClass="org.intellij.elmlang.elmplugin.psi.ElmElementType"
+  tokenTypeClass="org.intellij.elmlang.elmplugin.psi.ElmTokenType"
+}
+
+// docs:
+// https://github.com/JetBrains/Grammar-Kit
+// https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md
+
+elmFile ::= item_*
+
+private item_ ::= (property|COMMENT|CRLF)
+
+property ::= (KEY? SEPARATOR VALUE?) | KEY

@@ -1,4 +1,4 @@
-package com.durkiewicz.elmplugin;
+package org.intellij.elmlang.elmplugin;
 
 import com.intellij.lang.Language;
 

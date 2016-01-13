@@ -1,4 +1,4 @@
-package com.durkiewicz.elmplugin;
+package org.intellij.elmlang.elmplugin;
 
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;

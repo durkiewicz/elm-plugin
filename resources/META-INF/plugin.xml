@@ -26,7 +26,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
-    <fileTypeFactory implementation="com.durkiewicz.elmplugin.ElmFileTypeFactory"/>
+    <fileTypeFactory implementation="org.intellij.elmlang.elmplugin.ElmFileTypeFactory"/>
   </extensions>
 
   <actions>
