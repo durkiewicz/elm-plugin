@@ -1,5 +1,5 @@
 <idea-plugin version="2">
-  <id>com.durkiewicz.elmplugin</id>
+  <id>org.intellij.elmlang.elmplugin</id>
   <name>Elm language plugin</name>
   <version>0.1</version>
   <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">Kamil Durkiewicz</vendor>
@@ -27,6 +27,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
     <fileTypeFactory implementation="org.intellij.elmlang.elmplugin.ElmFileTypeFactory"/>
+    <lang.parserDefinition language="Elm" implementationClass="org.intellij.elmlang.elmplugin.ElmParserDefinition"/>
   </extensions>
 
   <actions>
