@@ -15,21 +15,22 @@ import org.intellij.elmlang.elmplugin.psi.ElmTypes;
 %eof{  return;
 %eof}
 
+%state INDENTED, DECLARATION
+
 CRLF= \n|\r|\r\n
 WHITE_SPACE=[\ \t\f]
-FIRST_VALUE_CHARACTER=[^ \n\r\f\\] | "\\"{CRLF} | "\\".
-VALUE_CHARACTER=[^\n\r\f\\] | "\\"{CRLF} | "\\".
 END_OF_LINE_COMMENT=("--")[^\r\n]*
-KEY_CHARACTER=[^:=\ \n\r\t\f\\] | "\\ "
 NON_WHITE=[a-z]+
-
-%state WAITING_VALUE
 
 %%
 
-({CRLF}|{WHITE_SPACE})+ { return TokenType.WHITE_SPACE; }
+// YYINITIAL state is when the line hasn't had any lexems yet.
 
-{NON_WHITE} { return ElmTypes.IDENTIFIER; }
+<YYINITIAL> {WHITE_SPACE}+ { yybegin(INDENTED); return ElmTypes.INDENTATION; }
+
+<YYINITIAL> {NON_WHITE} { yybegin(DECLARATION); return ElmTypes.IDENTIFIER; }
+
+{CRLF}+ { yybegin(YYINITIAL); return ElmTypes.NEW_LINE; }
 
 {WHITE_SPACE}+ { return TokenType.WHITE_SPACE; }
 

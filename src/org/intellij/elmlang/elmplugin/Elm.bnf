@@ -19,6 +19,6 @@
 
 elmFile ::= item_*
 
-private item_ ::= (property|WHITE_SPACE|COMMENT|CRLF)
+private item_ ::= (declaration|WHITE_SPACE|INDENTATION|COMMENT|NEW_LINE)
 
-property ::= IDENTIFIER
+declaration ::= IDENTIFIER
