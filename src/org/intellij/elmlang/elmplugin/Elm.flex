@@ -3,7 +3,7 @@ package org.intellij.elmlang.elmplugin;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.TokenType;
-import org.intellij.elmlang.elmplugin.psi.ElmTypes;
+import static org.intellij.elmlang.elmplugin.psi.ElmTypes.*;
 
 %%
 
@@ -29,18 +29,24 @@ NON_WHITE=[a-z]+
 <YYINITIAL> {
     {WHITE_SPACE}+ {
         yybegin(INDENTED);
-        return ElmTypes.INDENTATION;
+        return INDENTATION;
     }
     {NON_WHITE} {
         yybegin(DECLARATION);
-        return ElmTypes.IDENTIFIER;
+        return IDENTIFIER;
     }
 }
 
-{CRLF}+ { yybegin(YYINITIAL); return ElmTypes.NEW_LINE; }
-
-{WHITE_SPACE}+ { return TokenType.WHITE_SPACE; }
-
-{END_OF_LINE_COMMENT} { return ElmTypes.COMMENT; }
-
-. { return TokenType.BAD_CHARACTER; }
+{CRLF}+ {
+    yybegin(YYINITIAL);
+    return NEW_LINE;
+}
+{WHITE_SPACE}+ {
+    return TokenType.WHITE_SPACE;
+}
+{END_OF_LINE_COMMENT} {
+    return COMMENT;
+}
+. {
+    return TokenType.BAD_CHARACTER;
+}
