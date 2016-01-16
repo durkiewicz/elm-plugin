@@ -15,6 +15,13 @@ import static org.intellij.elmlang.elmplugin.psi.ElmTypes.*;
 %eof{  return;
 %eof}
 
+%{
+    private IElementType nonInitial(IElementType elementType) {
+        yybegin(NON_INITIAL);
+        return elementType;
+    }
+%}
+
 %state NON_INITIAL
 
 CRLF= (\n|\r|\r\n)+
@@ -31,38 +38,30 @@ MODULE_NAME=({UPPER_CASE_IDENTIRIER}\.)*{UPPER_CASE_IDENTIRIER}
 
 <YYINITIAL> {
     {WHITE_SPACE} {
-        yybegin(NON_INITIAL);
-        return INDENTATION;
+        return nonInitial(INDENTATION);
     }
 }
 
 "module" {
-    yybegin(NON_INITIAL);
-    return MODULE;
+    return nonInitial(MODULE);
 }
 "where" {
-    yybegin(NON_INITIAL);
-    return WHERE;
+    return nonInitial(WHERE);
 }
 "(" {
-    yybegin(NON_INITIAL);
-    return LEFT_PARENTHESIS;
+    return nonInitial(LEFT_PARENTHESIS);
 }
 ")" {
-    yybegin(NON_INITIAL);
-    return RIGHT_PARENTHESIS;
+    return nonInitial(RIGHT_PARENTHESIS);
 }
 ".." {
-    yybegin(NON_INITIAL);
-    return DOUBLE_DOT;
+    return nonInitial(DOUBLE_DOT);
 }
 {LOWER_CASE_IDENTIRIER} {
-    yybegin(NON_INITIAL);
-    return LOWER_CASE_IDENTIRIER;
+    return nonInitial(LOWER_CASE_IDENTIRIER);
 }
 {MODULE_NAME} {
-    yybegin(NON_INITIAL);
-    return MODULE_NAME;
+    return nonInitial(MODULE_NAME);
 }
 {CRLF} {
     yybegin(YYINITIAL);
