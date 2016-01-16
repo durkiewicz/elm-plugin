@@ -44,6 +44,18 @@ MODULE_NAME=({UPPER_CASE_IDENTIRIER}\.)*{UPPER_CASE_IDENTIRIER}
     yybegin(NON_INITIAL);
     return WHERE;
 }
+"(" {
+    yybegin(NON_INITIAL);
+    return LEFT_PARENTHESIS;
+}
+")" {
+    yybegin(NON_INITIAL);
+    return RIGHT_PARENTHESIS;
+}
+".." {
+    yybegin(NON_INITIAL);
+    return DOUBLE_DOT;
+}
 {LOWER_CASE_IDENTIRIER} {
     yybegin(NON_INITIAL);
     return LOWER_CASE_IDENTIRIER;
