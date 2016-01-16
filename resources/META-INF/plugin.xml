@@ -1,37 +1,39 @@
 <idea-plugin version="2">
-  <id>org.intellij.elmlang.elmplugin</id>
-  <name>Elm language plugin</name>
-  <version>0.1</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">Kamil Durkiewicz</vendor>
+    <id>org.intellij.elmlang.elmplugin</id>
+    <name>Elm language plugin</name>
+    <version>0.1</version>
+    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">Kamil Durkiewicz</vendor>
 
-  <description><![CDATA[
+    <description><![CDATA[
       Enter short description for your plugin here.<br>
       <em>most HTML tags may be used</em>
     ]]></description>
 
-  <change-notes><![CDATA[
+    <change-notes><![CDATA[
       Add change notes here.<br>
       <em>most HTML tags may be used</em>
     ]]>
-  </change-notes>
+    </change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="141.0"/>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="141.0"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
 
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
-    <fileTypeFactory implementation="org.intellij.elmlang.elmplugin.ElmFileTypeFactory"/>
-    <lang.parserDefinition language="Elm" implementationClass="org.intellij.elmlang.elmplugin.ElmParserDefinition"/>
-  </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <fileTypeFactory implementation="org.intellij.elmlang.elmplugin.ElmFileTypeFactory"/>
+        <lang.parserDefinition language="Elm" implementationClass="org.intellij.elmlang.elmplugin.ElmParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="Elm"
+                                       implementationClass="org.intellij.elmlang.elmplugin.ElmSyntaxHighlighterFactory"/>
+    </extensions>
 
-  <actions>
-    <!-- Add your actions here -->
-  </actions>
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
 
 </idea-plugin>
