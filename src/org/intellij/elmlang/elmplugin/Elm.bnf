@@ -17,8 +17,10 @@
 // https://github.com/JetBrains/Grammar-Kit
 // https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md
 
-elmFile ::= item_*
+elmFile ::= [moduleDeclaration] item_*
 
 private item_ ::= (declaration|WHITE_SPACE|INDENTATION|COMMENT|NEW_LINE)
+
+moduleDeclaration ::= MODULE IDENTIFIER WHERE
 
 declaration ::= IDENTIFIER
