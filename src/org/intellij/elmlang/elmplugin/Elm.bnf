@@ -19,6 +19,6 @@
 
 elmFile ::= item_*
 
-private item_ ::= (property|COMMENT|CRLF)
+private item_ ::= (property|WHITE_SPACE|COMMENT|CRLF)
 
-property ::= (KEY? SEPARATOR VALUE?) | KEY
+property ::= IDENTIFIER

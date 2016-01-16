@@ -19,28 +19,20 @@ CRLF= \n|\r|\r\n
 WHITE_SPACE=[\ \t\f]
 FIRST_VALUE_CHARACTER=[^ \n\r\f\\] | "\\"{CRLF} | "\\".
 VALUE_CHARACTER=[^\n\r\f\\] | "\\"{CRLF} | "\\".
-END_OF_LINE_COMMENT=("#"|"!")[^\r\n]*
-SEPARATOR=[:=]
+END_OF_LINE_COMMENT=("--")[^\r\n]*
 KEY_CHARACTER=[^:=\ \n\r\t\f\\] | "\\ "
+NON_WHITE=[a-z]+
 
 %state WAITING_VALUE
 
 %%
 
-<YYINITIAL> {END_OF_LINE_COMMENT}                           { yybegin(YYINITIAL); return ElmTypes.COMMENT; }
+({CRLF}|{WHITE_SPACE})+ { return TokenType.WHITE_SPACE; }
 
-<YYINITIAL> {KEY_CHARACTER}+                                { yybegin(YYINITIAL); return ElmTypes.KEY; }
+{NON_WHITE} { return ElmTypes.IDENTIFIER; }
 
-<YYINITIAL> {SEPARATOR}                                     { yybegin(WAITING_VALUE); return ElmTypes.SEPARATOR; }
+{WHITE_SPACE}+ { return TokenType.WHITE_SPACE; }
 
-<WAITING_VALUE> {CRLF}({CRLF}|{WHITE_SPACE})+               { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+{END_OF_LINE_COMMENT} { return ElmTypes.COMMENT; }
 
-<WAITING_VALUE> {WHITE_SPACE}+                              { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE; }
-
-<WAITING_VALUE> {FIRST_VALUE_CHARACTER}{VALUE_CHARACTER}*   { yybegin(YYINITIAL); return ElmTypes.VALUE; }
-
-({CRLF}|{WHITE_SPACE})+                                     { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
-
-{WHITE_SPACE}+                                              { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
-
-.                                                           { return TokenType.BAD_CHARACTER; }
+. { return TokenType.BAD_CHARACTER; }
