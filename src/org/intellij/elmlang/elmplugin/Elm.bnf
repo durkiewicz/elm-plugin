@@ -17,10 +17,14 @@
 // https://github.com/JetBrains/Grammar-Kit
 // https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md
 
-elmFile ::= [moduleDeclaration] item_*
+elmFile ::= blank* [moduleDeclaration] item_*
 
-private item_ ::= (declaration|WHITE_SPACE|INDENTATION|COMMENT|NEW_LINE)
+private item_ ::= (declaration|blank)
 
-moduleDeclaration ::= MODULE IDENTIFIER WHERE
+blank ::= WHITE_SPACE|INDENTATION|NEW_LINE|comment
 
-declaration ::= IDENTIFIER
+moduleDeclaration ::= MODULE MODULE_NAME WHERE
+
+declaration ::= LOWER_CASE_IDENTIRIER
+
+comment ::= LINE_COMMENT

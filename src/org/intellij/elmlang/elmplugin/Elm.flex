@@ -19,8 +19,11 @@ import static org.intellij.elmlang.elmplugin.psi.ElmTypes.*;
 
 CRLF= (\n|\r|\r\n)+
 WHITE_SPACE=[\ \t\f]+
-END_OF_LINE_COMMENT=("--")[^\r\n]*
-NON_WHITE=[a-z]+
+LINE_COMMENT=("--")[^\r\n]*
+IDENTIFIER_CHAR=[[:letter:][:digit:]_]
+LOWER_CASE_IDENTIRIER=[:lowercase:]({IDENTIFIER_CHAR}|')*
+UPPER_CASE_IDENTIRIER=[:uppercase:]{IDENTIFIER_CHAR}*
+MODULE_NAME=({UPPER_CASE_IDENTIRIER}\.)*{UPPER_CASE_IDENTIRIER}
 
 %%
 
@@ -41,9 +44,13 @@ NON_WHITE=[a-z]+
     yybegin(NON_INITIAL);
     return WHERE;
 }
-{NON_WHITE} {
+{LOWER_CASE_IDENTIRIER} {
     yybegin(NON_INITIAL);
-    return IDENTIFIER;
+    return LOWER_CASE_IDENTIRIER;
+}
+{MODULE_NAME} {
+    yybegin(NON_INITIAL);
+    return MODULE_NAME;
 }
 {CRLF} {
     yybegin(YYINITIAL);
@@ -52,8 +59,8 @@ NON_WHITE=[a-z]+
 {WHITE_SPACE} {
     return TokenType.WHITE_SPACE;
 }
-{END_OF_LINE_COMMENT} {
-    return COMMENT;
+{LINE_COMMENT} {
+    return LINE_COMMENT;
 }
 . {
     return TokenType.BAD_CHARACTER;
