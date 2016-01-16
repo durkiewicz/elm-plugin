@@ -26,9 +26,16 @@ NON_WHITE=[a-z]+
 
 // YYINITIAL state is when the line hasn't had any lexems yet.
 
-<YYINITIAL> {WHITE_SPACE}+ { yybegin(INDENTED); return ElmTypes.INDENTATION; }
-
-<YYINITIAL> {NON_WHITE} { yybegin(DECLARATION); return ElmTypes.IDENTIFIER; }
+<YYINITIAL> {
+    {WHITE_SPACE}+ {
+        yybegin(INDENTED);
+        return ElmTypes.INDENTATION;
+    }
+    {NON_WHITE} {
+        yybegin(DECLARATION);
+        return ElmTypes.IDENTIFIER;
+    }
+}
 
 {CRLF}+ { yybegin(YYINITIAL); return ElmTypes.NEW_LINE; }
 
