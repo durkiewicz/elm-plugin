@@ -23,9 +23,15 @@ private item_ ::= (declaration|blank)
 
 blank ::= WHITE_SPACE|INDENTATION|NEW_LINE|comment
 
-module_declaration ::= MODULE MODULE_NAME [exposed_types] WHERE
+module_declaration ::= MODULE module_name [exposed_values] WHERE
 
-exposed_types ::= LEFT_PARENTHESIS DOUBLE_DOT RIGHT_PARENTHESIS
+module_name ::= MODULE_PATH | UPPER_CASE_IDENTIRIER
+
+exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT|list_of_values) RIGHT_PARENTHESIS
+
+list_of_values ::= (exposed_value COMMA)* exposed_value
+
+exposed_value ::= LOWER_CASE_IDENTIRIER | (UPPER_CASE_IDENTIRIER[exposed_values])
 
 declaration ::= LOWER_CASE_IDENTIRIER
 

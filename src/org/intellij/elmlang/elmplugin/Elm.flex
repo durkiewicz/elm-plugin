@@ -30,7 +30,7 @@ LINE_COMMENT=("--")[^\r\n]*
 IDENTIFIER_CHAR=[[:letter:][:digit:]_]
 LOWER_CASE_IDENTIRIER=[:lowercase:]({IDENTIFIER_CHAR}|')*
 UPPER_CASE_IDENTIRIER=[:uppercase:]{IDENTIFIER_CHAR}*
-MODULE_NAME=({UPPER_CASE_IDENTIRIER}\.)*{UPPER_CASE_IDENTIRIER}
+MODULE_PATH=({UPPER_CASE_IDENTIRIER}\.)+{UPPER_CASE_IDENTIRIER}
 
 %%
 
@@ -57,11 +57,17 @@ MODULE_NAME=({UPPER_CASE_IDENTIRIER}\.)*{UPPER_CASE_IDENTIRIER}
 ".." {
     return nonInitial(DOUBLE_DOT);
 }
+"," {
+    return nonInitial(COMMA);
+}
 {LOWER_CASE_IDENTIRIER} {
     return nonInitial(LOWER_CASE_IDENTIRIER);
 }
-{MODULE_NAME} {
-    return nonInitial(MODULE_NAME);
+{MODULE_PATH} {
+    return nonInitial(MODULE_PATH);
+}
+{UPPER_CASE_IDENTIRIER} {
+    return nonInitial(UPPER_CASE_IDENTIRIER);
 }
 {CRLF} {
     yybegin(YYINITIAL);
