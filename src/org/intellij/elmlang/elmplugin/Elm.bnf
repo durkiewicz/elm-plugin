@@ -23,15 +23,23 @@ private item_ ::= (declaration|blank)
 
 blank ::= WHITE_SPACE|INDENTATION|NEW_LINE|comment
 
+// module
+
 module_declaration ::= MODULE module_name [exposed_values] WHERE
 
 module_name ::= MODULE_PATH | UPPER_CASE_IDENTIRIER
 
 exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT|list_of_values) RIGHT_PARENTHESIS
 
-list_of_values ::= (exposed_value COMMA)* exposed_value
+list_of_values ::= exposed_value (COMMA exposed_value)*
 
-exposed_value ::= LOWER_CASE_IDENTIRIER | (UPPER_CASE_IDENTIRIER[exposed_values])
+exposed_value ::= LOWER_CASE_IDENTIRIER | (UPPER_CASE_IDENTIRIER[exposed_union_constructors])
+
+exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT|list_of_union_constructors) RIGHT_PARENTHESIS
+
+list_of_union_constructors ::= UPPER_CASE_IDENTIRIER (COMMA UPPER_CASE_IDENTIRIER)*
+
+// imports
 
 declaration ::= LOWER_CASE_IDENTIRIER
 
