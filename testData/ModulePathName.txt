@@ -1,0 +1,8 @@
+Elm File(0,27)
+  ElmModuleDeclarationImpl(MODULE_DECLARATION)(0,27)
+    PsiElement(ElmTokenType.MODULE)('module')(0,6)
+    PsiWhiteSpace(' ')(6,7)
+    ElmModuleNameImpl(MODULE_NAME)(7,21)
+      PsiElement(ElmTokenType.MODULE_PATH)('This.Is.Module')(7,21)
+    PsiWhiteSpace(' ')(21,22)
+    PsiElement(ElmTokenType.WHERE)('where')(22,27)
