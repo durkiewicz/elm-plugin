@@ -17,9 +17,11 @@
 // https://github.com/JetBrains/Grammar-Kit
 // https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md
 
-elmFile ::= blank* [module_declaration] item_*
+elmFile ::= blank* [module_declaration] import_item* declaration_item*
 
-private item_ ::= (declaration|blank)
+private declaration_item ::= (declaration|blank)
+
+private import_item ::= (import_clause|blank)
 
 blank ::= WHITE_SPACE|INDENTATION|NEW_LINE|comment
 
@@ -41,6 +43,13 @@ list_of_union_constructors ::= UPPER_CASE_IDENTIRIER (COMMA UPPER_CASE_IDENTIRIE
 
 // imports
 
+import_clause ::= IMPORT module_name [as_clause] [exposing_clause]
+
+as_clause ::= AS UPPER_CASE_IDENTIRIER
+
+exposing_clause ::= EXPOSING exposed_values
+
 declaration ::= LOWER_CASE_IDENTIRIER
 
 comment ::= LINE_COMMENT
+

@@ -52,7 +52,10 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
 
     private boolean isKeyword(IElementType tokenType) {
         return tokenType.equals(WHERE) ||
-                tokenType.equals(MODULE);
+                tokenType.equals(MODULE) ||
+                tokenType.equals(IMPORT) ||
+                tokenType.equals(AS) ||
+                tokenType.equals(EXPOSING);
     }
 
     private boolean isParenthesis(IElementType tokenType) {

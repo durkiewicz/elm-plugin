@@ -48,6 +48,15 @@ MODULE_PATH=({UPPER_CASE_IDENTIRIER}\.)+{UPPER_CASE_IDENTIRIER}
 "where" {
     return nonInitial(WHERE);
 }
+"import" {
+    return nonInitial(IMPORT);
+}
+"as" {
+    return nonInitial(AS);
+}
+"exposing" {
+    return nonInitial(EXPOSING);
+}
 "(" {
     return nonInitial(LEFT_PARENTHESIS);
 }
