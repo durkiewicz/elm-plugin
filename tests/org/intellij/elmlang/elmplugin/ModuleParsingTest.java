@@ -23,6 +23,10 @@ public class ModuleParsingTest extends ParsingTestCase {
         doTest(true);
     }
 
+    public void testBrokenLines() {
+        doTest(true);
+    }
+
     @Override
     protected String getTestDataPath() {
         return "testData/parsing/module";

@@ -15,8 +15,8 @@ import static org.intellij.elmlang.elmplugin.psi.ElmTypes.*;
 %eof{  return;
 %eof}
 
-CRLF= (\n|\r|\r\n)+
-WHITE_SPACE=[\ \t\f]+
+CRLF= (\n|\r|\r\n)
+WHITE_SPACE=[\ \t\f]
 LINE_COMMENT=("--")[^\r\n]*
 IDENTIFIER_CHAR=[[:letter:][:digit:]_]
 LOWER_CASE_IDENTIRIER=[:lowercase:]({IDENTIFIER_CHAR}|')*
@@ -61,18 +61,19 @@ MODULE_PATH=({UPPER_CASE_IDENTIRIER}\.)+{UPPER_CASE_IDENTIRIER}
 {UPPER_CASE_IDENTIRIER} {
     return UPPER_CASE_IDENTIRIER;
 }
-({CRLF}{WHITE_SPACE}) {
+({CRLF}+{WHITE_SPACE}+) {
     return TokenType.WHITE_SPACE;
 }
-{CRLF} {
-    return NEW_LINE;
-}
-{WHITE_SPACE} {
-    return TokenType.WHITE_SPACE;
-}
-{LINE_COMMENT} {
+{CRLF}*{LINE_COMMENT} {
     return LINE_COMMENT;
 }
+{WHITE_SPACE}+ {
+    return TokenType.WHITE_SPACE;
+}
+{CRLF}+ {
+    return NEW_LINE;
+}
+
 . {
     return TokenType.BAD_CHARACTER;
 }
