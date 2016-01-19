@@ -2,30 +2,30 @@ package org.intellij.elmlang.elmplugin;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class ElmParsingTest extends ParsingTestCase {
-    public ElmParsingTest() {
+public class ModuleParsingTest extends ParsingTestCase {
+    public ModuleParsingTest() {
         super("", "elm", new ElmParserDefinition());
     }
 
-    public void testModuleSimplest() {
+    public void testSimplest() {
         doTest(true);
     }
 
-    public void testModuleExposingAll() {
+    public void testExposingAll() {
         doTest(true);
     }
 
-    public void testModuleExposingSomeMembers() {
+    public void testExposingSomeMembers() {
         doTest(true);
     }
 
-    public void testModulePathName() {
+    public void testPathName() {
         doTest(true);
     }
 
     @Override
     protected String getTestDataPath() {
-        return "testData";
+        return "testData/parsing/module";
     }
 
     @Override
