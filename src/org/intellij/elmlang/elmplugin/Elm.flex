@@ -15,6 +15,12 @@ import static org.intellij.elmlang.elmplugin.psi.ElmTypes.*;
 %eof{  return;
 %eof}
 
+%{
+    private int commentLevel = 0;
+%}
+
+%state IN_COMMENT
+
 CRLF= (\n|\r|\r\n)
 WHITE_SPACE=[\ \t\f]
 LINE_COMMENT=("--")[^\r\n]*
@@ -25,53 +31,82 @@ MODULE_PATH=({UPPER_CASE_IDENTIRIER}\.)+{UPPER_CASE_IDENTIRIER}
 
 %%
 
-"module" {
-    return MODULE;
+<IN_COMMENT> {
+    "{-" {
+        commentLevel++;
+        return COMMENT_CONTENT;
+    }
+    "-}" {
+        commentLevel--;
+        if (commentLevel == 0) {
+            yybegin(YYINITIAL);
+            return END_COMMENT;
+        }
+        return COMMENT_CONTENT;
+    }
+    [^-{}]+ {
+        return COMMENT_CONTENT;
+    }
+    [^] {
+        return COMMENT_CONTENT;
+    }
 }
-"where" {
-    return WHERE;
-}
-"import" {
-    return IMPORT;
-}
-"as" {
-    return AS;
-}
-"exposing" {
-    return EXPOSING;
-}
-"(" {
-    return LEFT_PARENTHESIS;
-}
-")" {
-    return RIGHT_PARENTHESIS;
-}
-".." {
-    return DOUBLE_DOT;
-}
-"," {
-    return COMMA;
-}
-{LOWER_CASE_IDENTIRIER} {
-    return LOWER_CASE_IDENTIRIER;
-}
-{MODULE_PATH} {
-    return MODULE_PATH;
-}
-{UPPER_CASE_IDENTIRIER} {
-    return UPPER_CASE_IDENTIRIER;
-}
-({CRLF}+{WHITE_SPACE}+) {
-    return TokenType.WHITE_SPACE;
-}
-{CRLF}*{LINE_COMMENT} {
-    return LINE_COMMENT;
-}
-{WHITE_SPACE}+ {
-    return TokenType.WHITE_SPACE;
-}
-{CRLF}+ {
-    return NEW_LINE;
+
+
+<YYINITIAL> {
+    "module" {
+        return MODULE;
+    }
+    "where" {
+        return WHERE;
+    }
+    "import" {
+        return IMPORT;
+    }
+    "as" {
+        return AS;
+    }
+    "exposing" {
+        return EXPOSING;
+    }
+    "(" {
+        return LEFT_PARENTHESIS;
+    }
+    ")" {
+        return RIGHT_PARENTHESIS;
+    }
+    ".." {
+        return DOUBLE_DOT;
+    }
+    "," {
+        return COMMA;
+    }
+    {CRLF}*"{-" {
+        commentLevel = 1;
+        yybegin(IN_COMMENT);
+        return START_COMMENT;
+    }
+    {LOWER_CASE_IDENTIRIER} {
+        return LOWER_CASE_IDENTIRIER;
+    }
+    {MODULE_PATH} {
+        return MODULE_PATH;
+    }
+    {UPPER_CASE_IDENTIRIER} {
+        return UPPER_CASE_IDENTIRIER;
+    }
+    ({CRLF}+{WHITE_SPACE}+) {
+        return TokenType.WHITE_SPACE;
+    }
+    {CRLF}*{LINE_COMMENT} {
+        return LINE_COMMENT;
+    }
+    {WHITE_SPACE}+ {
+        return TokenType.WHITE_SPACE;
+    }
+    {CRLF}+ {
+        return NEW_LINE;
+    }
 }
 
 . {

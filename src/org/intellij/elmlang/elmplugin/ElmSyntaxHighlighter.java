@@ -14,16 +14,16 @@ import static org.intellij.elmlang.elmplugin.psi.ElmTypes.*;
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
 public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
-    private static final TextAttributesKey[] KEYWORD_KEYS = new TextAttributesKey[]{
+    private static final TextAttributesKey[] KEYWORD_KEYS = new TextAttributesKey[] {
         createTextAttributesKey("ELM_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD)
     };
-    private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{
+    private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[] {
         createTextAttributesKey("ELM_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
     };
-    private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[]{
+    private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[] {
         createTextAttributesKey("ELM_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT)
     };
-    private static final TextAttributesKey[] PARENTHESIS_KEYS = new TextAttributesKey[]{
+    private static final TextAttributesKey[] PARENTHESIS_KEYS = new TextAttributesKey[] {
             createTextAttributesKey("ELM_PARENTHESIS", DefaultLanguageHighlighterColors.PARENTHESES)
     };
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
@@ -41,7 +41,7 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
             return KEYWORD_KEYS;
         } else if (isParenthesis(tokenType)) {
             return PARENTHESIS_KEYS;
-        } else if (tokenType.equals(LINE_COMMENT)) {
+        } else if (isComment(tokenType)) {
             return COMMENT_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;
@@ -61,5 +61,12 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
     private boolean isParenthesis(IElementType tokenType) {
         return tokenType.equals(LEFT_PARENTHESIS) ||
                 tokenType.equals(RIGHT_PARENTHESIS);
+    }
+
+    private boolean isComment(IElementType tokenType) {
+        return tokenType.equals(LINE_COMMENT) ||
+                tokenType.equals(START_COMMENT) ||
+                tokenType.equals(END_COMMENT) ||
+                tokenType.equals(COMMENT_CONTENT);
     }
 }

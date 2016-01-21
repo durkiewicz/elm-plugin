@@ -51,5 +51,6 @@ exposing_clause ::= EXPOSING exposed_values
 
 declaration ::= LOWER_CASE_IDENTIRIER
 
-comment ::= LINE_COMMENT
+comment ::= LINE_COMMENT|level_comment
 
+level_comment ::= START_COMMENT COMMENT_CONTENT* END_COMMENT

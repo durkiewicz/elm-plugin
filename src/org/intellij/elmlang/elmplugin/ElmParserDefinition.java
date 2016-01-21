@@ -19,7 +19,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class ElmParserDefinition implements ParserDefinition {
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final TokenSet COMMENTS = TokenSet.create(ElmTypes.COMMENT, ElmTypes.LINE_COMMENT);
+    public static final TokenSet COMMENTS = TokenSet.create(
+            ElmTypes.LINE_COMMENT,
+            ElmTypes.START_COMMENT,
+            ElmTypes.END_COMMENT,
+            ElmTypes.COMMENT_CONTENT
+        );
 
     public static final IFileElementType FILE = new IFileElementType(Language.<ElmLanguage>findInstance(ElmLanguage.class));
 
