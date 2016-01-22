@@ -1,4 +1,4 @@
-package org.intellij.elmlang.elmplugin;
+package org.elmlang.intellijplugin;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;

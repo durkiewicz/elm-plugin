@@ -1,10 +1,10 @@
-package org.intellij.elmlang.elmplugin.psi;
+package org.elmlang.intellijplugin.psi;
 
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
-import org.intellij.elmlang.elmplugin.ElmFileType;
-import org.intellij.elmlang.elmplugin.ElmLanguage;
+import org.elmlang.intellijplugin.ElmFileType;
+import org.elmlang.intellijplugin.ElmLanguage;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

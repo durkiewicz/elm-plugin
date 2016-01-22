@@ -1,4 +1,4 @@
-package org.intellij.elmlang.elmplugin;
+package org.elmlang.intellijplugin;
 
 import com.intellij.lexer.FlexAdapter;
 

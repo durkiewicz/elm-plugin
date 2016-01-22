@@ -1,4 +1,4 @@
-package org.intellij.elmlang.elmplugin;
+package org.elmlang.intellijplugin;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
@@ -12,9 +12,9 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import org.intellij.elmlang.elmplugin.parser.ElmParser;
-import org.intellij.elmlang.elmplugin.psi.ElmFile;
-import org.intellij.elmlang.elmplugin.psi.ElmTypes;
+import org.elmlang.intellijplugin.parser.ElmParser;
+import org.elmlang.intellijplugin.psi.ElmFile;
+import org.elmlang.intellijplugin.psi.ElmTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class ElmParserDefinition implements ParserDefinition {

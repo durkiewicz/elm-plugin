@@ -1,4 +1,4 @@
-package org.intellij.elmlang.elmplugin;
+package org.elmlang.intellijplugin;
 
 
 import com.intellij.lexer.Lexer;
@@ -9,7 +9,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import static org.intellij.elmlang.elmplugin.psi.ElmTypes.*;
+import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 

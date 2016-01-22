@@ -1,9 +1,9 @@
-package org.intellij.elmlang.elmplugin;
+package org.elmlang.intellijplugin;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.TokenType;
-import static org.intellij.elmlang.elmplugin.psi.ElmTypes.*;
+import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 
 %%
 
