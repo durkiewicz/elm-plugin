@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 
@@ -34,6 +35,31 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
     };
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
+    private static final TokenSet KEYWORDS = TokenSet.create(
+        WHERE,
+        MODULE,
+        IMPORT,
+        AS,
+        EXPOSING
+    );
+
+    private static final TokenSet STRINGS = TokenSet.create(
+        STRING_LITERAL,
+        CHAR_LITERAL
+    );
+
+    private static final TokenSet PARENTHESES = TokenSet.create(
+        LEFT_PARENTHESIS,
+        RIGHT_PARENTHESIS
+    );
+
+    private static final TokenSet COMMENTS = TokenSet.create(
+        LINE_COMMENT,
+        START_COMMENT,
+        END_COMMENT,
+        COMMENT_CONTENT
+    );
+
     @NotNull
     @Override
     public Lexer getHighlightingLexer() {
@@ -43,13 +69,13 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-        if (isKeyword(tokenType)) {
+        if (KEYWORDS.contains(tokenType)) {
             return KEYWORD_KEYS;
-        } else if (isParenthesis(tokenType)) {
+        } else if (PARENTHESES.contains(tokenType)) {
             return PARENTHESIS_KEYS;
-        } else if (isComment(tokenType)) {
+        } else if (COMMENTS.contains(tokenType)) {
             return COMMENT_KEYS;
-        } else if (isString(tokenType)) {
+        } else if (STRINGS.contains(tokenType)) {
             return STRING_KEYS;
         } else if (tokenType.equals(NUMBER_LITERAL)) {
             return NUMBER_KEYS;
@@ -58,30 +84,5 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
         } else {
             return EMPTY_KEYS;
         }
-    }
-
-    private boolean isKeyword(IElementType tokenType) {
-        return tokenType.equals(WHERE) ||
-                tokenType.equals(MODULE) ||
-                tokenType.equals(IMPORT) ||
-                tokenType.equals(AS) ||
-                tokenType.equals(EXPOSING);
-    }
-
-    private boolean isString(IElementType tokenType) {
-        return tokenType.equals(STRING_LITERAL) ||
-                tokenType.equals(CHAR_LITERAL);
-    }
-
-    private boolean isParenthesis(IElementType tokenType) {
-        return tokenType.equals(LEFT_PARENTHESIS) ||
-                tokenType.equals(RIGHT_PARENTHESIS);
-    }
-
-    private boolean isComment(IElementType tokenType) {
-        return tokenType.equals(LINE_COMMENT) ||
-                tokenType.equals(START_COMMENT) ||
-                tokenType.equals(END_COMMENT) ||
-                tokenType.equals(COMMENT_CONTENT);
     }
 }
