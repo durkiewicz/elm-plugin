@@ -29,28 +29,40 @@ blank ::= WHITE_SPACE|INDENTATION|NEW_LINE|comment
 
 module_declaration ::= MODULE module_name [exposed_values] WHERE
 
-module_name ::= MODULE_PATH | UPPER_CASE_IDENTIRIER
+module_name ::= MODULE_PATH | UPPER_CASE_IDENTIFIER
 
 exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT|list_of_values) RIGHT_PARENTHESIS
 
 list_of_values ::= exposed_value (COMMA exposed_value)*
 
-exposed_value ::= LOWER_CASE_IDENTIRIER | (UPPER_CASE_IDENTIRIER[exposed_union_constructors])
+exposed_value ::= LOWER_CASE_IDENTIRIER | (UPPER_CASE_IDENTIFIER[exposed_union_constructors])
 
 exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT|list_of_union_constructors) RIGHT_PARENTHESIS
 
-list_of_union_constructors ::= UPPER_CASE_IDENTIRIER (COMMA UPPER_CASE_IDENTIRIER)*
+list_of_union_constructors ::= UPPER_CASE_IDENTIFIER (COMMA UPPER_CASE_IDENTIFIER)*
 
 // imports
 
 import_clause ::= IMPORT module_name [as_clause] [exposing_clause]
 
-as_clause ::= AS UPPER_CASE_IDENTIRIER
+as_clause ::= AS UPPER_CASE_IDENTIFIER
 
 exposing_clause ::= EXPOSING exposed_values
 
-declaration ::= LOWER_CASE_IDENTIRIER
+// comments
 
 comment ::= LINE_COMMENT|level_comment
 
 level_comment ::= START_COMMENT COMMENT_CONTENT* END_COMMENT
+
+// declarations
+
+declaration ::= value_declaration
+
+value_declaration ::= value_declaration_left EQ expression
+
+value_declaration_left ::= LOWER_CASE_IDENTIRIER+
+
+expression ::= literal|LOWER_CASE_IDENTIRIER
+
+literal ::= STRING_LITERAL|NUMBER_LITERAL

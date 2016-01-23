@@ -26,8 +26,11 @@ WHITE_SPACE=[\ \t\f]
 LINE_COMMENT=("--")[^\r\n]*
 IDENTIFIER_CHAR=[[:letter:][:digit:]_]
 LOWER_CASE_IDENTIRIER=[:lowercase:]({IDENTIFIER_CHAR}|')*
-UPPER_CASE_IDENTIRIER=[:uppercase:]{IDENTIFIER_CHAR}*
-MODULE_PATH=({UPPER_CASE_IDENTIRIER}\.)+{UPPER_CASE_IDENTIRIER}
+UPPER_CASE_IDENTIFIER=[:uppercase:]{IDENTIFIER_CHAR}*
+MODULE_PATH=({UPPER_CASE_IDENTIFIER}\.)+{UPPER_CASE_IDENTIFIER}
+STRING_LITERAL=\"(\\.|[^\\\"])*\"
+STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
+NUMBER_LITERAL=[:digit:]+(\.[:digit:]+)?
 
 %%
 
@@ -81,6 +84,9 @@ MODULE_PATH=({UPPER_CASE_IDENTIRIER}\.)+{UPPER_CASE_IDENTIRIER}
     "," {
         return COMMA;
     }
+    "=" {
+        return EQ;
+    }
     {CRLF}*"{-" {
         commentLevel = 1;
         yybegin(IN_COMMENT);
@@ -92,8 +98,17 @@ MODULE_PATH=({UPPER_CASE_IDENTIRIER}\.)+{UPPER_CASE_IDENTIRIER}
     {MODULE_PATH} {
         return MODULE_PATH;
     }
-    {UPPER_CASE_IDENTIRIER} {
-        return UPPER_CASE_IDENTIRIER;
+    {UPPER_CASE_IDENTIFIER} {
+        return UPPER_CASE_IDENTIFIER;
+    }
+    {STRING_WITH_QUOTES_LITERAL} {
+        return STRING_LITERAL;
+    }
+    {STRING_LITERAL} {
+        return STRING_LITERAL;
+    }
+    {NUMBER_LITERAL} {
+        return NUMBER_LITERAL;
     }
     ({CRLF}+{WHITE_SPACE}+) {
         return TokenType.WHITE_SPACE;

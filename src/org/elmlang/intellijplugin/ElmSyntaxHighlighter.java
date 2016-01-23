@@ -23,8 +23,14 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[] {
         createTextAttributesKey("ELM_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT)
     };
+    private static final TextAttributesKey[] STRING_KEYS = new TextAttributesKey[] {
+        createTextAttributesKey("ELM_STRING", DefaultLanguageHighlighterColors.STRING)
+    };
+    private static final TextAttributesKey[] NUMBER_KEYS = new TextAttributesKey[] {
+            createTextAttributesKey("ELM_NUMBER", DefaultLanguageHighlighterColors.NUMBER)
+    };
     private static final TextAttributesKey[] PARENTHESIS_KEYS = new TextAttributesKey[] {
-            createTextAttributesKey("ELM_PARENTHESIS", DefaultLanguageHighlighterColors.PARENTHESES)
+        createTextAttributesKey("ELM_PARENTHESIS", DefaultLanguageHighlighterColors.PARENTHESES)
     };
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
@@ -43,6 +49,10 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
             return PARENTHESIS_KEYS;
         } else if (isComment(tokenType)) {
             return COMMENT_KEYS;
+        } else if (tokenType.equals(STRING_LITERAL)) {
+            return STRING_KEYS;
+        } else if (tokenType.equals(NUMBER_LITERAL)) {
+            return NUMBER_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;
         } else {
