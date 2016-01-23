@@ -39,6 +39,14 @@ public class LiteralParsingTest extends ParsingTestCase {
         doTest(true);
     }
 
+    public void testChar() {
+        doTest(true);
+    }
+
+    public void testEscapedChar() {
+        doTest(true);
+    }
+
     @Override
     protected String getTestDataPath() {
         return "testData/parsing/literals";

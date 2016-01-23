@@ -65,4 +65,4 @@ value_declaration_left ::= LOWER_CASE_IDENTIRIER+
 
 expression ::= literal|LOWER_CASE_IDENTIRIER
 
-literal ::= STRING_LITERAL|NUMBER_LITERAL
+literal ::= STRING_LITERAL|NUMBER_LITERAL|CHAR_LITERAL

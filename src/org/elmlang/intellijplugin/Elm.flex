@@ -31,6 +31,7 @@ MODULE_PATH=({UPPER_CASE_IDENTIFIER}\.)+{UPPER_CASE_IDENTIFIER}
 STRING_LITERAL=\"(\\.|[^\\\"])*\"
 STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=[:digit:]+(\.[:digit:]+)?
+CHAR_LITERAL='(\\.|[^\\'])'
 
 %%
 
@@ -106,6 +107,9 @@ NUMBER_LITERAL=[:digit:]+(\.[:digit:]+)?
     }
     {STRING_LITERAL} {
         return STRING_LITERAL;
+    }
+    {CHAR_LITERAL} {
+        return CHAR_LITERAL;
     }
     {NUMBER_LITERAL} {
         return NUMBER_LITERAL;

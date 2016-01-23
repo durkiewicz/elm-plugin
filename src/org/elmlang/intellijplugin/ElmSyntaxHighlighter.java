@@ -49,7 +49,7 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
             return PARENTHESIS_KEYS;
         } else if (isComment(tokenType)) {
             return COMMENT_KEYS;
-        } else if (tokenType.equals(STRING_LITERAL)) {
+        } else if (isString(tokenType)) {
             return STRING_KEYS;
         } else if (tokenType.equals(NUMBER_LITERAL)) {
             return NUMBER_KEYS;
@@ -66,6 +66,11 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
                 tokenType.equals(IMPORT) ||
                 tokenType.equals(AS) ||
                 tokenType.equals(EXPOSING);
+    }
+
+    private boolean isString(IElementType tokenType) {
+        return tokenType.equals(STRING_LITERAL) ||
+                tokenType.equals(CHAR_LITERAL);
     }
 
     private boolean isParenthesis(IElementType tokenType) {
