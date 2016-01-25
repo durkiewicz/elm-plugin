@@ -30,7 +30,7 @@ UPPER_CASE_IDENTIFIER=[:uppercase:]{IDENTIFIER_CHAR}*
 MODULE_PATH=({UPPER_CASE_IDENTIFIER}\.)+{UPPER_CASE_IDENTIFIER}
 STRING_LITERAL=\"(\\.|[^\\\"])*\"
 STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
-NUMBER_LITERAL=[:digit:]+(\.[:digit:]+)?
+NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
 CHAR_LITERAL='(\\.|[^\\'])'
 
 %%
@@ -124,7 +124,7 @@ CHAR_LITERAL='(\\.|[^\\'])'
         return TokenType.WHITE_SPACE;
     }
     {CRLF}+ {
-        return NEW_LINE;
+        return FRESH_LINE;
     }
 }
 

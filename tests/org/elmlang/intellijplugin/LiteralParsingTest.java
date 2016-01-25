@@ -19,6 +19,10 @@ public class LiteralParsingTest extends ParsingTestCase {
         doTest(true);
     }
 
+    public void testNegativeInt() {
+        doTest(true);
+    }
+
     public void testLongInt() {
         doTest(true);
     }

@@ -23,7 +23,7 @@ private declaration_item ::= (declaration|blank)
 
 private import_item ::= (import_clause|blank)
 
-blank ::= WHITE_SPACE|INDENTATION|NEW_LINE|comment
+blank ::= WHITE_SPACE|INDENTATION|FRESH_LINE|comment
 
 // module
 
@@ -59,10 +59,12 @@ level_comment ::= START_COMMENT COMMENT_CONTENT* END_COMMENT
 
 declaration ::= value_declaration
 
-value_declaration ::= value_declaration_left EQ expression
+value_declaration ::= value_declaration_left EQ expression { pin = 1 recoverWhile="declaration_recover" }
 
 value_declaration_left ::= LOWER_CASE_IDENTIRIER+
 
 expression ::= literal|LOWER_CASE_IDENTIRIER
 
 literal ::= STRING_LITERAL|NUMBER_LITERAL|CHAR_LITERAL
+
+declaration_recover ::= !(FRESH_LINE)
