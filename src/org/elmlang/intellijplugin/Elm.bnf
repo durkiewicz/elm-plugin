@@ -63,7 +63,9 @@ value_declaration ::= value_declaration_left EQ expression { pin = 1 recoverWhil
 
 value_declaration_left ::= LOWER_CASE_IDENTIRIER+
 
-expression ::= literal|LOWER_CASE_IDENTIRIER
+expression ::= expression_without_operator OPERATOR expression|expression_without_operator|LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
+
+expression_without_operator ::= literal|LOWER_CASE_IDENTIRIER
 
 literal ::= STRING_LITERAL|NUMBER_LITERAL|CHAR_LITERAL
 

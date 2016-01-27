@@ -32,6 +32,7 @@ STRING_LITERAL=\"(\\.|[^\\\"])*\"
 STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
 CHAR_LITERAL='(\\.|[^\\'])'
+OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|-|@|#|%|&|<|>|€|¥|¢|£|¤)+
 
 %%
 
@@ -113,6 +114,9 @@ CHAR_LITERAL='(\\.|[^\\'])'
     }
     {NUMBER_LITERAL} {
         return NUMBER_LITERAL;
+    }
+    {OPERATOR} {
+        return OPERATOR;
     }
     ({CRLF}+{WHITE_SPACE}+) {
         return TokenType.WHITE_SPACE;
