@@ -23,21 +23,29 @@ private declaration_item ::= (declaration|blank)
 
 private import_item ::= (import_clause|blank)
 
-blank ::= WHITE_SPACE|INDENTATION|FRESH_LINE|comment
+blank ::=
+    WHITE_SPACE
+    | INDENTATION
+    | FRESH_LINE
+    | comment
 
 // module
 
 module_declaration ::= MODULE module_name [exposed_values] WHERE
 
-module_name ::= MODULE_PATH | UPPER_CASE_IDENTIFIER
+module_name ::=
+    MODULE_PATH
+    | UPPER_CASE_IDENTIFIER
 
-exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT|list_of_values) RIGHT_PARENTHESIS
+exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
 
 list_of_values ::= exposed_value (COMMA exposed_value)*
 
-exposed_value ::= LOWER_CASE_IDENTIRIER | (UPPER_CASE_IDENTIFIER[exposed_union_constructors])
+exposed_value ::=
+    LOWER_CASE_IDENTIRIER
+    | (UPPER_CASE_IDENTIFIER[exposed_union_constructors])
 
-exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT|list_of_union_constructors) RIGHT_PARENTHESIS
+exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
 
 list_of_union_constructors ::= UPPER_CASE_IDENTIFIER (COMMA UPPER_CASE_IDENTIFIER)*
 
@@ -51,7 +59,9 @@ exposing_clause ::= EXPOSING exposed_values
 
 // comments
 
-comment ::= LINE_COMMENT|level_comment
+comment ::=
+    LINE_COMMENT
+    | level_comment
 
 level_comment ::= START_COMMENT COMMENT_CONTENT* END_COMMENT
 
@@ -63,10 +73,17 @@ value_declaration ::= value_declaration_left EQ expression { pin = 1 recoverWhil
 
 value_declaration_left ::= LOWER_CASE_IDENTIRIER+
 
-expression ::= expression_without_operator OPERATOR expression|expression_without_operator|LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
+expression ::=
+    LEFT_PARENTHESIS expression RIGHT_PARENTHESIS (OPERATOR expression)*
+    | expression_without_operator (OPERATOR expression)*
 
-expression_without_operator ::= literal|LOWER_CASE_IDENTIRIER
+expression_without_operator ::=
+    literal
+    | LOWER_CASE_IDENTIRIER
 
-literal ::= STRING_LITERAL|NUMBER_LITERAL|CHAR_LITERAL
+literal ::=
+    STRING_LITERAL
+    | NUMBER_LITERAL
+    | CHAR_LITERAL
 
 declaration_recover ::= !(FRESH_LINE)
