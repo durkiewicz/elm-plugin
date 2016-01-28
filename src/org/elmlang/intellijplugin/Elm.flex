@@ -33,6 +33,7 @@ STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
 CHAR_LITERAL='(\\.|[^\\'])'
 OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|-|@|#|%|&|<|>|€|¥|¢|£|¤)+
+BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
 
 %%
 
@@ -115,7 +116,7 @@ OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|-|@|#|%|&|<|>|€|¥|¢|£|¤)+
     {NUMBER_LITERAL} {
         return NUMBER_LITERAL;
     }
-    {OPERATOR} {
+    {OPERATOR}|{BACKTICKED_FUNCTION} {
         return OPERATOR;
     }
     ({CRLF}+{WHITE_SPACE}+) {
