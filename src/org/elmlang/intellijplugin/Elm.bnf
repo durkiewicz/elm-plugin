@@ -71,7 +71,9 @@ value_declaration ::= value_declaration_left EQ expression { pin = 1 recoverWhil
 
 value_declaration_left ::= LOWER_CASE_IDENTIRIER+
 
-expression ::= operand (OPERATOR operand)*
+expression ::= list_of_operands (OPERATOR list_of_operands)*
+
+list_of_operands ::= operand+
 
 operand ::=
     literal
