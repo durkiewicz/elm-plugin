@@ -17,6 +17,12 @@ import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 
 %{
     private int commentLevel = 0;
+    private IElementType previous = null;
+
+    private IElementType setPrevious(IElementType elem) {
+        this.previous = elem;
+        return elem;
+    }
 %}
 
 %state IN_COMMENT
@@ -27,7 +33,7 @@ LINE_COMMENT=("--")[^\r\n]*
 IDENTIFIER_CHAR=[[:letter:][:digit:]_]
 LOWER_CASE_IDENTIRIER=[:lowercase:]({IDENTIFIER_CHAR}|')*
 UPPER_CASE_IDENTIFIER=[:uppercase:]{IDENTIFIER_CHAR}*
-MODULE_PATH=({UPPER_CASE_IDENTIFIER}\.)+{UPPER_CASE_IDENTIFIER}
+//MODULE_PATH=({UPPER_CASE_IDENTIFIER}\.)+{UPPER_CASE_IDENTIFIER}
 STRING_LITERAL=\"(\\.|[^\\\"])*\"
 STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
@@ -40,99 +46,113 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
 <IN_COMMENT> {
     "{-" {
         commentLevel++;
-        return COMMENT_CONTENT;
+        return setPrevious(COMMENT_CONTENT);
     }
     "-}" {
         commentLevel--;
         if (commentLevel == 0) {
             yybegin(YYINITIAL);
-            return END_COMMENT;
+            return setPrevious(END_COMMENT);
         }
-        return COMMENT_CONTENT;
+        return setPrevious(COMMENT_CONTENT);
     }
     [^-{}]+ {
-        return COMMENT_CONTENT;
+        return setPrevious(COMMENT_CONTENT);
     }
     [^] {
-        return COMMENT_CONTENT;
+        return setPrevious(COMMENT_CONTENT);
     }
 }
 
 
 <YYINITIAL> {
     "module" {
-        return MODULE;
+        return setPrevious(MODULE);
     }
     "where" {
-        return WHERE;
+        return setPrevious(WHERE);
     }
     "import" {
-        return IMPORT;
+        return setPrevious(IMPORT);
     }
     "as" {
-        return AS;
+        return setPrevious(AS);
     }
     "exposing" {
-        return EXPOSING;
+        return setPrevious(EXPOSING);
     }
     "(" {
-        return LEFT_PARENTHESIS;
+        return setPrevious(LEFT_PARENTHESIS);
     }
     ")" {
-        return RIGHT_PARENTHESIS;
+        return setPrevious(RIGHT_PARENTHESIS);
     }
     ".." {
-        return DOUBLE_DOT;
+        return setPrevious(DOUBLE_DOT);
     }
     "," {
-        return COMMA;
+        return setPrevious(COMMA);
     }
     "=" {
-        return EQ;
+        return setPrevious(EQ);
+    }
+    "." {
+        if (LOWER_CASE_IDENTIRIER.equals(previous)
+            || UPPER_CASE_IDENTIFIER.equals(previous)
+            || LOWER_CASE_PATH.equals(previous)
+            || UPPER_CASE_PATH.equals(previous)) {
+            return setPrevious(DOT_IN_PATH);
+        }
+        return setPrevious(DOT);
     }
     {CRLF}*"{-" {
         commentLevel = 1;
         yybegin(IN_COMMENT);
-        return START_COMMENT;
+        return setPrevious(START_COMMENT);
     }
     {LOWER_CASE_IDENTIRIER} {
-        return LOWER_CASE_IDENTIRIER;
-    }
-    {MODULE_PATH} {
-        return MODULE_PATH;
+        if (DOT.equals(previous)
+            || DOT_IN_PATH.equals(previous)) {
+            return setPrevious(LOWER_CASE_PATH);
+        }
+        return setPrevious(LOWER_CASE_IDENTIRIER);
     }
     {UPPER_CASE_IDENTIFIER} {
-        return UPPER_CASE_IDENTIFIER;
+        if (DOT.equals(previous)
+            || DOT_IN_PATH.equals(previous)) {
+            return setPrevious(UPPER_CASE_PATH);
+        }
+        return setPrevious(UPPER_CASE_IDENTIFIER);
     }
     {STRING_WITH_QUOTES_LITERAL} {
-        return STRING_LITERAL;
+        return setPrevious(STRING_LITERAL);
     }
     {STRING_LITERAL} {
-        return STRING_LITERAL;
+        return setPrevious(STRING_LITERAL);
     }
     {CHAR_LITERAL} {
-        return CHAR_LITERAL;
+        return setPrevious(CHAR_LITERAL);
     }
     {NUMBER_LITERAL} {
-        return NUMBER_LITERAL;
+        return setPrevious(NUMBER_LITERAL);
     }
     {OPERATOR}|{BACKTICKED_FUNCTION} {
-        return OPERATOR;
+        return setPrevious(OPERATOR);
     }
     ({CRLF}+{WHITE_SPACE}+) {
-        return TokenType.WHITE_SPACE;
+        return setPrevious(TokenType.WHITE_SPACE);
     }
     {CRLF}*{LINE_COMMENT} {
-        return LINE_COMMENT;
+        return setPrevious(LINE_COMMENT);
     }
     {WHITE_SPACE}+ {
-        return TokenType.WHITE_SPACE;
+        return setPrevious(TokenType.WHITE_SPACE);
     }
     {CRLF}+ {
-        return FRESH_LINE;
+        return setPrevious(FRESH_LINE);
     }
 }
 
 . {
-    return TokenType.BAD_CHARACTER;
+    return setPrevious(TokenType.BAD_CHARACTER);
 }

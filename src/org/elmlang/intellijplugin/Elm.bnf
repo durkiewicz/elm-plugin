@@ -33,9 +33,7 @@ blank ::=
 
 module_declaration ::= MODULE module_name [exposed_values] WHERE
 
-module_name ::=
-    MODULE_PATH
-    | UPPER_CASE_IDENTIFIER
+module_name ::= UPPER_CASE_IDENTIFIER (DOT_IN_PATH UPPER_CASE_PATH)*
 
 exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
 
@@ -77,12 +75,18 @@ expression ::= operand (OPERATOR operand)*
 
 operand ::=
     literal
-    | LOWER_CASE_IDENTIRIER
+    | referenced_value
+    | DOT LOWER_CASE_PATH
+    | LEFT_PARENTHESIS OPERATOR RIGHT_PARENTHESIS
     | LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
 
 literal ::=
     STRING_LITERAL
     | NUMBER_LITERAL
     | CHAR_LITERAL
+
+referenced_value ::=
+    module_name (DOT_IN_PATH LOWER_CASE_PATH)*
+    | LOWER_CASE_IDENTIRIER (DOT_IN_PATH LOWER_CASE_PATH)*
 
 declaration_recover ::= !(FRESH_LINE)
