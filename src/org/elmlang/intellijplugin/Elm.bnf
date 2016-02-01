@@ -81,6 +81,8 @@ operand ::=
     | DOT LOWER_CASE_PATH
     | LEFT_PARENTHESIS OPERATOR RIGHT_PARENTHESIS
     | LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
+    | tuple_constructor
+    | tuple
 
 literal ::=
     STRING_LITERAL
@@ -90,5 +92,11 @@ literal ::=
 referenced_value ::=
     module_name (DOT_IN_PATH LOWER_CASE_PATH)*
     | LOWER_CASE_IDENTIRIER (DOT_IN_PATH LOWER_CASE_PATH)*
+
+tuple_constructor ::= LEFT_PARENTHESIS COMMA+ RIGHT_PARENTHESIS
+
+tuple ::=
+    LEFT_PARENTHESIS RIGHT_PARENTHESIS
+    | LEFT_PARENTHESIS expression (COMMA expression)* RIGHT_PARENTHESIS
 
 declaration_recover ::= !(FRESH_LINE)
