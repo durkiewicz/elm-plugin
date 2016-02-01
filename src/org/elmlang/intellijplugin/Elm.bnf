@@ -71,18 +71,23 @@ value_declaration ::= value_declaration_left EQ expression { pin = 1 recoverWhil
 
 value_declaration_left ::= LOWER_CASE_IDENTIRIER+
 
-expression ::= list_of_operands (OPERATOR list_of_operands)*
+expression ::= list_of_operands (some_operator list_of_operands)*
 
 list_of_operands ::= operand+
+
+private some_operator ::=
+    OPERATOR
+    | LIST_CONSTRUCTOR
 
 operand ::=
     literal
     | referenced_value
     | DOT LOWER_CASE_PATH
-    | LEFT_PARENTHESIS OPERATOR RIGHT_PARENTHESIS
+    | LEFT_PARENTHESIS some_operator RIGHT_PARENTHESIS
     | LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
     | tuple_constructor
     | tuple
+    | list
 
 literal ::=
     STRING_LITERAL
@@ -98,5 +103,9 @@ tuple_constructor ::= LEFT_PARENTHESIS COMMA+ RIGHT_PARENTHESIS
 tuple ::=
     LEFT_PARENTHESIS RIGHT_PARENTHESIS
     | LEFT_PARENTHESIS expression (COMMA expression)* RIGHT_PARENTHESIS
+
+list ::=
+    LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
+    | LEFT_SQUARE_BRACKET expression (COMMA expression)* RIGHT_SQUARE_BRACKET
 
 declaration_recover ::= !(FRESH_LINE)

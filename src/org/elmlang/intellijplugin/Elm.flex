@@ -37,7 +37,7 @@ STRING_LITERAL=\"(\\.|[^\\\"])*\"
 STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
 CHAR_LITERAL='(\\.|[^\\'])'
-OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|-|@|#|%|&|<|>|€|¥|¢|£|¤)+
+OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|-|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
 BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
 
 %%
@@ -86,6 +86,12 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
     ")" {
         return setPrevious(RIGHT_PARENTHESIS);
     }
+    "[" {
+        return setPrevious(LEFT_SQUARE_BRACKET);
+    }
+    "]" {
+        return setPrevious(RIGHT_SQUARE_BRACKET);
+    }
     ".." {
         return setPrevious(DOUBLE_DOT);
     }
@@ -94,6 +100,9 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
     }
     "=" {
         return setPrevious(EQ);
+    }
+    "::" {
+        return setPrevious(LIST_CONSTRUCTOR);
     }
     "." {
         if (LOWER_CASE_IDENTIRIER.equals(previous)
