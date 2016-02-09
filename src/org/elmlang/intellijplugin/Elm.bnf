@@ -109,7 +109,9 @@ list ::=
     LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
     | LEFT_SQUARE_BRACKET expression (COMMA expression)* RIGHT_SQUARE_BRACKET
 
-record ::= LEFT_BRACE field (COMMA field)* RIGHT_BRACE
+record ::= LEFT_BRACE [derived_record] field (COMMA field)* RIGHT_BRACE
+
+derived_record ::= LOWER_CASE_IDENTIRIER PIPE
 
 field ::= LOWER_CASE_IDENTIRIER EQ expression
 
