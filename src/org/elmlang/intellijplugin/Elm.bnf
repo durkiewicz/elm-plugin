@@ -88,6 +88,7 @@ operand ::=
     | tuple_constructor
     | tuple
     | list
+    | record
 
 literal ::=
     STRING_LITERAL
@@ -107,5 +108,9 @@ tuple ::=
 list ::=
     LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
     | LEFT_SQUARE_BRACKET expression (COMMA expression)* RIGHT_SQUARE_BRACKET
+
+record ::= LEFT_BRACE field (COMMA field)* RIGHT_BRACE
+
+field ::= LOWER_CASE_IDENTIRIER EQ expression
 
 declaration_recover ::= !(FRESH_LINE)

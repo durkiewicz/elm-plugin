@@ -92,6 +92,12 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
     "]" {
         return setPrevious(RIGHT_SQUARE_BRACKET);
     }
+    "{" {
+        return setPrevious(LEFT_BRACE);
+    }
+    "}" {
+        return setPrevious(RIGHT_BRACE);
+    }
     ".." {
         return setPrevious(DOUBLE_DOT);
     }
