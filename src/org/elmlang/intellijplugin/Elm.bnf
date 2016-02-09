@@ -89,6 +89,7 @@ operand ::=
     | tuple
     | list
     | record
+    | if_else
 
 literal ::=
     STRING_LITERAL
@@ -114,5 +115,7 @@ record ::= LEFT_BRACE [derived_record] field (COMMA field)* RIGHT_BRACE
 derived_record ::= LOWER_CASE_IDENTIRIER PIPE
 
 field ::= LOWER_CASE_IDENTIRIER EQ expression
+
+if_else ::= IF expression THEN expression ELSE expression
 
 declaration_recover ::= !(FRESH_LINE)

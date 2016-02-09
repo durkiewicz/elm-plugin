@@ -40,7 +40,10 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
         MODULE,
         IMPORT,
         AS,
-        EXPOSING
+        EXPOSING,
+        IF,
+        THEN,
+        ELSE
     );
 
     private static final TokenSet STRINGS = TokenSet.create(
