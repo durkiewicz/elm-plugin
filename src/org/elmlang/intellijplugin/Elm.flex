@@ -122,6 +122,9 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
     "=" {
         return setPrevious(EQ);
     }
+    "->" {
+        return setPrevious(ARROW);
+    }
     "::" {
         return setPrevious(LIST_CONSTRUCTOR);
     }
