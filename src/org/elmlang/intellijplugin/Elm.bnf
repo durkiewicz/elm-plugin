@@ -1,6 +1,5 @@
 {
   parserClass="org.elmlang.intellijplugin.parser.ElmParser"
-
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
   psiClassPrefix="Elm"
@@ -8,9 +7,17 @@
   psiPackage="org.elmlang.intellijplugin.psi"
   psiImplPackage="org.elmlang.intellijplugin.psi.impl"
 
+  parserUtilClass="org.elmlang.intellijplugin.manualParsing.ElmParserUtil"
+
   elementTypeHolderClass="org.elmlang.intellijplugin.psi.ElmTypes"
   elementTypeClass="org.elmlang.intellijplugin.psi.ElmElementType"
   tokenTypeClass="org.elmlang.intellijplugin.psi.ElmTokenType"
+
+  tokens = [
+    CASE_OF='CASE_OF'
+    CASE='CASE'
+    OF='OF'
+  ]
 }
 
 // docs:
@@ -90,6 +97,7 @@ operand ::=
     | list
     | record
     | if_else
+    | case_of
 
 literal ::=
     STRING_LITERAL
@@ -117,5 +125,7 @@ derived_record ::= LOWER_CASE_IDENTIRIER PIPE
 field ::= LOWER_CASE_IDENTIRIER EQ expression
 
 if_else ::= IF expression THEN expression ELSE expression
+
+external case_of ::= parse_case_of expression
 
 declaration_recover ::= !(FRESH_LINE)

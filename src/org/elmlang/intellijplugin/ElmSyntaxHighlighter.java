@@ -43,7 +43,9 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
         EXPOSING,
         IF,
         THEN,
-        ELSE
+        ELSE,
+        CASE,
+        OF
     );
 
     private static final TokenSet STRINGS = TokenSet.create(

@@ -89,6 +89,12 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
     "else" {
         return setPrevious(ELSE);
     }
+    "case" {
+        return setPrevious(CASE);
+    }
+    "of" {
+        return setPrevious(OF);
+    }
     "(" {
         return setPrevious(LEFT_PARENTHESIS);
     }

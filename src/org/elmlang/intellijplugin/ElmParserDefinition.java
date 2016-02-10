@@ -10,8 +10,10 @@ import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
+import org.elmlang.intellijplugin.manualParsing.ElmManualPsiElementFactory;
 import org.elmlang.intellijplugin.parser.ElmParser;
 import org.elmlang.intellijplugin.psi.ElmFile;
 import org.elmlang.intellijplugin.psi.ElmTypes;
@@ -69,6 +71,7 @@ public class ElmParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiElement createElement(ASTNode node) {
-        return ElmTypes.Factory.createElement(node);
+        PsiElement element = ElmManualPsiElementFactory.createElement(node);
+        return element == null ? ElmTypes.Factory.createElement(node) : element;
     }
 }
