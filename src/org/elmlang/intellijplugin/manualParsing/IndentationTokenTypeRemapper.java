@@ -1,7 +1,6 @@
 package org.elmlang.intellijplugin.manualParsing;
 
 import com.intellij.lang.ITokenTypeRemapper;
-import com.intellij.lang.PsiBuilder;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 
@@ -52,7 +51,7 @@ public class IndentationTokenTypeRemapper implements ITokenTypeRemapper {
                 Indentation indentation = this.getIndentation(i);
                 if (indentation != null) {
                     this.removeCaseIndentationsAbove(indentation);
-                    return ElmTypes.CASE_OF_SEPARATION;
+                    return ElmTypes.SEPARATION_BY_INDENTATION;
                 }
             }
         } else if (ElmTypes.FRESH_LINE.equals(type) || end == text.length()) {
