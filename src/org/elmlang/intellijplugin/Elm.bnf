@@ -52,23 +52,17 @@ exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_cons
 
 list_of_union_constructors ::= UPPER_CASE_IDENTIFIER (COMMA UPPER_CASE_IDENTIFIER)*
 
-// imports
-
 import_clause ::= IMPORT module_name [as_clause] [exposing_clause]
 
 as_clause ::= AS UPPER_CASE_IDENTIFIER
 
 exposing_clause ::= EXPOSING exposed_values
 
-// comments
-
 comment ::=
     LINE_COMMENT
     | level_comment
 
 level_comment ::= START_COMMENT COMMENT_CONTENT* END_COMMENT
-
-// declarations
 
 declaration ::= value_declaration
 
@@ -124,15 +118,13 @@ field ::= LOWER_CASE_IDENTIRIER EQ expression
 
 if_else ::= IF expression THEN expression ELSE expression
 
-external case_of ::= parseCaseOf case_of_header case_of_branch case_of_one_or_more_separation case_of_trailing_separation
+external case_of ::= parseCaseOf case_of_header case_of_branch case_of_one_or_more_separation
 
 case_of_header ::= CASE expression OF
 
 case_of_branch ::= pattern ARROW expression
 
 case_of_one_or_more_separation ::= CASE_OF_SEPARATION+
-
-case_of_trailing_separation ::= CASE_OF_SEPARATION*
 
 pattern ::= LOWER_CASE_IDENTIRIER
 

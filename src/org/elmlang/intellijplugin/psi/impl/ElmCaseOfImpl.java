@@ -19,7 +19,9 @@ public class ElmCaseOfImpl extends ASTWrapperPsiElement implements ElmCaseOf {
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
-        if (visitor instanceof ElmVisitor) ((ElmVisitor)visitor).visitPsiElement(this);
+        if (visitor instanceof ElmVisitor) {
+            ((ElmVisitor)visitor).visitPsiElement(this);
+        }
         else super.accept(visitor);
     }
 }
