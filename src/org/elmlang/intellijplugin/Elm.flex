@@ -95,6 +95,12 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
     "of" {
         return setPrevious(OF);
     }
+    "let" {
+        return setPrevious(LET);
+    }
+    "in" {
+        return setPrevious(IN);
+    }
     "(" {
         return setPrevious(LEFT_PARENTHESIS);
     }

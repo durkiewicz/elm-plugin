@@ -10,4 +10,10 @@ public class ElmParserUtil extends GeneratedParserUtilBase {
         return new CaseOfParser(header, branch, oneOrMoreSeparations)
                 .parse(builder, level);
     }
+
+    // LET inner_value_declaration other_value_declarations IN expression
+    public static boolean parseLetIn(PsiBuilder builder, int level, Parser innerValueDeclaration, Parser otherValueDeclarations, Parser expression) {
+        return new LetInParser(innerValueDeclaration, otherValueDeclarations, expression)
+                .parse(builder, level);
+    }
 }

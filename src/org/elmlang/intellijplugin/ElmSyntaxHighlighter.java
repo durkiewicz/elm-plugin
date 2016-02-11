@@ -36,33 +36,35 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
     private static final TokenSet KEYWORDS = TokenSet.create(
-        WHERE,
-        MODULE,
-        IMPORT,
-        AS,
-        EXPOSING,
-        IF,
-        THEN,
-        ELSE,
-        CASE,
-        OF
+            WHERE,
+            MODULE,
+            IMPORT,
+            AS,
+            EXPOSING,
+            IF,
+            THEN,
+            ELSE,
+            CASE,
+            OF,
+            LET,
+            IN
     );
 
     private static final TokenSet STRINGS = TokenSet.create(
-        STRING_LITERAL,
-        CHAR_LITERAL
+            STRING_LITERAL,
+            CHAR_LITERAL
     );
 
     private static final TokenSet PARENTHESES = TokenSet.create(
-        LEFT_PARENTHESIS,
-        RIGHT_PARENTHESIS
+            LEFT_PARENTHESIS,
+            RIGHT_PARENTHESIS
     );
 
     private static final TokenSet COMMENTS = TokenSet.create(
-        LINE_COMMENT,
-        START_COMMENT,
-        END_COMMENT,
-        COMMENT_CONTENT
+            LINE_COMMENT,
+            START_COMMENT,
+            END_COMMENT,
+            COMMENT_CONTENT
     );
 
     @NotNull

@@ -5,16 +5,15 @@ import com.intellij.lang.PsiBuilder;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 import org.elmlang.intellijplugin.psi.ElmTypes;
 import org.jetbrains.annotations.Nullable;
 
+
 public class IndentationTokenTypeRemapper implements ITokenTypeRemapper {
     private static final Map<Long, IndentationTokenTypeRemapper> instances =
-            new HashMap<Long, IndentationTokenTypeRemapper>();
+            Collections.synchronizedMap(new HashMap<Long, IndentationTokenTypeRemapper>());
 
     private Stack<Indentation> indentations;
 
@@ -22,12 +21,21 @@ public class IndentationTokenTypeRemapper implements ITokenTypeRemapper {
         this.reset();
     }
 
-    public int pushIndentation(PsiBuilder builder) {
-        int indentation = IndentationHelper.getIndentationOfPreviousToken(builder);
+    public void pushIndentation(int indentation, IndentationType type) {
         if (indentation > 0) {
-            this.indentations.push(new Indentation(indentation, this.indentations.size()));
+            Indentation value = new Indentation(indentation, this.indentations.size(), type);
+            this.indentations.push(value);
         }
-        return indentation;
+    }
+
+    public void popIndentation(int indentationValue, EnumSet<IndentationType> types) {
+        if (indentationValue == 0) {
+            return;
+        }
+        Indentation indentation = this.getIndentation(indentationValue);
+        if (indentation != null) {
+            this.removeIndentations(indentation.index, types);
+        }
     }
 
     public void reset() {
@@ -43,24 +51,22 @@ public class IndentationTokenTypeRemapper implements ITokenTypeRemapper {
             if (i > 0) {
                 Indentation indentation = this.getIndentation(i);
                 if (indentation != null) {
-                    if (!this.isLast(indentation)) {
-                        this.removeAbove(indentation);
-                    }
+                    this.removeCaseIndentationsAbove(indentation);
                     return ElmTypes.CASE_OF_SEPARATION;
                 }
             }
-        } else if (ElmTypes.FRESH_LINE.equals(type)) {
+        } else if (ElmTypes.FRESH_LINE.equals(type) || end == text.length()) {
             this.reset();
         }
         return type;
     }
 
     public static IndentationTokenTypeRemapper getInstance() {
-        long threadId = Thread.currentThread().getId();
-        if (!instances.containsKey(threadId)) {
-            instances.put(threadId, new IndentationTokenTypeRemapper());
+        long key = Thread.currentThread().getId();
+        if (!instances.containsKey(key)) {
+            instances.put(key, new IndentationTokenTypeRemapper());
         }
-        return instances.get(threadId);
+        return instances.get(key);
     }
 
     @Nullable
@@ -74,31 +80,37 @@ public class IndentationTokenTypeRemapper implements ITokenTypeRemapper {
         return null;
     }
 
-    private boolean isLast(Indentation indentation) {
-        return indentation.index == this.indentations.size() - 1;
+    private void removeCaseIndentationsAbove(Indentation indentation) {
+        this.removeIndentations(indentation.index + 1, EnumSet.of(IndentationType.CASE_OF));
     }
 
-    private void removeAbove(Indentation indentation) {
-        Indentation removed;
-        while (true) {
-            removed = this.indentations.pop();
-            if (removed.index == indentation.index + 1) {
-                break;
+    private void removeIndentations(int minIndex, EnumSet<IndentationType> types) {
+        for (int i = this.indentations.size() - 1; i >= minIndex; i--) {
+            Indentation toRemove = this.indentations.elementAt(i);
+            if (types.contains(toRemove.type)) {
+                this.indentations.removeElementAt(i);
             }
         }
+    }
+
+    public enum IndentationType {
+        CASE_OF,
+        LET_IN
     }
 
     private class Indentation {
         private final int value;
         private final int index;
+        private final IndentationType type;
 
-        private Indentation(int value, int index) {
+        private Indentation(int value, int index, IndentationType type) {
             this.value = value;
             this.index = index;
+            this.type = type;
         }
 
         public String toString() {
-            return String.format("(%d, %d)", this.index, this.value);
+            return String.format("(%d, %d, %s)", this.index, this.value, this.type);
         }
     }
 }
