@@ -142,6 +142,7 @@ single_pattern ::=
     | LOWER_CASE_IDENTIFIER
     | record_pattern
     | list_pattern
+    | union_pattern
     | parenthesed_pattern
 
 pattern ::= single_pattern (LIST_CONSTRUCTOR single_pattern)*
@@ -149,6 +150,8 @@ pattern ::= single_pattern (LIST_CONSTRUCTOR single_pattern)*
 record_pattern ::= LEFT_BRACE <<non_empty_list lower_case_identifier_parser>> RIGHT_BRACE
 
 list_pattern ::= LEFT_SQUARE_BRACKET [<<non_empty_list pattern>>] RIGHT_SQUARE_BRACKET
+
+union_pattern ::= UPPER_CASE_IDENTIFIER pattern*
 
 parenthesed_pattern ::= LEFT_PARENTHESIS pattern RIGHT_PARENTHESIS
 
