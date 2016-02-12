@@ -101,6 +101,9 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIFIER}"`"
     "in" {
         return setPrevious(IN);
     }
+    "type" {
+        return setPrevious(TYPE_KEYWORD);
+    }
     "(" {
         return setPrevious(LEFT_PARENTHESIS);
     }

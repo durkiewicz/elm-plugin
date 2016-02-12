@@ -47,7 +47,8 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
             CASE,
             OF,
             LET,
-            IN
+            IN,
+            TYPE_KEYWORD
     );
 
     private static final TokenSet STRINGS = TokenSet.create(

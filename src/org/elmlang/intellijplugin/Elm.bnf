@@ -37,9 +37,9 @@ blank ::=
     | FRESH_LINE
     | comment
 
-module_declaration ::= MODULE module_name [exposed_values] WHERE
+module_declaration ::= MODULE list_of_upper_cases [exposed_values] WHERE
 
-module_name ::= UPPER_CASE_IDENTIFIER (DOT_IN_PATH UPPER_CASE_PATH)*
+list_of_upper_cases ::= UPPER_CASE_IDENTIFIER (DOT_IN_PATH UPPER_CASE_PATH)*
 
 exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
 
@@ -53,7 +53,7 @@ exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_cons
 
 list_of_union_constructors ::= <<non_empty_list upper_case_identifier_parser>>
 
-import_clause ::= IMPORT module_name [as_clause] [exposing_clause]
+import_clause ::= IMPORT list_of_upper_cases [as_clause] [exposing_clause]
 
 as_clause ::= AS UPPER_CASE_IDENTIFIER
 
@@ -65,13 +65,21 @@ comment ::=
 
 level_comment ::= START_COMMENT COMMENT_CONTENT* END_COMMENT
 
-declaration ::= value_declaration
-
-value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION*
+declaration ::=
+    value_declaration
+    | type_declaration
 {
-    pin = 2
+    pin = 1
     recoverWhile = declaration_recover
 }
+
+value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION*
+
+type_declaration ::= TYPE_KEYWORD UPPER_CASE_IDENTIFIER EQ union_member (PIPE union_member)*
+
+union_member ::= UPPER_CASE_IDENTIFIER type_reference*
+
+type_reference ::= list_of_upper_cases
 
 inner_value_declaration ::= value_declaration_left EQ expression
 
@@ -109,7 +117,7 @@ literal ::=
     | CHAR_LITERAL
 
 referenced_value ::=
-    module_name (DOT_IN_PATH LOWER_CASE_PATH)*
+    list_of_upper_cases (DOT_IN_PATH LOWER_CASE_PATH)*
     | LOWER_CASE_IDENTIFIER (DOT_IN_PATH LOWER_CASE_PATH)*
 
 operator_as_function ::= LEFT_PARENTHESIS some_operator RIGHT_PARENTHESIS
