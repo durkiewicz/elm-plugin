@@ -137,12 +137,20 @@ external let_in ::= parseLetIn inner_value_declaration other_values_declarations
 
 other_values_declarations ::= (one_or_more_separations inner_value_declaration)* SEPARATION_BY_INDENTATION*
 
-pattern ::=
+single_pattern ::=
     UNDERSCORE
     | LOWER_CASE_IDENTIRIER
     | record_pattern
+    | list_pattern
+    | parenthesed_pattern
+
+pattern ::= single_pattern (LIST_CONSTRUCTOR single_pattern)*
 
 record_pattern ::= LEFT_BRACE <<non_empty_list lower_case_identifier_parser>> RIGHT_BRACE
+
+list_pattern ::= LEFT_SQUARE_BRACKET [<<non_empty_list pattern>>] RIGHT_SQUARE_BRACKET
+
+parenthesed_pattern ::= LEFT_PARENTHESIS pattern RIGHT_PARENTHESIS
 
 anonymous_function ::= BACKSLASH pattern+ ARROW expression
 
