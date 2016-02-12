@@ -79,7 +79,16 @@ type_declaration ::= TYPE_KEYWORD UPPER_CASE_IDENTIFIER EQ union_member (PIPE un
 
 union_member ::= UPPER_CASE_IDENTIFIER type_reference*
 
-type_reference ::= list_of_upper_cases
+type_reference ::= single_type_reference (ARROW single_type_reference)*
+
+single_type_reference ::=
+    list_of_upper_cases
+    | record_type
+    | LEFT_PARENTHESIS type_reference RIGHT_PARENTHESIS
+
+record_type ::= LEFT_BRACE [<<non_empty_list field_type>>] RIGHT_BRACE
+
+field_type ::= LOWER_CASE_IDENTIFIER COLON type_reference
 
 inner_value_declaration ::= value_declaration_left EQ expression
 

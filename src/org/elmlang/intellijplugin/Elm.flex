@@ -137,6 +137,9 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIFIER}"`"
     "::" {
         return setPrevious(LIST_CONSTRUCTOR);
     }
+    ":" {
+        return setPrevious(COLON);
+    }
     "|" {
         return setPrevious(PIPE);
     }
