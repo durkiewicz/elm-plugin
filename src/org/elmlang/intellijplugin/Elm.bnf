@@ -43,7 +43,7 @@ module_name ::= UPPER_CASE_IDENTIFIER (DOT_IN_PATH UPPER_CASE_PATH)*
 
 exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
 
-list_of_values ::= exposed_value (COMMA exposed_value)*
+list_of_values ::= <<non_empty_list exposed_value>>
 
 exposed_value ::=
     LOWER_CASE_IDENTIRIER
@@ -51,7 +51,7 @@ exposed_value ::=
 
 exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
 
-list_of_union_constructors ::= UPPER_CASE_IDENTIFIER (COMMA UPPER_CASE_IDENTIFIER)*
+list_of_union_constructors ::= <<non_empty_list upper_case_identifier_parser>>
 
 import_clause ::= IMPORT module_name [as_clause] [exposing_clause]
 
@@ -115,9 +115,9 @@ tuple ::=
     LEFT_PARENTHESIS RIGHT_PARENTHESIS
     | LEFT_PARENTHESIS expression (COMMA expression)+ RIGHT_PARENTHESIS
 
-list ::= LEFT_SQUARE_BRACKET [expression (COMMA expression)*] RIGHT_SQUARE_BRACKET
+list ::= LEFT_SQUARE_BRACKET [<<non_empty_list expression>>] RIGHT_SQUARE_BRACKET
 
-record ::= LEFT_BRACE [[derived_record] field (COMMA field)*] RIGHT_BRACE
+record ::= LEFT_BRACE [[derived_record] <<non_empty_list field>>] RIGHT_BRACE
 
 derived_record ::= LOWER_CASE_IDENTIRIER PIPE
 
@@ -137,8 +137,19 @@ external let_in ::= parseLetIn inner_value_declaration other_values_declarations
 
 other_values_declarations ::= (one_or_more_separations inner_value_declaration)* SEPARATION_BY_INDENTATION*
 
-pattern ::= LOWER_CASE_IDENTIRIER
+pattern ::=
+    UNDERSCORE
+    | LOWER_CASE_IDENTIRIER
+    | record_pattern
+
+record_pattern ::= LEFT_BRACE <<non_empty_list lower_case_identifier_parser>> RIGHT_BRACE
 
 anonymous_function ::= BACKSLASH pattern+ ARROW expression
 
 declaration_recover ::= !(FRESH_LINE)
+
+private meta non_empty_list ::= <<p>> (COMMA <<p>>)*
+
+private lower_case_identifier_parser ::= LOWER_CASE_IDENTIRIER
+
+private upper_case_identifier_parser ::= UPPER_CASE_IDENTIFIER

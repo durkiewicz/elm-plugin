@@ -140,6 +140,9 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
     "\\" {
         return setPrevious(BACKSLASH);
     }
+    "_" {
+        return setPrevious(UNDERSCORE);
+    }
     "." {
         if (LOWER_CASE_IDENTIRIER.equals(previous)
             || UPPER_CASE_IDENTIFIER.equals(previous)
