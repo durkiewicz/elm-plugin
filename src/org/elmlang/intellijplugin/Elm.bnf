@@ -67,6 +67,7 @@ level_comment ::= START_COMMENT COMMENT_CONTENT* END_COMMENT
 
 declaration ::=
     value_declaration
+    | type_alias_declaration
     | type_declaration
 {
     pin = 1
@@ -75,7 +76,9 @@ declaration ::=
 
 value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION*
 
-type_declaration ::= TYPE_KEYWORD UPPER_CASE_IDENTIFIER EQ union_member (PIPE union_member)*
+type_alias_declaration ::= TYPE ALIAS UPPER_CASE_IDENTIFIER EQ type_reference
+
+type_declaration ::= TYPE UPPER_CASE_IDENTIFIER EQ union_member (PIPE union_member)*
 
 union_member ::= UPPER_CASE_IDENTIFIER type_reference*
 

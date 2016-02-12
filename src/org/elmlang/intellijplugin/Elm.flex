@@ -102,7 +102,10 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIFIER}"`"
         return setPrevious(IN);
     }
     "type" {
-        return setPrevious(TYPE_KEYWORD);
+        return setPrevious(TYPE);
+    }
+    "alias" {
+        return setPrevious(ALIAS);
     }
     "(" {
         return setPrevious(LEFT_PARENTHESIS);
