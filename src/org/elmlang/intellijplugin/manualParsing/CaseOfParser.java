@@ -6,7 +6,6 @@ import com.intellij.lang.parser.GeneratedParserUtilBase;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import static org.elmlang.intellijplugin.psi.ElmTypes.CASE;
 import static org.elmlang.intellijplugin.psi.ElmTypes.CASE_OF;
-import static org.elmlang.intellijplugin.manualParsing.IndentationTokenTypeRemapper.IndentationType;
 
 public class CaseOfParser implements GeneratedParserUtilBase.Parser {
     private final GeneratedParserUtilBase.Parser header;
@@ -25,7 +24,7 @@ public class CaseOfParser implements GeneratedParserUtilBase.Parser {
     }
 
     @Override
-    public boolean parse(PsiBuilder builder, int level) {
+    public boolean parse(final PsiBuilder builder, final int level) {
         if (!recursion_guard_(builder, level, "CaseOfParser")) {
             return false;
         }
@@ -35,14 +34,17 @@ public class CaseOfParser implements GeneratedParserUtilBase.Parser {
         boolean result;
         PsiBuilder.Marker marker = enter_section_(builder);
         result = this.header.parse(builder, level + 1);
-        if (result) {
-            IndentationTokenTypeRemapper reMapper = IndentationTokenTypeRemapper.getInstance();
-            this.indentation = IndentationHelper.getIndentationOfPreviousToken(builder);
-            reMapper.pushIndentation(this.indentation, IndentationType.CASE_OF);
-            builder.setTokenTypeRemapper(reMapper);
-        }
-        result = result && this.branch.parse(builder, level + 1);
-        result = result && this.separatedBranches(builder, level + 1);
+        result = result && IndentationTokenTypeRemapper.use(new IndentationTokenTypeRemapper.Callback<Boolean>() {
+            @Override
+            public Boolean call(IndentationTokenTypeRemapper reMapper, Boolean result) {
+                CaseOfParser.this.indentation = IndentationHelper.getIndentationOfPreviousToken(builder);
+                reMapper.pushIndentation(CaseOfParser.this.indentation);
+                builder.setTokenTypeRemapper(reMapper);
+                result = result && CaseOfParser.this.branch.parse(builder, level + 1);
+                result = result && CaseOfParser.this.separatedBranches(builder, level + 1);
+                return result;
+            }
+        }, result);
         exit_section_(builder, marker, CASE_OF, result);
         return result;
     }

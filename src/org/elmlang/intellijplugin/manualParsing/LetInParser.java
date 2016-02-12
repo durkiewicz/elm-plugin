@@ -3,15 +3,12 @@ package org.elmlang.intellijplugin.manualParsing;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.parser.GeneratedParserUtilBase;
 
-import java.util.EnumSet;
-
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.consumeToken;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.exit_section_;
 import static org.elmlang.intellijplugin.psi.ElmTypes.IN;
 import static org.elmlang.intellijplugin.psi.ElmTypes.LET;
 import static org.elmlang.intellijplugin.psi.ElmTypes.LET_IN;
-import static org.elmlang.intellijplugin.manualParsing.IndentationTokenTypeRemapper.IndentationType;
 
 public class LetInParser implements GeneratedParserUtilBase.Parser {
     private final GeneratedParserUtilBase.Parser innerValueDeclaration;
@@ -26,26 +23,26 @@ public class LetInParser implements GeneratedParserUtilBase.Parser {
     }
 
     @Override
-    public boolean parse(PsiBuilder builder, int level) {
+    public boolean parse(final PsiBuilder builder, final int level) {
         if (!recursion_guard_(builder, level, "let_in")) return false;
         if (!nextTokenIs(builder, LET)) return false;
         boolean result;
-        int indentationValue = 0;
         PsiBuilder.Marker marker = enter_section_(builder);
         result = consumeToken(builder, LET);
-        IndentationTokenTypeRemapper reMapper = IndentationTokenTypeRemapper.getInstance();
-        builder.setTokenTypeRemapper(reMapper);
-        if (result) {
-            indentationValue = IndentationHelper.getIndentationOfPreviousToken(builder);
-            reMapper.pushIndentation(indentationValue, IndentationType.LET_IN);
-        }
-        result = result && this.innerValueDeclaration.parse(builder, level + 1);
-        result = result && this.otherValueDeclarations.parse(builder, level + 1);
-        result = result && consumeToken(builder, IN);
-        reMapper.popIndentation(
-                indentationValue,
-                EnumSet.of(IndentationType.CASE_OF, IndentationType.LET_IN)
-        );
+        result = result && IndentationTokenTypeRemapper.use(new IndentationTokenTypeRemapper.Callback<Boolean>() {
+            @Override
+            public Boolean call(IndentationTokenTypeRemapper reMapper, Boolean result) {
+                builder.setTokenTypeRemapper(reMapper);
+                if (result) {
+                    int indentationValue = IndentationHelper.getIndentationOfPreviousToken(builder);
+                    reMapper.pushIndentation(indentationValue);
+                }
+                result = result && LetInParser.this.innerValueDeclaration.parse(builder, level + 1);
+                result = result && LetInParser.this.otherValueDeclarations.parse(builder, level + 1);
+                result = result && consumeToken(builder, IN);
+                return result;
+            }
+        }, result);
         result = result && this.expression.parse(builder, level + 1);
         exit_section_(builder, marker, LET_IN, result);
         return result;
