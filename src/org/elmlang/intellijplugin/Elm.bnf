@@ -69,6 +69,7 @@ declaration ::=
     value_declaration
     | type_alias_declaration
     | type_declaration
+    | type_annotation
 {
     pin = 1
     recoverWhile = declaration_recover
@@ -80,12 +81,14 @@ type_alias_declaration ::= TYPE ALIAS UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFI
 
 type_declaration ::= TYPE UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ union_member (PIPE union_member)*
 
+type_annotation ::= (LOWER_CASE_IDENTIFIER | operator_as_function) COLON type_reference
+
 union_member ::= UPPER_CASE_IDENTIFIER type_reference*
 
 type_reference ::= single_type_reference (ARROW single_type_reference)*
 
 single_type_reference ::=
-    list_of_upper_cases
+    list_of_upper_cases+
     | LOWER_CASE_IDENTIFIER
     | record_type
     | LEFT_PARENTHESIS type_reference RIGHT_PARENTHESIS
