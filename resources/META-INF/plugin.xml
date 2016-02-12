@@ -30,6 +30,7 @@
         <lang.parserDefinition language="Elm" implementationClass="org.elmlang.intellijplugin.ElmParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Elm"
                                        implementationClass="org.elmlang.intellijplugin.ElmSyntaxHighlighterFactory"/>
+        <lang.commenter language="Elm" implementationClass="org.elmlang.intellijplugin.features.ElmCommenter"/>
     </extensions>
 
     <actions>
