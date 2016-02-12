@@ -76,9 +76,9 @@ declaration ::=
 
 value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION*
 
-type_alias_declaration ::= TYPE ALIAS UPPER_CASE_IDENTIFIER EQ type_reference
+type_alias_declaration ::= TYPE ALIAS UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ type_reference
 
-type_declaration ::= TYPE UPPER_CASE_IDENTIFIER EQ union_member (PIPE union_member)*
+type_declaration ::= TYPE UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ union_member (PIPE union_member)*
 
 union_member ::= UPPER_CASE_IDENTIFIER type_reference*
 
@@ -86,10 +86,11 @@ type_reference ::= single_type_reference (ARROW single_type_reference)*
 
 single_type_reference ::=
     list_of_upper_cases
+    | LOWER_CASE_IDENTIFIER
     | record_type
     | LEFT_PARENTHESIS type_reference RIGHT_PARENTHESIS
 
-record_type ::= LEFT_BRACE [<<non_empty_list field_type>>] RIGHT_BRACE
+record_type ::= LEFT_BRACE [[record_base] <<non_empty_list field_type>>] RIGHT_BRACE
 
 field_type ::= LOWER_CASE_IDENTIFIER COLON type_reference
 
@@ -142,9 +143,9 @@ tuple ::=
 
 list ::= LEFT_SQUARE_BRACKET [<<non_empty_list expression>>] RIGHT_SQUARE_BRACKET
 
-record ::= LEFT_BRACE [[derived_record] <<non_empty_list field>>] RIGHT_BRACE
+record ::= LEFT_BRACE [[record_base] <<non_empty_list field>>] RIGHT_BRACE
 
-derived_record ::= LOWER_CASE_IDENTIFIER PIPE
+record_base ::= LOWER_CASE_IDENTIFIER PIPE
 
 field ::= LOWER_CASE_IDENTIFIER EQ expression
 
