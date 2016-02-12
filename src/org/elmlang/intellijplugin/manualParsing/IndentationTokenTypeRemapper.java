@@ -15,7 +15,7 @@ public class IndentationTokenTypeRemapper implements ITokenTypeRemapper {
     private Stack<Integer> indentations;
 
     private IndentationTokenTypeRemapper() {
-        this.indentations = new Stack<Integer>();
+        this.reset();
     }
 
     public static <T> T use(Callback<T> callback, T input) {
@@ -42,8 +42,16 @@ public class IndentationTokenTypeRemapper implements ITokenTypeRemapper {
                     return ElmTypes.SEPARATION_BY_INDENTATION;
                 }
             }
+        } else if (ElmTypes.FRESH_LINE.equals(type) || end == text.length()) {
+            this.reset();
         }
         return type;
+    }
+
+    public void reset() {
+        if (this.indentations == null || !this.indentations.empty()) {
+            this.indentations = new Stack<Integer>();
+        }
     }
 
     private static IndentationTokenTypeRemapper getInstance() {
