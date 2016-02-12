@@ -177,14 +177,14 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
     {NUMBER_LITERAL} {
         return setPrevious(NUMBER_LITERAL);
     }
-    {OPERATOR}|{BACKTICKED_FUNCTION} {
-        return setPrevious(OPERATOR);
-    }
-    ({CRLF}+{WHITE_SPACE}+) {
+    ({CRLF}+{WHITE_SPACE}+)+ {
         return setPrevious(TokenType.WHITE_SPACE);
     }
     {CRLF}*{LINE_COMMENT} {
         return setPrevious(LINE_COMMENT);
+    }
+    {OPERATOR}|{BACKTICKED_FUNCTION} {
+        return setPrevious(OPERATOR);
     }
     {WHITE_SPACE}+ {
         return setPrevious(TokenType.WHITE_SPACE);
