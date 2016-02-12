@@ -46,7 +46,7 @@ exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHE
 list_of_values ::= <<non_empty_list exposed_value>>
 
 exposed_value ::=
-    LOWER_CASE_IDENTIRIER
+    LOWER_CASE_IDENTIFIER
     | (UPPER_CASE_IDENTIFIER[exposed_union_constructors])
 
 exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
@@ -75,7 +75,7 @@ value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTA
 
 inner_value_declaration ::= value_declaration_left EQ expression
 
-value_declaration_left ::= LOWER_CASE_IDENTIRIER+
+value_declaration_left ::= LOWER_CASE_IDENTIFIER+
 
 expression ::= list_of_operands (some_operator list_of_operands)*
 
@@ -107,7 +107,7 @@ literal ::=
 
 referenced_value ::=
     module_name (DOT_IN_PATH LOWER_CASE_PATH)*
-    | LOWER_CASE_IDENTIRIER (DOT_IN_PATH LOWER_CASE_PATH)*
+    | LOWER_CASE_IDENTIFIER (DOT_IN_PATH LOWER_CASE_PATH)*
 
 tuple_constructor ::= LEFT_PARENTHESIS COMMA+ RIGHT_PARENTHESIS
 
@@ -119,9 +119,9 @@ list ::= LEFT_SQUARE_BRACKET [<<non_empty_list expression>>] RIGHT_SQUARE_BRACKE
 
 record ::= LEFT_BRACE [[derived_record] <<non_empty_list field>>] RIGHT_BRACE
 
-derived_record ::= LOWER_CASE_IDENTIRIER PIPE
+derived_record ::= LOWER_CASE_IDENTIFIER PIPE
 
-field ::= LOWER_CASE_IDENTIRIER EQ expression
+field ::= LOWER_CASE_IDENTIFIER EQ expression
 
 if_else ::= IF expression THEN expression ELSE expression
 
@@ -139,7 +139,7 @@ other_values_declarations ::= (one_or_more_separations inner_value_declaration)*
 
 single_pattern ::=
     UNDERSCORE
-    | LOWER_CASE_IDENTIRIER
+    | LOWER_CASE_IDENTIFIER
     | record_pattern
     | list_pattern
     | parenthesed_pattern
@@ -158,6 +158,6 @@ declaration_recover ::= !(FRESH_LINE)
 
 private meta non_empty_list ::= <<p>> (COMMA <<p>>)*
 
-private lower_case_identifier_parser ::= LOWER_CASE_IDENTIRIER
+private lower_case_identifier_parser ::= LOWER_CASE_IDENTIFIER
 
 private upper_case_identifier_parser ::= UPPER_CASE_IDENTIFIER

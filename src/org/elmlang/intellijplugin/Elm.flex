@@ -31,14 +31,14 @@ CRLF= (\n|\r|\r\n)
 WHITE_SPACE=[\ \t\f]
 LINE_COMMENT=("--")[^\r\n]*
 IDENTIFIER_CHAR=[[:letter:][:digit:]_]
-LOWER_CASE_IDENTIRIER=[:lowercase:]({IDENTIFIER_CHAR}|')*
+LOWER_CASE_IDENTIFIER=[:lowercase:]({IDENTIFIER_CHAR}|')*
 UPPER_CASE_IDENTIFIER=[:uppercase:]{IDENTIFIER_CHAR}*
 STRING_LITERAL=\"(\\.|[^\\\"])*\"
 STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
 CHAR_LITERAL='(\\.|[^\\'])'
 OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|-|=|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
-BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
+BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIFIER}"`"
 
 %%
 
@@ -144,7 +144,7 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
         return setPrevious(UNDERSCORE);
     }
     "." {
-        if (LOWER_CASE_IDENTIRIER.equals(previous)
+        if (LOWER_CASE_IDENTIFIER.equals(previous)
             || UPPER_CASE_IDENTIFIER.equals(previous)
             || LOWER_CASE_PATH.equals(previous)
             || UPPER_CASE_PATH.equals(previous)) {
@@ -157,12 +157,12 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIRIER}"`"
         yybegin(IN_COMMENT);
         return setPrevious(START_COMMENT);
     }
-    {LOWER_CASE_IDENTIRIER} {
+    {LOWER_CASE_IDENTIFIER} {
         if (DOT.equals(previous)
             || DOT_IN_PATH.equals(previous)) {
             return setPrevious(LOWER_CASE_PATH);
         }
-        return setPrevious(LOWER_CASE_IDENTIRIER);
+        return setPrevious(LOWER_CASE_IDENTIFIER);
     }
     {UPPER_CASE_IDENTIFIER} {
         if (DOT.equals(previous)
