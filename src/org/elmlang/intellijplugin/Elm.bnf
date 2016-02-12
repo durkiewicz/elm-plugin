@@ -98,6 +98,7 @@ operand ::=
     | if_else
     | case_of
     | let_in
+    | anonymous_function
 
 literal ::=
     STRING_LITERAL
@@ -137,5 +138,7 @@ external let_in ::= parseLetIn inner_value_declaration other_values_declarations
 other_values_declarations ::= (one_or_more_separations inner_value_declaration)* SEPARATION_BY_INDENTATION*
 
 pattern ::= LOWER_CASE_IDENTIRIER
+
+anonymous_function ::= BACKSLASH pattern+ ARROW expression
 
 declaration_recover ::= !(FRESH_LINE)
