@@ -103,8 +103,6 @@ union_member ::=
 
 type_annotation ::= ([PORT] LOWER_CASE_IDENTIFIER | operator_as_function) COLON type_reference
 
-inner_value_declaration ::= internal_value_declaration_left EQ expression
-
 value_declaration_left ::=
     internal_value_declaration_left
     | port_declaration_left
@@ -182,9 +180,16 @@ case_of_branch ::=
 one_or_more_separations ::= SEPARATION_BY_INDENTATION+
 
 external let_in ::=
-    parseLetIn inner_value_declaration other_values_declarations expression
+    parseLetIn inner_declaration other_values_declarations expression
 other_values_declarations ::=
-    (one_or_more_separations inner_value_declaration)* SEPARATION_BY_INDENTATION*
+    (one_or_more_separations inner_declaration)* SEPARATION_BY_INDENTATION*
+inner_declaration ::=
+    inner_value_declaration
+    | inner_type_annotation
+inner_value_declaration ::=
+    internal_value_declaration_left EQ expression
+inner_type_annotation ::=
+    LOWER_CASE_IDENTIFIER COLON type_reference
 
 // patterns:
 pattern ::=
