@@ -91,11 +91,15 @@ single_type_reference ::=
     list_of_upper_cases
     | LOWER_CASE_IDENTIFIER
     | record_type
+    | tuple_type
     | LEFT_PARENTHESIS type_reference RIGHT_PARENTHESIS
 record_type ::=
     LEFT_BRACE [[record_base] <<non_empty_list field_type>>] RIGHT_BRACE
 field_type ::=
     LOWER_CASE_IDENTIFIER COLON type_reference
+tuple_type ::=
+    unit
+    | LEFT_PARENTHESIS type_reference (COMMA type_reference)+ RIGHT_PARENTHESIS
 
 type_declaration ::=
     TYPE UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ union_member (PIPE union_member)*
@@ -109,7 +113,7 @@ value_declaration_left ::=
     | port_declaration_left
 internal_value_declaration_left ::=
     LOWER_CASE_IDENTIFIER pattern+
-    | operator_as_function pattern pattern
+    | operator_as_function pattern*
     | pattern
 port_declaration_left ::=
     PORT LOWER_CASE_IDENTIFIER
@@ -151,10 +155,12 @@ operator_as_function ::=
     LEFT_PARENTHESIS some_operator RIGHT_PARENTHESIS
 
 tuple ::=
-    LEFT_PARENTHESIS RIGHT_PARENTHESIS
+    unit
     | LEFT_PARENTHESIS expression (COMMA expression)+ RIGHT_PARENTHESIS
 tuple_constructor ::=
     LEFT_PARENTHESIS COMMA+ RIGHT_PARENTHESIS
+unit ::=
+    LEFT_PARENTHESIS RIGHT_PARENTHESIS
 
 list ::=
     LEFT_SQUARE_BRACKET [<<non_empty_list expression>>] RIGHT_SQUARE_BRACKET
@@ -208,7 +214,7 @@ record_pattern ::=
 list_pattern ::=
     LEFT_SQUARE_BRACKET [<<non_empty_list pattern>>] RIGHT_SQUARE_BRACKET
 union_pattern ::=
-    UPPER_CASE_IDENTIFIER pattern*
+    list_of_upper_cases pattern*
 tuple_pattern ::=
     LEFT_PARENTHESIS pattern (COMMA pattern)+ RIGHT_PARENTHESIS
 parenthesed_pattern ::=
