@@ -53,7 +53,8 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
             PORT,
             INFIXL,
             INFIX,
-            INFIXR
+            INFIXR,
+            RESERVED
     );
 
     private static final TokenSet STRINGS = TokenSet.create(

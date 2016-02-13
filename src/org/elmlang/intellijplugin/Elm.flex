@@ -39,6 +39,7 @@ NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
 CHAR_LITERAL='(\\.|[^\\'])'
 OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|-|=|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
 BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIFIER}"`"
+RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
 
 %%
 
@@ -118,6 +119,9 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIFIER}"`"
     }
     "infixr" {
         return setPrevious(INFIXR);
+    }
+    {RESERVED} {
+        return setPrevious(RESERVED);
     }
     "(" {
         return setPrevious(LEFT_PARENTHESIS);

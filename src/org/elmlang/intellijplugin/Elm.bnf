@@ -18,6 +18,7 @@
     LET='LET'
     IN='IN'
     LET_IN='LET_IN'
+    RESERVED='RESERVED'
   ]
 }
 
