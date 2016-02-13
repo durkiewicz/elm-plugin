@@ -77,30 +77,29 @@ declaration ::=
 
 value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION*
 
-type_alias_declaration ::= TYPE ALIAS UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ type_reference
-
-type_declaration ::= TYPE UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ union_member (PIPE union_member)*
-
-type_annotation ::= ([PORT] LOWER_CASE_IDENTIFIER | operator_as_function) COLON type_reference
-
-union_member ::= UPPER_CASE_IDENTIFIER single_type_reference*
-
-type_reference ::= list_of_single_type_references (ARROW list_of_single_type_references)*
-
+type_alias_declaration ::=
+    TYPE ALIAS UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ type_reference
+type_reference ::=
+    list_of_single_type_references (ARROW list_of_single_type_references)*
 list_of_single_type_references ::=
     list_of_upper_cases (single_type_reference)+
     | single_type_reference
-
 single_type_reference ::=
     list_of_upper_cases
     | LOWER_CASE_IDENTIFIER
     | record_type
     | LEFT_PARENTHESIS type_reference RIGHT_PARENTHESIS
-
 record_type ::=
     LEFT_BRACE [[record_base] <<non_empty_list field_type>>] RIGHT_BRACE
 field_type ::=
     LOWER_CASE_IDENTIFIER COLON type_reference
+
+type_declaration ::=
+    TYPE UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ union_member (PIPE union_member)*
+union_member ::=
+    UPPER_CASE_IDENTIFIER single_type_reference*
+
+type_annotation ::= ([PORT] LOWER_CASE_IDENTIFIER | operator_as_function) COLON type_reference
 
 inner_value_declaration ::= internal_value_declaration_left EQ expression
 
@@ -131,6 +130,7 @@ operand ::=
     | tuple_constructor
     | tuple
     | list
+    | list_range
     | record
     | if_else
     | case_of
@@ -146,35 +146,43 @@ referenced_value ::=
     list_of_upper_cases (DOT_IN_PATH LOWER_CASE_PATH)*
     | LOWER_CASE_IDENTIFIER (DOT_IN_PATH LOWER_CASE_PATH)*
 
-operator_as_function ::= LEFT_PARENTHESIS some_operator RIGHT_PARENTHESIS
-
-tuple_constructor ::= LEFT_PARENTHESIS COMMA+ RIGHT_PARENTHESIS
+operator_as_function ::=
+    LEFT_PARENTHESIS some_operator RIGHT_PARENTHESIS
 
 tuple ::=
     LEFT_PARENTHESIS RIGHT_PARENTHESIS
     | LEFT_PARENTHESIS expression (COMMA expression)+ RIGHT_PARENTHESIS
+tuple_constructor ::=
+    LEFT_PARENTHESIS COMMA+ RIGHT_PARENTHESIS
 
-list ::= LEFT_SQUARE_BRACKET [<<non_empty_list expression>>] RIGHT_SQUARE_BRACKET
+list ::=
+    LEFT_SQUARE_BRACKET [<<non_empty_list expression>>] RIGHT_SQUARE_BRACKET
+list_range ::=
+    LEFT_SQUARE_BRACKET expression DOUBLE_DOT expression RIGHT_SQUARE_BRACKET
 
-record ::= LEFT_BRACE [[record_base] <<non_empty_list field>>] RIGHT_BRACE
+record ::=
+    LEFT_BRACE [[record_base] <<non_empty_list field>>] RIGHT_BRACE
+record_base ::=
+    LOWER_CASE_IDENTIFIER PIPE
+field ::=
+    LOWER_CASE_IDENTIFIER EQ expression
 
-record_base ::= LOWER_CASE_IDENTIFIER PIPE
+if_else ::=
+    IF expression THEN expression ELSE expression
 
-field ::= LOWER_CASE_IDENTIFIER EQ expression
-
-if_else ::= IF expression THEN expression ELSE expression
-
-external case_of ::= parseCaseOf case_of_header case_of_branch one_or_more_separations
-
-case_of_header ::= CASE expression OF
-
-case_of_branch ::= pattern ARROW expression
+external case_of ::=
+    parseCaseOf case_of_header case_of_branch one_or_more_separations
+case_of_header ::=
+    CASE expression OF
+case_of_branch ::=
+    pattern ARROW expression
 
 one_or_more_separations ::= SEPARATION_BY_INDENTATION+
 
-external let_in ::= parseLetIn inner_value_declaration other_values_declarations expression
-
-other_values_declarations ::= (one_or_more_separations inner_value_declaration)* SEPARATION_BY_INDENTATION*
+external let_in ::=
+    parseLetIn inner_value_declaration other_values_declarations expression
+other_values_declarations ::=
+    (one_or_more_separations inner_value_declaration)* SEPARATION_BY_INDENTATION*
 
 // patterns:
 pattern ::=
