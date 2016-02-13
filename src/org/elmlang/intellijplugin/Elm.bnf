@@ -47,6 +47,7 @@ list_of_values ::= <<non_empty_list exposed_value>>
 
 exposed_value ::=
     LOWER_CASE_IDENTIFIER
+    | operator_as_function
     | (UPPER_CASE_IDENTIFIER[exposed_union_constructors])
 
 exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
