@@ -70,6 +70,7 @@ declaration ::=
     | type_alias_declaration
     | type_declaration
     | type_annotation
+    | operator_config
 {
     pin = 1
     recoverWhile = declaration_recover
@@ -207,6 +208,13 @@ parenthesed_pattern ::=
     LEFT_PARENTHESIS pattern RIGHT_PARENTHESIS
 
 anonymous_function ::= BACKSLASH pattern+ ARROW expression
+
+operator_config ::=
+    operator_config_keyword NUMBER_LITERAL OPERATOR
+operator_config_keyword ::=
+    INFIXL
+    | INFIX
+    | INFIXR
 
 declaration_recover ::= !(FRESH_LINE)
 

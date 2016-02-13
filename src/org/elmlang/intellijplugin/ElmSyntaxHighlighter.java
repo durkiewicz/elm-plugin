@@ -50,7 +50,10 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
             IN,
             TYPE,
             ALIAS,
-            PORT
+            PORT,
+            INFIXL,
+            INFIX,
+            INFIXR
     );
 
     private static final TokenSet STRINGS = TokenSet.create(

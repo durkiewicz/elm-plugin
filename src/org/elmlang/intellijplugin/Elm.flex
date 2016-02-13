@@ -110,6 +110,15 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIFIER}"`"
     "port" {
         return setPrevious(PORT);
     }
+    "infixl" {
+        return setPrevious(INFIXL);
+    }
+    "infix" {
+        return setPrevious(INFIX);
+    }
+    "infixr" {
+        return setPrevious(INFIXR);
+    }
     "(" {
         return setPrevious(LEFT_PARENTHESIS);
     }
