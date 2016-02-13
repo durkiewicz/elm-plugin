@@ -170,23 +170,27 @@ external let_in ::= parseLetIn inner_value_declaration other_values_declarations
 
 other_values_declarations ::= (one_or_more_separations inner_value_declaration)* SEPARATION_BY_INDENTATION*
 
+// patterns:
+pattern ::=
+    single_pattern (LIST_CONSTRUCTOR single_pattern)*
 single_pattern ::=
     UNDERSCORE
     | LOWER_CASE_IDENTIFIER
-    | record_pattern
-    | list_pattern
     | union_pattern
+    | tuple_pattern
+    | list_pattern
+    | record_pattern
     | parenthesed_pattern
-
-pattern ::= single_pattern (LIST_CONSTRUCTOR single_pattern)*
-
-record_pattern ::= LEFT_BRACE <<non_empty_list lower_case_identifier_parser>> RIGHT_BRACE
-
-list_pattern ::= LEFT_SQUARE_BRACKET [<<non_empty_list pattern>>] RIGHT_SQUARE_BRACKET
-
-union_pattern ::= UPPER_CASE_IDENTIFIER pattern*
-
-parenthesed_pattern ::= LEFT_PARENTHESIS pattern RIGHT_PARENTHESIS
+record_pattern ::=
+    LEFT_BRACE <<non_empty_list lower_case_identifier_parser>> RIGHT_BRACE
+list_pattern ::=
+    LEFT_SQUARE_BRACKET [<<non_empty_list pattern>>] RIGHT_SQUARE_BRACKET
+union_pattern ::=
+    UPPER_CASE_IDENTIFIER pattern*
+tuple_pattern ::=
+    LEFT_PARENTHESIS pattern (COMMA pattern)+ RIGHT_PARENTHESIS
+parenthesed_pattern ::=
+    LEFT_PARENTHESIS pattern RIGHT_PARENTHESIS
 
 anonymous_function ::= BACKSLASH pattern+ ARROW expression
 
@@ -195,5 +199,4 @@ declaration_recover ::= !(FRESH_LINE)
 private meta non_empty_list ::= <<p>> (COMMA <<p>>)*
 
 private lower_case_identifier_parser ::= LOWER_CASE_IDENTIFIER
-
 private upper_case_identifier_parser ::= UPPER_CASE_IDENTIFIER
