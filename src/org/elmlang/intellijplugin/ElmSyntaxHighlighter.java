@@ -49,7 +49,8 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
             LET,
             IN,
             TYPE,
-            ALIAS
+            ALIAS,
+            PORT
     );
 
     private static final TokenSet STRINGS = TokenSet.create(

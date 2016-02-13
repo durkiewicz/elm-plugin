@@ -107,6 +107,9 @@ BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIFIER}"`"
     "alias" {
         return setPrevious(ALIAS);
     }
+    "port" {
+        return setPrevious(PORT);
+    }
     "(" {
         return setPrevious(LEFT_PARENTHESIS);
     }

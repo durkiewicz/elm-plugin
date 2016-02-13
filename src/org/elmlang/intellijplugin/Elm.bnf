@@ -81,7 +81,7 @@ type_alias_declaration ::= TYPE ALIAS UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFI
 
 type_declaration ::= TYPE UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ union_member (PIPE union_member)*
 
-type_annotation ::= (LOWER_CASE_IDENTIFIER | operator_as_function) COLON type_reference
+type_annotation ::= ([PORT] LOWER_CASE_IDENTIFIER | operator_as_function) COLON type_reference
 
 union_member ::= UPPER_CASE_IDENTIFIER single_type_reference*
 
@@ -97,16 +97,22 @@ single_type_reference ::=
     | record_type
     | LEFT_PARENTHESIS type_reference RIGHT_PARENTHESIS
 
-record_type ::= LEFT_BRACE [[record_base] <<non_empty_list field_type>>] RIGHT_BRACE
+record_type ::=
+    LEFT_BRACE [[record_base] <<non_empty_list field_type>>] RIGHT_BRACE
+field_type ::=
+    LOWER_CASE_IDENTIFIER COLON type_reference
 
-field_type ::= LOWER_CASE_IDENTIFIER COLON type_reference
-
-inner_value_declaration ::= value_declaration_left EQ expression
+inner_value_declaration ::= internal_value_declaration_left EQ expression
 
 value_declaration_left ::=
+    internal_value_declaration_left
+    | port_declaration_left
+internal_value_declaration_left ::=
     LOWER_CASE_IDENTIFIER pattern+
     | operator_as_function pattern pattern
     | pattern
+port_declaration_left ::=
+    PORT LOWER_CASE_IDENTIFIER
 
 expression ::= list_of_operands (some_operator list_of_operands)*
 
