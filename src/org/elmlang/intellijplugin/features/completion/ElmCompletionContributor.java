@@ -32,6 +32,9 @@ public class ElmCompletionContributor extends CompletionContributor {
                 "infix",
                 "infixl",
                 "infixr",
+                "if",
+                "then",
+                "else",
 
                 // some values from the core library
                 "Address",
