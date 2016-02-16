@@ -206,8 +206,10 @@ single_pattern ::=
     | LOWER_CASE_IDENTIFIER
     | union_pattern
     | tuple_pattern
+    | unit
     | list_pattern
     | record_pattern
+    | literal
     | parenthesed_pattern
 record_pattern ::=
     LEFT_BRACE <<non_empty_list lower_case_identifier_parser>> RIGHT_BRACE
