@@ -30,8 +30,8 @@ import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 CRLF= (\n|\r|\r\n)
 WHITE_SPACE=[\ \t\f]
 LINE_COMMENT=("--")[^\r\n]*
-IDENTIFIER_CHAR=[[:letter:][:digit:]_]
-LOWER_CASE_IDENTIFIER=[:lowercase:]({IDENTIFIER_CHAR}|')*
+IDENTIFIER_CHAR=[[:letter:][:digit:]_']
+LOWER_CASE_IDENTIFIER=[:lowercase:]{IDENTIFIER_CHAR}*
 UPPER_CASE_IDENTIFIER=[:uppercase:]{IDENTIFIER_CHAR}*
 STRING_LITERAL=\"(\\.|[^\\\"])*\"
 STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
