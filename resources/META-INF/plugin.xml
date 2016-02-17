@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>org.elmlang.intellijplugin</id>
     <name>Elm language plugin</name>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
     <vendor email="elm.intellij.plugin@gmail.com" url="https://github.com/durkiewicz/elm-plugin">Kamil Durkiewicz</vendor>
 
     <description>Plugin for Elm language support.</description>
