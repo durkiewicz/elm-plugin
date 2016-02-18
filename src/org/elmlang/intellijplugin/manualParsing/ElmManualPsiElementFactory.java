@@ -25,6 +25,9 @@ public class ElmManualPsiElementFactory {
         if (type == ElmTypes.MIXED_CASE_PATH) {
             return new ElmMixedCasePathImpl(node);
         }
+        if (type == ElmTypes.FIELD_ACCESS) {
+            return new ElmFieldAccessImpl(node);
+        }
         return null;
     }
 }

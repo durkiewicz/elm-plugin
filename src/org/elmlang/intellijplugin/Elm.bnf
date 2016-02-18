@@ -22,6 +22,8 @@
     UPPER_CASE_PATH='UPPER_CASE_PATH'
     LOWER_CASE_PATH='LOWER_CASE_PATH'
     MIXED_CASE_PATH='MIXED_CASE_PATH'
+    FIELD_ACCESS='FIELD_ACCESS'
+    DOT='DOT'
   ]
 }
 
@@ -130,7 +132,7 @@ private some_operator ::=
 operand ::=
     literal
     | referenced_value
-    | DOT LOWER_CASE_PATH
+    | field_access
     | operator_as_function
     | LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
     | tuple_constructor
@@ -147,6 +149,8 @@ literal ::=
     STRING_LITERAL
     | NUMBER_LITERAL
     | CHAR_LITERAL
+
+external field_access ::= parseFieldAccess
 
 external upper_case_path ::= parseUpperCasePath
 external lower_case_path ::= parseLowerCasePath

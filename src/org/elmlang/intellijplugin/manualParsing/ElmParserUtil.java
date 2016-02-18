@@ -32,4 +32,9 @@ public class ElmParserUtil extends GeneratedParserUtilBase {
         return new PathParser(ElmTypes.LOWER_CASE_PATH, ElmTypes.LOWER_CASE_IDENTIFIER, null)
                 .parse(builder, level);
     }
+
+    public static boolean parseFieldAccess(PsiBuilder builder, int level) {
+        return new FieldAccessParser()
+                .parse(builder, level);
+    }
 }
