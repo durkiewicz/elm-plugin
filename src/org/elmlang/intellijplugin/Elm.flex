@@ -17,10 +17,8 @@ import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 
 %{
     private int commentLevel = 0;
-    private IElementType previous = null;
 
     private IElementType setPrevious(IElementType elem) {
-        this.previous = elem;
         return elem;
     }
 %}
@@ -169,12 +167,6 @@ RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
         return setPrevious(UNDERSCORE);
     }
     "." {
-        if (LOWER_CASE_IDENTIFIER.equals(previous)
-            || UPPER_CASE_IDENTIFIER.equals(previous)
-            || LOWER_CASE_PATH.equals(previous)
-            || UPPER_CASE_PATH.equals(previous)) {
-            return setPrevious(DOT_IN_PATH);
-        }
         return setPrevious(DOT);
     }
     {CRLF}*"{-" {
@@ -183,17 +175,9 @@ RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
         return setPrevious(START_COMMENT);
     }
     {LOWER_CASE_IDENTIFIER} {
-        if (DOT.equals(previous)
-            || DOT_IN_PATH.equals(previous)) {
-            return setPrevious(LOWER_CASE_PATH);
-        }
         return setPrevious(LOWER_CASE_IDENTIFIER);
     }
     {UPPER_CASE_IDENTIFIER} {
-        if (DOT.equals(previous)
-            || DOT_IN_PATH.equals(previous)) {
-            return setPrevious(UPPER_CASE_PATH);
-        }
         return setPrevious(UPPER_CASE_IDENTIFIER);
     }
     {STRING_WITH_QUOTES_LITERAL} {

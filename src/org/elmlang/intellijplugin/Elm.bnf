@@ -19,6 +19,9 @@
     IN='IN'
     LET_IN='LET_IN'
     RESERVED='RESERVED'
+    UPPER_CASE_PATH='UPPER_CASE_PATH'
+    LOWER_CASE_PATH='LOWER_CASE_PATH'
+    MIXED_CASE_PATH='MIXED_CASE_PATH'
   ]
 }
 
@@ -38,9 +41,7 @@ blank ::=
     | FRESH_LINE
     | comment
 
-module_declaration ::= MODULE list_of_upper_cases [exposed_values] WHERE
-
-list_of_upper_cases ::= UPPER_CASE_IDENTIFIER (DOT_IN_PATH UPPER_CASE_PATH)*
+module_declaration ::= MODULE upper_case_path [exposed_values] WHERE
 
 exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
 
@@ -55,7 +56,7 @@ exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_cons
 
 list_of_union_constructors ::= <<non_empty_list upper_case_identifier_parser>>
 
-import_clause ::= IMPORT list_of_upper_cases [as_clause] [exposing_clause]
+import_clause ::= IMPORT upper_case_path [as_clause] [exposing_clause]
 
 as_clause ::= AS UPPER_CASE_IDENTIFIER
 
@@ -85,10 +86,10 @@ type_alias_declaration ::=
 type_reference ::=
     list_of_single_type_references (ARROW list_of_single_type_references)*
 list_of_single_type_references ::=
-    list_of_upper_cases (single_type_reference)+
+    upper_case_path (single_type_reference)+
     | single_type_reference
 single_type_reference ::=
-    list_of_upper_cases
+    upper_case_path
     | LOWER_CASE_IDENTIFIER
     | record_type
     | tuple_type
@@ -147,9 +148,13 @@ literal ::=
     | NUMBER_LITERAL
     | CHAR_LITERAL
 
+external upper_case_path ::= parseUpperCasePath
+external lower_case_path ::= parseLowerCasePath
+external mixed_case_path ::= parseMixedCasePath
+
 referenced_value ::=
-    list_of_upper_cases (DOT_IN_PATH LOWER_CASE_PATH)*
-    | LOWER_CASE_IDENTIFIER (DOT_IN_PATH LOWER_CASE_PATH)*
+    lower_case_path
+    | mixed_case_path
 
 operator_as_function ::=
     LEFT_PARENTHESIS some_operator RIGHT_PARENTHESIS
@@ -216,7 +221,7 @@ record_pattern ::=
 list_pattern ::=
     LEFT_SQUARE_BRACKET [<<non_empty_list pattern>>] RIGHT_SQUARE_BRACKET
 union_pattern ::=
-    list_of_upper_cases pattern*
+    upper_case_path pattern*
 tuple_pattern ::=
     LEFT_PARENTHESIS pattern (COMMA pattern)+ RIGHT_PARENTHESIS
 parenthesed_pattern ::=
