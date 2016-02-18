@@ -17,10 +17,6 @@ import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 
 %{
     private int commentLevel = 0;
-
-    private IElementType setPrevious(IElementType elem) {
-        return elem;
-    }
 %}
 
 %state IN_COMMENT
@@ -44,171 +40,171 @@ RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
 <IN_COMMENT> {
     "{-" {
         commentLevel++;
-        return setPrevious(COMMENT_CONTENT);
+        return COMMENT_CONTENT;
     }
     "-}" {
         commentLevel--;
         if (commentLevel == 0) {
             yybegin(YYINITIAL);
-            return setPrevious(END_COMMENT);
+            return END_COMMENT;
         }
-        return setPrevious(COMMENT_CONTENT);
+        return COMMENT_CONTENT;
     }
     [^-{}]+ {
-        return setPrevious(COMMENT_CONTENT);
+        return COMMENT_CONTENT;
     }
     [^] {
-        return setPrevious(COMMENT_CONTENT);
+        return COMMENT_CONTENT;
     }
 }
 
 
 <YYINITIAL> {
     "module" {
-        return setPrevious(MODULE);
+        return MODULE;
     }
     "where" {
-        return setPrevious(WHERE);
+        return WHERE;
     }
     "import" {
-        return setPrevious(IMPORT);
+        return IMPORT;
     }
     "as" {
-        return setPrevious(AS);
+        return AS;
     }
     "exposing" {
-        return setPrevious(EXPOSING);
+        return EXPOSING;
     }
     "if" {
-        return setPrevious(IF);
+        return IF;
     }
     "then" {
-        return setPrevious(THEN);
+        return THEN;
     }
     "else" {
-        return setPrevious(ELSE);
+        return ELSE;
     }
     "case" {
-        return setPrevious(CASE);
+        return CASE;
     }
     "of" {
-        return setPrevious(OF);
+        return OF;
     }
     "let" {
-        return setPrevious(LET);
+        return LET;
     }
     "in" {
-        return setPrevious(IN);
+        return IN;
     }
     "type" {
-        return setPrevious(TYPE);
+        return TYPE;
     }
     "alias" {
-        return setPrevious(ALIAS);
+        return ALIAS;
     }
     "port" {
-        return setPrevious(PORT);
+        return PORT;
     }
     "infixl" {
-        return setPrevious(INFIXL);
+        return INFIXL;
     }
     "infix" {
-        return setPrevious(INFIX);
+        return INFIX;
     }
     "infixr" {
-        return setPrevious(INFIXR);
+        return INFIXR;
     }
     {RESERVED} {
-        return setPrevious(RESERVED);
+        return RESERVED;
     }
     "(" {
-        return setPrevious(LEFT_PARENTHESIS);
+        return LEFT_PARENTHESIS;
     }
     ")" {
-        return setPrevious(RIGHT_PARENTHESIS);
+        return RIGHT_PARENTHESIS;
     }
     "[" {
-        return setPrevious(LEFT_SQUARE_BRACKET);
+        return LEFT_SQUARE_BRACKET;
     }
     "]" {
-        return setPrevious(RIGHT_SQUARE_BRACKET);
+        return RIGHT_SQUARE_BRACKET;
     }
     "{" {
-        return setPrevious(LEFT_BRACE);
+        return LEFT_BRACE;
     }
     "}" {
-        return setPrevious(RIGHT_BRACE);
+        return RIGHT_BRACE;
     }
     ".." {
-        return setPrevious(DOUBLE_DOT);
+        return DOUBLE_DOT;
     }
     "," {
-        return setPrevious(COMMA);
+        return COMMA;
     }
     "=" {
-        return setPrevious(EQ);
+        return EQ;
     }
     "->" {
-        return setPrevious(ARROW);
+        return ARROW;
     }
     "::" {
-        return setPrevious(LIST_CONSTRUCTOR);
+        return LIST_CONSTRUCTOR;
     }
     ":" {
-        return setPrevious(COLON);
+        return COLON;
     }
     "|" {
-        return setPrevious(PIPE);
+        return PIPE;
     }
     "\\" {
-        return setPrevious(BACKSLASH);
+        return BACKSLASH;
     }
     "_" {
-        return setPrevious(UNDERSCORE);
+        return UNDERSCORE;
     }
     "." {
-        return setPrevious(DOT);
+        return DOT;
     }
     {CRLF}*"{-" {
         commentLevel = 1;
         yybegin(IN_COMMENT);
-        return setPrevious(START_COMMENT);
+        return START_COMMENT;
     }
     {LOWER_CASE_IDENTIFIER} {
-        return setPrevious(LOWER_CASE_IDENTIFIER);
+        return LOWER_CASE_IDENTIFIER;
     }
     {UPPER_CASE_IDENTIFIER} {
-        return setPrevious(UPPER_CASE_IDENTIFIER);
+        return UPPER_CASE_IDENTIFIER;
     }
     {STRING_WITH_QUOTES_LITERAL} {
-        return setPrevious(STRING_LITERAL);
+        return STRING_LITERAL;
     }
     {STRING_LITERAL} {
-        return setPrevious(STRING_LITERAL);
+        return STRING_LITERAL;
     }
     {CHAR_LITERAL} {
-        return setPrevious(CHAR_LITERAL);
+        return CHAR_LITERAL;
     }
     {NUMBER_LITERAL} {
-        return setPrevious(NUMBER_LITERAL);
+        return NUMBER_LITERAL;
     }
     ({CRLF}+{WHITE_SPACE}+)+ {
-        return setPrevious(TokenType.WHITE_SPACE);
+        return TokenType.WHITE_SPACE;
     }
     {CRLF}*{LINE_COMMENT} {
-        return setPrevious(LINE_COMMENT);
+        return LINE_COMMENT;
     }
     {OPERATOR}|{BACKTICKED_FUNCTION} {
-        return setPrevious(OPERATOR);
+        return OPERATOR;
     }
     {WHITE_SPACE}+ {
-        return setPrevious(TokenType.WHITE_SPACE);
+        return TokenType.WHITE_SPACE;
     }
     {CRLF}+ {
-        return setPrevious(FRESH_LINE);
+        return FRESH_LINE;
     }
 }
 
 . {
-    return setPrevious(TokenType.BAD_CHARACTER);
+    return TokenType.BAD_CHARACTER;
 }
