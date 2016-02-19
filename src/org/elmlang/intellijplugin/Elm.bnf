@@ -37,7 +37,7 @@ private declaration_item ::= (declaration|blank)
 
 private import_item ::= (import_clause|blank)
 
-blank ::=
+private blank ::=
     WHITE_SPACE
     | INDENTATION
     | FRESH_LINE
@@ -70,7 +70,7 @@ comment ::=
 
 level_comment ::= START_COMMENT COMMENT_CONTENT* END_COMMENT
 
-declaration ::=
+private declaration ::=
     value_declaration
     | type_alias_declaration
     | type_declaration
@@ -111,13 +111,17 @@ union_member ::=
 
 type_annotation ::= ([PORT] LOWER_CASE_IDENTIFIER | operator_as_function) COLON type_reference
 
-value_declaration_left ::=
+private value_declaration_left ::=
     internal_value_declaration_left
     | port_declaration_left
-internal_value_declaration_left ::=
-    LOWER_CASE_IDENTIFIER pattern+
-    | operator_as_function pattern*
+private internal_value_declaration_left ::=
+    function_declaration_left
+    | operator_declaration_left
     | pattern
+function_declaration_left ::=
+    LOWER_CASE_IDENTIFIER pattern+
+operator_declaration_left ::=
+    operator_as_function pattern*
 port_declaration_left ::=
     PORT LOWER_CASE_IDENTIFIER
 
@@ -129,12 +133,12 @@ private some_operator ::=
     OPERATOR
     | LIST_CONSTRUCTOR
 
-operand ::=
+private operand ::=
     literal
     | referenced_value
     | field_access
     | operator_as_function
-    | LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
+    | parenthesed_expression
     | tuple_constructor
     | tuple
     | list
@@ -145,7 +149,9 @@ operand ::=
     | let_in
     | anonymous_function
 
-literal ::=
+parenthesed_expression ::= LEFT_PARENTHESIS expression RIGHT_PARENTHESIS
+
+private literal ::=
     STRING_LITERAL
     | NUMBER_LITERAL
     | CHAR_LITERAL
@@ -197,9 +203,9 @@ one_or_more_separations ::= SEPARATION_BY_INDENTATION+
 
 external let_in ::=
     parseLetIn inner_declaration other_values_declarations expression
-other_values_declarations ::=
+private other_values_declarations ::=
     (one_or_more_separations inner_declaration)* SEPARATION_BY_INDENTATION*
-inner_declaration ::=
+private inner_declaration ::=
     inner_value_declaration
     | inner_type_annotation
 inner_value_declaration ::=
@@ -210,7 +216,7 @@ inner_type_annotation ::=
 // patterns:
 pattern ::=
     single_pattern (LIST_CONSTRUCTOR single_pattern)*
-single_pattern ::=
+private single_pattern ::=
     UNDERSCORE
     | LOWER_CASE_IDENTIFIER
     | union_pattern
@@ -235,7 +241,7 @@ anonymous_function ::= BACKSLASH pattern+ ARROW expression
 
 operator_config ::=
     operator_config_keyword NUMBER_LITERAL OPERATOR
-operator_config_keyword ::=
+private operator_config_keyword ::=
     INFIXL
     | INFIX
     | INFIXR
