@@ -1,29 +1,26 @@
 package org.elmlang.intellijplugin.features.completion;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
-import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-public class FixedWordsProvider extends CompletionProvider<CompletionParameters> {
+public class FixedWordsProvider implements Provider {
     private final String[] words;
 
-    public FixedWordsProvider(String ... words) {
+    public FixedWordsProvider(String... words) {
         this.words = words;
     }
 
     @Override
-    public void addCompletions(@NotNull CompletionParameters parameters,
-                               ProcessingContext context,
+    public boolean addCompletions(@NotNull CompletionParameters parameters,
                                @NotNull CompletionResultSet resultSet) {
-        resultSet.addAllElements(this.getLookupElements());
 
+        resultSet.addAllElements(getLookupElements());
+        return false;
     }
 
     private Iterable<LookupElement> getLookupElements() {

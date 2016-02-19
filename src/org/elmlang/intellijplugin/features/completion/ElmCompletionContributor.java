@@ -2,7 +2,9 @@ package org.elmlang.intellijplugin.features.completion;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.patterns.PlatformPatterns;
+import com.intellij.util.ProcessingContext;
 import org.elmlang.intellijplugin.ElmLanguage;
+import org.jetbrains.annotations.NotNull;
 
 public class ElmCompletionContributor extends CompletionContributor {
     public ElmCompletionContributor() {
@@ -16,6 +18,28 @@ public class ElmCompletionContributor extends CompletionContributor {
     }
 
     private static CompletionProvider<CompletionParameters> getProvider() {
+        final Provider[] providers = new Provider[] {
+                getKeywordsProvider(),
+                getCurrentFileProvider(),
+                getCoreLibraryProvider()
+        };
+        return new CompletionProvider<CompletionParameters>() {
+            @Override
+            protected void addCompletions(@NotNull CompletionParameters completionParameters, ProcessingContext processingContext, @NotNull CompletionResultSet completionResultSet) {
+                for (Provider p : providers) {
+                    if (p.addCompletions(completionParameters, completionResultSet)) {
+                        break;
+                    }
+                }
+            }
+        };
+    }
+
+    private static Provider getCurrentFileProvider() {
+        return new CurrentFileProvider();
+    }
+
+    private static Provider getKeywordsProvider() {
         return new FixedWordsProvider(
                 // keywords
                 "module",
@@ -34,9 +58,12 @@ public class ElmCompletionContributor extends CompletionContributor {
                 "infixr",
                 "if",
                 "then",
-                "else",
+                "else"
+        );
+    }
 
-                // some values from the core library
+    private static Provider getCoreLibraryProvider() {
+        return new FixedWordsProvider(
                 "Address",
                 "All",
                 "Array",
