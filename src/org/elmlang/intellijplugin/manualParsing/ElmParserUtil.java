@@ -18,18 +18,36 @@ public class ElmParserUtil extends GeneratedParserUtilBase {
                 .parse(builder, level);
     }
 
-    public static boolean parseUpperCasePath(PsiBuilder builder, int level) {
-        return new PathParser(ElmTypes.UPPER_CASE_PATH, ElmTypes.UPPER_CASE_IDENTIFIER, null)
+    public static boolean parseUpperCasePath(PsiBuilder builder, int level, Parser upperCaseId) {
+        return new PathParser(
+                ElmTypes.UPPER_CASE_PATH,
+                ElmTypes.UPPER_CASE_IDENTIFIER,
+                null,
+                upperCaseId,
+                null
+        )
                 .parse(builder, level);
     }
 
-    public static boolean parseMixedCasePath(PsiBuilder builder, int level) {
-        return new PathParser(ElmTypes.MIXED_CASE_PATH, ElmTypes.UPPER_CASE_IDENTIFIER, ElmTypes.LOWER_CASE_IDENTIFIER)
+    public static boolean parseMixedCasePath(PsiBuilder builder, int level, Parser upperCaseId, Parser lowerCaseId) {
+        return new PathParser(
+                ElmTypes.MIXED_CASE_PATH,
+                ElmTypes.UPPER_CASE_IDENTIFIER,
+                ElmTypes.LOWER_CASE_IDENTIFIER,
+                upperCaseId,
+                lowerCaseId
+        )
                 .parse(builder, level);
     }
 
-    public static boolean parseLowerCasePath(PsiBuilder builder, int level) {
-        return new PathParser(ElmTypes.LOWER_CASE_PATH, ElmTypes.LOWER_CASE_IDENTIFIER, null)
+    public static boolean parseLowerCasePath(PsiBuilder builder, int level, Parser lowerCaseId) {
+        return new PathParser(
+                ElmTypes.LOWER_CASE_PATH,
+                ElmTypes.LOWER_CASE_IDENTIFIER,
+                null,
+                lowerCaseId,
+                null
+        )
                 .parse(builder, level);
     }
 

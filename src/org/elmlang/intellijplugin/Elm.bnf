@@ -50,13 +50,14 @@ module_declaration ::= MODULE upper_case_path [exposed_values] WHERE
 
 exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
 
-list_of_values ::= <<non_empty_list exposed_value>>
+private list_of_values ::= <<non_empty_list exposed_value>>
 
-exposed_value ::=
+private exposed_value ::=
     lower_case_id
     | operator_as_function
-    | (upper_case_id[exposed_union_constructors])
-
+    | exposed_union
+exposed_union ::=
+    upper_case_id [exposed_union_constructors]
 exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
 
 list_of_union_constructors ::= <<non_empty_list upper_case_id>>
@@ -161,11 +162,11 @@ private literal ::=
 
 external field_access ::= parseFieldAccess
 
-external upper_case_path ::= parseUpperCasePath
-external lower_case_path ::= parseLowerCasePath
-external mixed_case_path ::= parseMixedCasePath
+external upper_case_path ::= parseUpperCasePath upper_case_id
+external lower_case_path ::= parseLowerCasePath lower_case_id
+external mixed_case_path ::= parseMixedCasePath upper_case_id lower_case_id
 
-referenced_value ::=
+private referenced_value ::=
     lower_case_path
     | mixed_case_path
 

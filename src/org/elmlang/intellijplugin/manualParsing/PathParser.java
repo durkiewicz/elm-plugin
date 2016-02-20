@@ -12,11 +12,16 @@ public class PathParser implements GeneratedParserUtilBase.Parser {
     private final IElementType sectionType;
     private IElementType memberType;
     private IElementType alternativeMemberType;
+    private Parser memberParser;
+    private Parser alternativeMemberParser;
 
-    public PathParser(IElementType sectionType, IElementType memberType, IElementType alternativeMemberType) {
+
+    public PathParser(IElementType sectionType, IElementType memberType, IElementType alternativeMemberType, Parser memberParser, Parser alternativeMemberParser) {
         this.sectionType = sectionType;
         this.memberType = memberType;
         this.alternativeMemberType = alternativeMemberType;
+        this.memberParser = memberParser;
+        this.alternativeMemberParser = alternativeMemberParser;
     }
 
     @Override
@@ -26,7 +31,7 @@ public class PathParser implements GeneratedParserUtilBase.Parser {
         boolean result;
         boolean isContinued = builder.rawLookup(1) == DOT;
         PsiBuilder.Marker marker = enter_section_(builder);
-        result = consumeToken(builder, this.memberType);
+        result = this.memberParser.parse(builder, level + 1); //consumeToken(builder, this.memberType);
         result = result && (!isContinued || listOfMembers(builder, level + 1));
         exit_section_(builder, marker, this.sectionType, result);
         return result;
@@ -54,10 +59,12 @@ public class PathParser implements GeneratedParserUtilBase.Parser {
     }
 
     private boolean trySwitchingMemberType(PsiBuilder builder) {
-        if (this.alternativeMemberType != null
+        if (this.alternativeMemberParser != null
                 && builder.rawLookup(1) == this.alternativeMemberType) {
             this.memberType = this.alternativeMemberType;
             this.alternativeMemberType = null;
+            this.memberParser = this.alternativeMemberParser;
+            this.alternativeMemberParser = null;
             return true;
         }
         return false;
@@ -67,7 +74,8 @@ public class PathParser implements GeneratedParserUtilBase.Parser {
         if (!recursion_guard_(builder, level, this.getGuardText(1, 0))) return false;
         boolean result;
         PsiBuilder.Marker m = enter_section_(builder);
-        result = consumeTokens(builder, 0, DOT, this.memberType);
+        result = consumeToken(builder, DOT);
+        result = result && this.memberParser.parse(builder, level + 1);
         exit_section_(builder, m, null, result);
         return result;
     }
