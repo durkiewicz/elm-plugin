@@ -51,6 +51,8 @@
         <completion.contributor
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.features.completion.ElmCompletionContributor"/>
+        <psi.referenceContributor
+                implementation="org.elmlang.intellijplugin.psi.references.ElmReferenceContributor"/>
     </extensions>
 
     <actions>
