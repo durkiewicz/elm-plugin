@@ -60,4 +60,8 @@ public class ElmPsiImplUtil {
     public static PsiReference getReference(ElmLowerCaseId element) {
         return new ElmReference(element, element.getTextRange());
     }
+
+    public static PsiReference getReference(ElmUpperCaseId element) {
+        return new ElmReference(element, element.getTextRange());
+    }
 }

@@ -13,7 +13,9 @@
   elementTypeClass="org.elmlang.intellijplugin.psi.ElmElementType"
   tokenTypeClass="org.elmlang.intellijplugin.psi.ElmTokenType"
 
-  implements("(upper|lower)_case_id")="org.elmlang.intellijplugin.psi.ElmNamedElement"
+  implements("(upper|lower)_case_id") = "org.elmlang.intellijplugin.psi.ElmNamedElement"
+  implements("value_declaration|inner_value_declaration") = "org.elmlang.intellijplugin.psi.ElmValueDeclarationBase"
+  implements("function_declaration_left|operator_declaration_left|list_pattern|union_pattern|tuple_pattern") = "org.elmlang.intellijplugin.psi.ElmWithPatternList"
   psiImplUtilClass="org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil"
 
   tokens = [
@@ -58,9 +60,10 @@ private exposed_value ::=
     | exposed_union
 exposed_union ::=
     upper_case_id [exposed_union_constructors]
-exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
-
-list_of_union_constructors ::= <<non_empty_list upper_case_id>>
+exposed_union_constructors ::=
+    LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
+private list_of_union_constructors ::=
+    <<non_empty_list upper_case_id>>
 
 import_clause ::= IMPORT upper_case_path [as_clause] [exposing_clause]
 
@@ -173,9 +176,11 @@ private referenced_value ::=
 operator_as_function ::=
     LEFT_PARENTHESIS some_operator RIGHT_PARENTHESIS
 
-tuple ::=
+private tuple ::=
     unit
-    | LEFT_PARENTHESIS expression (COMMA expression)+ RIGHT_PARENTHESIS
+    | non_empty_tuple
+non_empty_tuple ::=
+    LEFT_PARENTHESIS expression (COMMA expression)+ RIGHT_PARENTHESIS
 tuple_constructor ::=
     LEFT_PARENTHESIS COMMA+ RIGHT_PARENTHESIS
 unit ::=
@@ -257,13 +262,11 @@ private meta non_empty_list ::= <<p>> (COMMA <<p>>)*
 lower_case_id ::= LOWER_CASE_IDENTIFIER
 {
     mixin="org.elmlang.intellijplugin.psi.impl.ElmNamedElementImpl"
-    implements="org.elmlang.intellijplugin.psi.ElmNamedElement"
     methods=[getName setName getNameIdentifier getReference]
 }
 
 upper_case_id ::= UPPER_CASE_IDENTIFIER
 {
     mixin="org.elmlang.intellijplugin.psi.impl.ElmNamedElementImpl"
-    implements="org.elmlang.intellijplugin.psi.ElmNamedElement"
-    methods=[getName setName getNameIdentifier]
+    methods=[getName setName getNameIdentifier getReference]
 }

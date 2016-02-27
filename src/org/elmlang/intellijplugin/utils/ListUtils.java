@@ -10,6 +10,9 @@ import java.util.List;
 
 public class ListUtils {
     public static <T1, T2> List<T2> map(List<T1> source, Function<T1, T2> f) {
+        if (source.size() == 0) {
+            return Collections.emptyList();
+        }
         ArrayList<T2> result =  new ArrayList<T2>(source.size());
         for (T1 aSource : source) {
             result.add(f.fun(aSource));
@@ -60,5 +63,14 @@ public class ListUtils {
             sorted.remove(0);
         }
         return sorted;
+    }
+
+    public static <T> T find(List<T> list, Function<T, Boolean> predicate) {
+        for (T elem : list) {
+            if (predicate.fun(elem)) {
+                return elem;
+            }
+        }
+        return null;
     }
 }
