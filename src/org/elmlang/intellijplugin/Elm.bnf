@@ -14,8 +14,10 @@
   tokenTypeClass="org.elmlang.intellijplugin.psi.ElmTokenType"
 
   implements("(upper|lower)_case_id") = "org.elmlang.intellijplugin.psi.ElmNamedElement"
-  implements("value_declaration|inner_value_declaration") = "org.elmlang.intellijplugin.psi.ElmValueDeclarationBase"
-  implements("function_declaration_left|operator_declaration_left|list_pattern|union_pattern|tuple_pattern") = "org.elmlang.intellijplugin.psi.ElmWithPatternList"
+  implements("(inner_)?value_declaration") =
+    "org.elmlang.intellijplugin.psi.ElmValueDeclarationBase"
+  implements("(function|operator)_declaration_left|(list|union|tuple)_pattern") =
+    "org.elmlang.intellijplugin.psi.ElmWithPatternList"
   psiImplUtilClass="org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil"
 
   tokens = [
