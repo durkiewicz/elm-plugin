@@ -30,8 +30,8 @@ UPPER_CASE_IDENTIFIER=[:uppercase:]{IDENTIFIER_CHAR}*
 STRING_LITERAL=\"(\\.|[^\\\"])*\"
 STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
-CHAR_LITERAL='(\\.|[^\\'])'
-OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|-|=|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
+CHAR_LITERAL='(\\.|\\x[[:digit:]A-Fa-f]+|[^\\'])'
+OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|"~"|-|=|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
 BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIFIER}"`"
 RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
 
