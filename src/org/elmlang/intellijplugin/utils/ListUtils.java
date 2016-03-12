@@ -20,19 +20,13 @@ public class ListUtils {
         return result;
     }
 
-    public static <T> List<T> flatten(List<List<T>> deep) {
-        int totalSize = reduce(
-                deep,
-                new Function2<Integer, List<T>, Integer>() {
-                    @Override
-                    public Integer fun(Integer total, List<T> list) {
-                        return total + list.size();
-                    }
-                },
-                0);
-        ArrayList<T> result = new ArrayList<T>(totalSize);
-        for(List<T> list : deep) {
-            result.addAll(list);
+    @SafeVarargs
+    public static <T> List<T> flatten(List<List<T>>... deeps) {
+        List<T> result = new LinkedList<>();
+        for (List<List<T>> deep : deeps) {
+            for(List<T> list : deep) {
+                result.addAll(list);
+            }
         }
         return result;
     }

@@ -1,6 +1,6 @@
 {
   parserClass="org.elmlang.intellijplugin.parser.ElmParser"
-  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+  extends="org.elmlang.intellijplugin.psi.impl.ElmPsiElement"
 
   psiClassPrefix="Elm"
   psiImplClassSuffix="Impl"
@@ -18,6 +18,10 @@
     "org.elmlang.intellijplugin.psi.ElmValueDeclarationBase"
   implements("(function|operator)_declaration_left|(list|union|tuple)_pattern") =
     "org.elmlang.intellijplugin.psi.ElmWithPatternList"
+  implements("if_else|non_empty_tuple|list(_range)?") =
+    "org.elmlang.intellijplugin.psi.ElmWithExpressionList"
+  implements("anonymous_function|(case_of_(branch|header))|field|parenthesed_expression") =
+    "org.elmlang.intellijplugin.psi.ElmWithExpression"
   psiImplUtilClass="org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil"
 
   tokens = [
@@ -90,7 +94,7 @@ private declaration ::=
     recoverWhile = declaration_recover
 }
 
-value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION*
+value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION* { methods = [getReferencesList] }
 
 type_alias_declaration ::=
     TYPE ALIAS upper_case_id (lower_case_id)* EQ type_reference

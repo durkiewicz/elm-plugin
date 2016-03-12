@@ -1,7 +1,9 @@
 package org.elmlang.intellijplugin.psi;
 
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.util.Function;
+import org.elmlang.intellijplugin.psi.impl.ElmPsiElement;
 import org.elmlang.intellijplugin.utils.ListUtils;
 
 import java.util.Collections;
@@ -48,10 +50,17 @@ public class ElmTreeUtil {
                 result.addAll(getDeclarationsFromLetIn((ElmLetIn)ancestor));
             } else if (ancestor instanceof ElmValueDeclaration) {
                 result.addAll(getDeclarationsFromTopValue((ElmValueDeclaration)ancestor));
+            } else if (ancestor instanceof ElmAnonymousFunction) {
+                result.addAll(getDeclarationsFromAnonymousFunction((ElmAnonymousFunction)ancestor));
             }
+
             ancestor = ancestor.getParent();
         }
         return result;
+    }
+
+    private static List<ElmLowerCaseId> getDeclarationsFromAnonymousFunction(ElmAnonymousFunction element) {
+        return ListUtils.flatten(ListUtils.map(element.getPatternList(), getDeclarationsFromPattern));
     }
 
     private static List<ElmLowerCaseId> getDeclarationsFromTopValue(ElmValueDeclaration valueDeclaration) {

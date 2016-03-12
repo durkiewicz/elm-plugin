@@ -4,11 +4,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface ElmValueDeclarationBase extends PsiElement {
-
-    @NotNull
-    ElmExpression getExpression();
-
+public interface ElmValueDeclarationBase extends PsiElement, ElmWithExpression {
     @Nullable
     ElmFunctionDeclarationLeft getFunctionDeclarationLeft();
 
