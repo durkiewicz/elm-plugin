@@ -1,6 +1,6 @@
 {
   parserClass="org.elmlang.intellijplugin.parser.ElmParser"
-  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+  extends="org.elmlang.intellijplugin.psi.impl.ElmPsiElement"
 
   psiClassPrefix="Elm"
   psiImplClassSuffix="Impl"
@@ -12,6 +12,17 @@
   elementTypeHolderClass="org.elmlang.intellijplugin.psi.ElmTypes"
   elementTypeClass="org.elmlang.intellijplugin.psi.ElmElementType"
   tokenTypeClass="org.elmlang.intellijplugin.psi.ElmTokenType"
+
+  implements("(upper|lower)_case_id") = "org.elmlang.intellijplugin.psi.ElmNamedElement"
+  implements("(inner_)?value_declaration") =
+    "org.elmlang.intellijplugin.psi.ElmValueDeclarationBase"
+  implements("(function|operator)_declaration_left|(list|union|tuple)_pattern") =
+    "org.elmlang.intellijplugin.psi.ElmWithPatternList"
+  implements("if_else|non_empty_tuple|list(_range)?") =
+    "org.elmlang.intellijplugin.psi.ElmWithExpressionList"
+  implements("anonymous_function|(case_of_(branch|header))|field|parenthesed_expression") =
+    "org.elmlang.intellijplugin.psi.ElmWithExpression"
+  psiImplUtilClass="org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil"
 
   tokens = [
     CASE_OF='CASE_OF'
@@ -47,20 +58,22 @@ module_declaration ::= MODULE upper_case_path [exposed_values] WHERE
 
 exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
 
-list_of_values ::= <<non_empty_list exposed_value>>
+private list_of_values ::= <<non_empty_list exposed_value>>
 
-exposed_value ::=
-    LOWER_CASE_IDENTIFIER
+private exposed_value ::=
+    lower_case_id
     | operator_as_function
-    | (UPPER_CASE_IDENTIFIER[exposed_union_constructors])
-
-exposed_union_constructors ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
-
-list_of_union_constructors ::= <<non_empty_list upper_case_identifier_parser>>
+    | exposed_union
+exposed_union ::=
+    upper_case_id [exposed_union_constructors]
+exposed_union_constructors ::=
+    LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
+private list_of_union_constructors ::=
+    <<non_empty_list upper_case_id>>
 
 import_clause ::= IMPORT upper_case_path [as_clause] [exposing_clause]
 
-as_clause ::= AS UPPER_CASE_IDENTIFIER
+as_clause ::= AS upper_case_id
 
 exposing_clause ::= EXPOSING exposed_values
 
@@ -81,10 +94,10 @@ private declaration ::=
     recoverWhile = declaration_recover
 }
 
-value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION*
+value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION* { methods = [getReferencesList] }
 
 type_alias_declaration ::=
-    TYPE ALIAS UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ type_reference
+    TYPE ALIAS upper_case_id (lower_case_id)* EQ type_reference
 type_reference ::=
     list_of_single_type_references (ARROW list_of_single_type_references)*
 list_of_single_type_references ::=
@@ -92,24 +105,24 @@ list_of_single_type_references ::=
     | single_type_reference
 single_type_reference ::=
     upper_case_path
-    | LOWER_CASE_IDENTIFIER
+    | lower_case_id
     | record_type
     | tuple_type
     | LEFT_PARENTHESIS type_reference RIGHT_PARENTHESIS
 record_type ::=
     LEFT_BRACE [[record_base] <<non_empty_list field_type>>] RIGHT_BRACE
 field_type ::=
-    LOWER_CASE_IDENTIFIER COLON type_reference
+    lower_case_id COLON type_reference
 tuple_type ::=
     unit
     | LEFT_PARENTHESIS type_reference (COMMA type_reference)+ RIGHT_PARENTHESIS
 
 type_declaration ::=
-    TYPE UPPER_CASE_IDENTIFIER (LOWER_CASE_IDENTIFIER)* EQ union_member (PIPE union_member)*
+    TYPE upper_case_id (lower_case_id)* EQ union_member (PIPE union_member)*
 union_member ::=
-    UPPER_CASE_IDENTIFIER single_type_reference*
+    upper_case_id single_type_reference*
 
-type_annotation ::= ([PORT] LOWER_CASE_IDENTIFIER | operator_as_function) COLON type_reference
+type_annotation ::= ([PORT] lower_case_id | operator_as_function) COLON type_reference
 
 private value_declaration_left ::=
     internal_value_declaration_left
@@ -119,11 +132,11 @@ private internal_value_declaration_left ::=
     | operator_declaration_left
     | pattern
 function_declaration_left ::=
-    LOWER_CASE_IDENTIFIER pattern+
+    lower_case_id pattern+
 operator_declaration_left ::=
     operator_as_function pattern*
 port_declaration_left ::=
-    PORT LOWER_CASE_IDENTIFIER
+    PORT lower_case_id
 
 expression ::= list_of_operands (some_operator list_of_operands)*
 
@@ -158,20 +171,22 @@ private literal ::=
 
 external field_access ::= parseFieldAccess
 
-external upper_case_path ::= parseUpperCasePath
-external lower_case_path ::= parseLowerCasePath
-external mixed_case_path ::= parseMixedCasePath
+external upper_case_path ::= parseUpperCasePath upper_case_id
+external lower_case_path ::= parseLowerCasePath lower_case_id
+external mixed_case_path ::= parseMixedCasePath upper_case_id lower_case_id
 
-referenced_value ::=
+private referenced_value ::=
     lower_case_path
     | mixed_case_path
 
 operator_as_function ::=
     LEFT_PARENTHESIS some_operator RIGHT_PARENTHESIS
 
-tuple ::=
+private tuple ::=
     unit
-    | LEFT_PARENTHESIS expression (COMMA expression)+ RIGHT_PARENTHESIS
+    | non_empty_tuple
+non_empty_tuple ::=
+    LEFT_PARENTHESIS expression (COMMA expression)+ RIGHT_PARENTHESIS
 tuple_constructor ::=
     LEFT_PARENTHESIS COMMA+ RIGHT_PARENTHESIS
 unit ::=
@@ -185,9 +200,9 @@ list_range ::=
 record ::=
     LEFT_BRACE [[record_base] <<non_empty_list field>>] RIGHT_BRACE
 record_base ::=
-    LOWER_CASE_IDENTIFIER PIPE
+    lower_case_id PIPE
 field ::=
-    LOWER_CASE_IDENTIFIER EQ expression
+    lower_case_id EQ expression
 
 if_else ::=
     IF expression THEN expression ELSE expression
@@ -211,14 +226,14 @@ private inner_declaration ::=
 inner_value_declaration ::=
     internal_value_declaration_left EQ expression
 inner_type_annotation ::=
-    LOWER_CASE_IDENTIFIER COLON type_reference
+    lower_case_id COLON type_reference
 
 // patterns:
 pattern ::=
     single_pattern (LIST_CONSTRUCTOR single_pattern)*
 private single_pattern ::=
     UNDERSCORE
-    | LOWER_CASE_IDENTIFIER
+    | lower_case_id
     | union_pattern
     | tuple_pattern
     | unit
@@ -227,7 +242,7 @@ private single_pattern ::=
     | literal
     | parenthesed_pattern
 record_pattern ::=
-    LEFT_BRACE <<non_empty_list lower_case_identifier_parser>> RIGHT_BRACE
+    LEFT_BRACE <<non_empty_list lower_case_id>> RIGHT_BRACE
 list_pattern ::=
     LEFT_SQUARE_BRACKET [<<non_empty_list pattern>>] RIGHT_SQUARE_BRACKET
 union_pattern ::=
@@ -250,5 +265,14 @@ declaration_recover ::= !(FRESH_LINE)
 
 private meta non_empty_list ::= <<p>> (COMMA <<p>>)*
 
-private lower_case_identifier_parser ::= LOWER_CASE_IDENTIFIER
-private upper_case_identifier_parser ::= UPPER_CASE_IDENTIFIER
+lower_case_id ::= LOWER_CASE_IDENTIFIER
+{
+    mixin="org.elmlang.intellijplugin.psi.impl.ElmNamedElementImpl"
+    methods=[getName setName getNameIdentifier getReference]
+}
+
+upper_case_id ::= UPPER_CASE_IDENTIFIER
+{
+    mixin="org.elmlang.intellijplugin.psi.impl.ElmNamedElementImpl"
+    methods=[getName setName getNameIdentifier getReference]
+}

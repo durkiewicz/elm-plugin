@@ -10,6 +10,9 @@ import java.util.List;
 
 public class ListUtils {
     public static <T1, T2> List<T2> map(List<T1> source, Function<T1, T2> f) {
+        if (source.size() == 0) {
+            return Collections.emptyList();
+        }
         ArrayList<T2> result =  new ArrayList<T2>(source.size());
         for (T1 aSource : source) {
             result.add(f.fun(aSource));
@@ -17,19 +20,13 @@ public class ListUtils {
         return result;
     }
 
-    public static <T> List<T> flatten(List<List<T>> deep) {
-        int totalSize = reduce(
-                deep,
-                new Function2<Integer, List<T>, Integer>() {
-                    @Override
-                    public Integer fun(Integer total, List<T> list) {
-                        return total + list.size();
-                    }
-                },
-                0);
-        ArrayList<T> result = new ArrayList<T>(totalSize);
-        for(List<T> list : deep) {
-            result.addAll(list);
+    @SafeVarargs
+    public static <T> List<T> flatten(List<List<T>>... deeps) {
+        List<T> result = new LinkedList<>();
+        for (List<List<T>> deep : deeps) {
+            for(List<T> list : deep) {
+                result.addAll(list);
+            }
         }
         return result;
     }
@@ -60,5 +57,14 @@ public class ListUtils {
             sorted.remove(0);
         }
         return sorted;
+    }
+
+    public static <T> T find(List<T> list, Function<T, Boolean> predicate) {
+        for (T elem : list) {
+            if (predicate.fun(elem)) {
+                return elem;
+            }
+        }
+        return null;
     }
 }
