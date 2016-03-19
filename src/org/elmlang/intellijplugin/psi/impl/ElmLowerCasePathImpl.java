@@ -1,21 +1,10 @@
 package org.elmlang.intellijplugin.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElementVisitor;
 import org.elmlang.intellijplugin.psi.ElmLowerCasePath;
-import org.elmlang.intellijplugin.psi.ElmVisitor;
-import org.jetbrains.annotations.NotNull;
 
-public class ElmLowerCasePathImpl extends ASTWrapperPsiElement implements ElmLowerCasePath {
+public class ElmLowerCasePathImpl extends ElmPathBase implements ElmLowerCasePath {
     public ElmLowerCasePathImpl(ASTNode node) {
         super(node);
-    }
-
-    public void accept(@NotNull PsiElementVisitor visitor) {
-        if (visitor instanceof ElmVisitor) {
-            ((ElmVisitor)visitor).visitPsiElement(this);
-        }
-        else super.accept(visitor);
     }
 }

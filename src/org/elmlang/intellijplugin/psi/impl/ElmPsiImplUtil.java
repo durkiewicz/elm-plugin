@@ -10,6 +10,7 @@ import org.elmlang.intellijplugin.utils.ListUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class ElmPsiImplUtil {
     public static String getName(ElmUpperCaseId element) {
@@ -145,6 +146,20 @@ public class ElmPsiImplUtil {
                 break;
             }
         }
+        return result;
+    }
+
+    public static List<PsiReference> getReferencesList(ElmRecord record) {
+        List<PsiReference> result = new LinkedList<>();
+
+        Optional.ofNullable(record.getLowerCaseId())
+                .map(e -> new ElmReference(e, e.getTextRange()))
+                .ifPresent(result::add);
+
+        record.getFieldList().stream()
+                .map(ElmPsiImplUtil::getReferencesList)
+                .forEach(result::addAll);
+
         return result;
     }
 }

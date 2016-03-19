@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 
-public class ElmLetInImpl extends ASTWrapperPsiElement implements ElmLetIn {
+public class ElmLetInImpl extends ElmPsiElement implements ElmLetIn {
     public ElmLetInImpl(ASTNode node) {
         super(node);
     }

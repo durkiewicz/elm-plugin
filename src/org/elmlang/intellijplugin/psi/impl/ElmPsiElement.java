@@ -6,10 +6,12 @@ import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
-public class ElmPsiElement extends ASTWrapperPsiElement {
+public abstract class ElmPsiElement extends ASTWrapperPsiElement {
     public ElmPsiElement(@NotNull ASTNode node) {
         super(node);
     }
@@ -24,6 +26,11 @@ public class ElmPsiElement extends ASTWrapperPsiElement {
     }
 
     public List<PsiReference> getReferencesList() {
-        return Collections.emptyList();
+        List<PsiReference> result = new LinkedList<>();
+        Arrays.stream(this.getChildren())
+                .filter(c -> c instanceof ElmPsiElement)
+                .map(c -> ((ElmPsiElement) c).getReferencesList())
+                .forEach(result::addAll);
+        return result;
     }
 }
