@@ -42,6 +42,17 @@ public class ElmScopeProvider {
                     .ifPresent(this::gatherDeclarations);
             Optional.ofNullable(declaration.getOperatorDeclarationLeft())
                     .ifPresent(this::gatherDeclarations);
+        } else if (this.elem instanceof ElmFile || this.elem instanceof ElmLetIn) {
+            Arrays.stream(this.elem.getChildren())
+                    .filter(c -> c instanceof ElmValueDeclarationBase)
+                    .forEach(d -> {
+                        PsiElement child = d.getFirstChild();
+                        if (child instanceof ElmPattern) {
+                            this.patterns.add((ElmPattern) child);
+                        } else if (child instanceof ElmFunctionDeclarationLeft) {
+                            this.ids.push(((ElmFunctionDeclarationLeft) child).getLowerCaseId());
+                        }
+                    });
         }
 
         this.elem = this.elem.getParent();
