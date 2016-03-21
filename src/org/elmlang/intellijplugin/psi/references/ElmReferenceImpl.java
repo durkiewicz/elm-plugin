@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class ElmReferenceImpl extends PsiReferenceBase<PsiElement> {
+public class ElmReferenceImpl extends PsiReferenceBase<PsiElement> implements ElmReference {
     private final PsiElement referencingElement;
 
     public ElmReferenceImpl(PsiElement element) {

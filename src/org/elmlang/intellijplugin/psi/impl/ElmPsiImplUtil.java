@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import org.elmlang.intellijplugin.psi.*;
+import org.elmlang.intellijplugin.psi.references.ElmReference;
 import org.elmlang.intellijplugin.psi.references.ElmReferenceImpl;
 
 import java.util.*;
@@ -64,21 +65,21 @@ public class ElmPsiImplUtil {
         return new ElmReferenceImpl(element);
     }
 
-    public static List<PsiReference> getReferencesList(ElmExpression element) {
-        List<PsiReference> result = new LinkedList<>();
+    public static List<ElmReference> getReferencesList(ElmExpression element) {
+        List<ElmReference> result = new LinkedList<>();
         element.getListOfOperandsList().stream()
                 .map(ElmPsiImplUtil::getReferencesList)
                 .map(list ->
                         list.stream()
-                                .map(r -> ((ElmReferenceImpl)r).referenceInAncestor(element))
+                                .map(r -> r.referenceInAncestor(element))
                                 .collect(Collectors.toList())
                 )
                 .forEach(result::addAll);
         return result;
     }
 
-    public static List<PsiReference> getReferencesList(ElmListOfOperands element) {
-        List<PsiReference> result = new LinkedList<>();
+    public static List<ElmReference> getReferencesList(ElmListOfOperands element) {
+        List<ElmReference> result = new LinkedList<>();
         Arrays.stream(element.getChildren())
                 .map(child -> {
                     if (child instanceof ElmWithExpression) {
@@ -88,12 +89,12 @@ public class ElmPsiImplUtil {
                     } else if (child instanceof ElmPathBase) {
                         return ((ElmPathBase)child).getReferencesList();
                     } else {
-                        return new LinkedList<ElmReferenceImpl>();
+                        return new LinkedList<ElmReference>();
                     }
                 })
                 .map(list ->
                         list.stream()
-                                .map(r -> ((ElmReferenceImpl)r).referenceInAncestor(element))
+                                .map(r -> r.referenceInAncestor(element))
                                 .collect(Collectors.toList())
                 )
                 .forEach(result::addAll);
@@ -101,26 +102,26 @@ public class ElmPsiImplUtil {
         return result;
     }
 
-    public static List<PsiReference> getReferencesList(ElmWithExpressionList element) {
-        List<PsiReference> result = new LinkedList<>();
+    public static List<ElmReference> getReferencesList(ElmWithExpressionList element) {
+        List<ElmReference> result = new LinkedList<>();
         element.getExpressionList().stream()
                 .map(expr ->
                         ElmPsiImplUtil.getReferencesList(expr).stream()
-                                .map(r -> ((ElmReferenceImpl) r).referenceInAncestor(element))
+                                .map(r -> r.referenceInAncestor(element))
                                 .collect(Collectors.toList())
                 )
                 .forEach(result::addAll);
         return result;
     }
 
-    public static List<PsiReference> getReferencesList(ElmWithExpression element) {
+    public static List<ElmReference> getReferencesList(ElmWithExpression element) {
         return getReferencesList(element.getExpression()).stream()
-                .map(r -> ((ElmReferenceImpl) r).referenceInAncestor(element))
+                .map(r -> r.referenceInAncestor(element))
                 .collect(Collectors.toList());
     }
 
-    public static List<PsiReference> getReferencesList(ElmLowerCasePath element) {
-        List<PsiReference> result = new LinkedList<>();
+    public static List<ElmReference> getReferencesList(ElmLowerCasePath element) {
+        List<ElmReference> result = new LinkedList<>();
         for (PsiElement child : element.getChildren()) {
             if (child instanceof ElmLowerCaseId) {
                 result.add(new ElmReferenceImpl(child).referenceInAncestor(element));
@@ -130,8 +131,8 @@ public class ElmPsiImplUtil {
         return result;
     }
 
-    public static List<PsiReference> getReferencesList(ElmRecord record) {
-        List<PsiReference> result = new LinkedList<>();
+    public static List<ElmReference> getReferencesList(ElmRecord record) {
+        List<ElmReference> result = new LinkedList<>();
 
         Optional.ofNullable(record.getLowerCaseId())
                 .map(id -> new ElmReferenceImpl(id).referenceInAncestor(record))
