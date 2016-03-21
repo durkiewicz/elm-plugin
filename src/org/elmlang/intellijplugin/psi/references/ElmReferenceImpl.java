@@ -2,7 +2,6 @@ package org.elmlang.intellijplugin.psi.references;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReferenceBase;
 import org.elmlang.intellijplugin.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -10,17 +9,29 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class ElmReference extends PsiReferenceBase<PsiElement> {
+public class ElmReferenceImpl extends PsiReferenceBase<PsiElement> {
+    private final PsiElement referencingElement;
 
-    public ElmReference(PsiElement element, TextRange rangeInElement) {
+    public ElmReferenceImpl(PsiElement element) {
+        this(element, element, new TextRange(0, element.getText().length()));
+    }
+
+    private ElmReferenceImpl(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
         super(element, rangeInElement);
+        this.referencingElement = referencingElement;
+    }
+
+    public ElmReferenceImpl referenceInAncestor(PsiElement ancestor) {
+        int diff = this.myElement.getTextOffset() - ancestor.getTextOffset();
+        TextRange range = this.getRangeInElement();
+        return new ElmReferenceImpl(ancestor, this.referencingElement, new TextRange(range.getStartOffset() + diff, range.getEndOffset() + diff));
     }
 
     @Nullable
     @Override
     public PsiElement resolve() {
-        if (isSimpleValueReference(this.myElement)) {
-            return ElmScopeProvider.scopeFor((ElmLowerCaseId)this.myElement)
+        if (isSimpleValueReference(this.referencingElement)) {
+            return ElmScopeProvider.scopeFor((ElmLowerCaseId)this.referencingElement)
                     .filter(this::theSameNameOrEmpty)
                     .findFirst()
                     .map(o -> o.orElse(null))
@@ -30,7 +41,7 @@ public class ElmReference extends PsiReferenceBase<PsiElement> {
     }
 
     private boolean theSameNameOrEmpty(Optional<ElmLowerCaseId> optionalId) {
-        return optionalId.map(id -> this.myElement.getText().equals(id.getText()))
+        return optionalId.map(id -> this.referencingElement.getText().equals(id.getText()))
                 .orElse(true);
     }
 

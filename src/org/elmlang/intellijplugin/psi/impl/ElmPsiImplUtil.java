@@ -3,14 +3,11 @@ package org.elmlang.intellijplugin.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.psi.*;
-import org.elmlang.intellijplugin.psi.references.ElmReference;
-import org.elmlang.intellijplugin.utils.ListUtils;
+import org.elmlang.intellijplugin.psi.references.ElmReferenceImpl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ElmPsiImplUtil {
     public static String getName(ElmUpperCaseId element) {
@@ -60,89 +57,73 @@ public class ElmPsiImplUtil {
     }
 
     public static PsiReference getReference(ElmLowerCaseId element) {
-        return new ElmReference(element, element.getTextRange());
-    }
-
-    public static PsiReference[] getReferences(ElmLowerCaseId element) {
-        return new PsiReference[]{getReference(element)};
-    }
-
-    public static PsiReference findReferenceAt(ElmLowerCaseId element, int offset) {
-        return getReference(element);
+        return new ElmReferenceImpl(element);
     }
 
     public static PsiReference getReference(ElmUpperCaseId element) {
-        return new ElmReference(element, element.getTextRange());
-    }
-
-    public static PsiReference[] getReferences(ElmUpperCaseId element) {
-        return new PsiReference[]{getReference(element)};
-    }
-
-    public static PsiReference findReferenceAt(ElmUpperCaseId element, int offset) {
-        return getReference(element);
+        return new ElmReferenceImpl(element);
     }
 
     public static List<PsiReference> getReferencesList(ElmExpression element) {
-        return ListUtils.flatten(
-                ListUtils.map(
-                        element.getListOfOperandsList(),
-                        ElmPsiImplUtil::getReferencesList
+        List<PsiReference> result = new LinkedList<>();
+        element.getListOfOperandsList().stream()
+                .map(ElmPsiImplUtil::getReferencesList)
+                .map(list ->
+                        list.stream()
+                                .map(r -> ((ElmReferenceImpl)r).referenceInAncestor(element))
+                                .collect(Collectors.toList())
                 )
-        );
+                .forEach(result::addAll);
+        return result;
     }
 
     public static List<PsiReference> getReferencesList(ElmListOfOperands element) {
-        return ListUtils.flatten(
-                ListUtils.map(
-                        element.getAnonymousFunctionList(),
-                        ElmPsiImplUtil::getReferencesList
-                ),
-                ListUtils.map(
-                        element.getIfElseList(),
-                        ElmPsiImplUtil::getReferencesList
-                ),
-                ListUtils.map(
-                        element.getListList(),
-                        ElmPsiImplUtil::getReferencesList
-                ),
-                ListUtils.map(
-                        element.getListRangeList(),
-                        ElmPsiImplUtil::getReferencesList
-                ),
-                ListUtils.map(
-                        element.getNonEmptyTupleList(),
-                        ElmPsiImplUtil::getReferencesList
-                ),
-                ListUtils.map(
-                        element.getParenthesedExpressionList(),
-                        ElmPsiImplUtil::getReferencesList
-                ),
-                ListUtils.map(
-                        PsiTreeUtil.getChildrenOfTypeAsList(element, ElmLowerCasePath.class),
-                        ElmPsiImplUtil::getReferencesList
+        List<PsiReference> result = new LinkedList<>();
+        Arrays.stream(element.getChildren())
+                .map(child -> {
+                    if (child instanceof ElmWithExpression) {
+                        return ElmPsiImplUtil.getReferencesList(((ElmWithExpression)child));
+                    } else if (child instanceof ElmWithExpressionList) {
+                        return ElmPsiImplUtil.getReferencesList(((ElmWithExpressionList)child));
+                    } else if (child instanceof ElmPathBase) {
+                        return ((ElmPathBase)child).getReferencesList();
+                    } else {
+                        return new LinkedList<ElmReferenceImpl>();
+                    }
+                })
+                .map(list ->
+                        list.stream()
+                                .map(r -> ((ElmReferenceImpl)r).referenceInAncestor(element))
+                                .collect(Collectors.toList())
                 )
-        );
+                .forEach(result::addAll);
+
+        return result;
     }
 
     public static List<PsiReference> getReferencesList(ElmWithExpressionList element) {
-        return ListUtils.flatten(
-                ListUtils.map(
-                        element.getExpressionList(),
-                        ElmPsiImplUtil::getReferencesList
+        List<PsiReference> result = new LinkedList<>();
+        element.getExpressionList().stream()
+                .map(expr ->
+                        ElmPsiImplUtil.getReferencesList(expr).stream()
+                                .map(r -> ((ElmReferenceImpl) r).referenceInAncestor(element))
+                                .collect(Collectors.toList())
                 )
-        );
+                .forEach(result::addAll);
+        return result;
     }
 
     public static List<PsiReference> getReferencesList(ElmWithExpression element) {
-        return getReferencesList(element.getExpression());
+        return getReferencesList(element.getExpression()).stream()
+                .map(r -> ((ElmReferenceImpl) r).referenceInAncestor(element))
+                .collect(Collectors.toList());
     }
 
     public static List<PsiReference> getReferencesList(ElmLowerCasePath element) {
         List<PsiReference> result = new LinkedList<>();
         for (PsiElement child : element.getChildren()) {
             if (child instanceof ElmLowerCaseId) {
-                result.add(new ElmReference(child, child.getTextRange()));
+                result.add(new ElmReferenceImpl(child).referenceInAncestor(element));
                 break;
             }
         }
@@ -153,7 +134,7 @@ public class ElmPsiImplUtil {
         List<PsiReference> result = new LinkedList<>();
 
         Optional.ofNullable(record.getLowerCaseId())
-                .map(e -> new ElmReference(e, e.getTextRange()))
+                .map(id -> new ElmReferenceImpl(id).referenceInAncestor(record))
                 .ifPresent(result::add);
 
         record.getFieldList().stream()
