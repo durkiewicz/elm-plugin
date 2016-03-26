@@ -2,10 +2,15 @@ package org.elmlang.intellijplugin.psi.references;
 
 
 import com.intellij.psi.PsiElement;
+import org.elmlang.intellijplugin.ElmModuleIndex;
 import org.elmlang.intellijplugin.psi.*;
+import org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ElmScopeProvider {
@@ -17,13 +22,18 @@ public class ElmScopeProvider {
         this.elem = elem;
     }
 
+    public static Stream<Optional<ElmLowerCaseId>> scopeFor(ElmLowerCaseId elem) {
+        ElmScopeProvider p = new ElmScopeProvider(elem.getParent());
+        return Stream.generate(p::nextId);
+    }
+
     private Optional<ElmLowerCaseId> nextId() {
         if (!this.ids.isEmpty()) {
             return Optional.of(ids.pop());
         }
 
         if (!this.patterns.isEmpty()) {
-            ids.addAll(getDeclarationsFromPattern(this.patterns.pop()));
+            ids.addAll(ElmPsiImplUtil.getDeclarationsFromPattern(this.patterns.pop()));
             return nextId();
         }
 
@@ -31,6 +41,12 @@ public class ElmScopeProvider {
             return Optional.empty();
         }
 
+        this.elem = this.gatherIdsFromCurrentElement();
+
+        return nextId();
+    }
+
+    private PsiElement gatherIdsFromCurrentElement() {
         Arrays.stream(this.elem.getChildren())
                 .filter(c -> c instanceof ElmPattern)
                 .map(p -> (ElmPattern)p)
@@ -42,27 +58,15 @@ public class ElmScopeProvider {
                     .ifPresent(this::gatherDeclarations);
             Optional.ofNullable(declaration.getOperatorDeclarationLeft())
                     .ifPresent(this::gatherDeclarations);
-        } else if (this.elem instanceof ElmFile || this.elem instanceof ElmLetIn) {
-            Arrays.stream(this.elem.getChildren())
-                    .filter(c -> c instanceof ElmValueDeclarationBase)
-                    .forEach(d -> {
-                        PsiElement child = d.getFirstChild();
-                        if (child instanceof ElmPattern) {
-                            this.patterns.add((ElmPattern) child);
-                        } else if (child instanceof ElmFunctionDeclarationLeft) {
-                            this.ids.push(((ElmFunctionDeclarationLeft) child).getLowerCaseId());
-                        }
-                    });
+        } else if (this.elem instanceof ElmLetIn) {
+            this.gatherValueDeclarations();
+        } else if (this.elem instanceof ElmFile) {
+            this.gatherValueDeclarations();
+            this.gatherDeclarationsFromOtherFiles();
+            return null;
         }
 
-        this.elem = this.elem.getParent();
-
-        return nextId();
-    }
-
-    public static Stream<Optional<ElmLowerCaseId>> scopeFor(ElmLowerCaseId elem) {
-        ElmScopeProvider p = new ElmScopeProvider(elem.getParent());
-        return Stream.generate(p::nextId);
+        return this.elem.getParent();
     }
 
     private void gatherDeclarations(ElmFunctionDeclarationLeft elem) {
@@ -70,58 +74,59 @@ public class ElmScopeProvider {
         this.patterns.addAll(elem.getPatternList());
     }
 
+    private void gatherValueDeclarations() {
+        this.gatherValueDeclarations((ElmWithValueDeclarations) this.elem, x -> true);
+    }
+
+    private void gatherValueDeclarations(ElmWithValueDeclarations element, Predicate<? super PsiElement> additionalPredicate) {
+        Arrays.stream(element.getChildren())
+                .filter(c -> c instanceof ElmValueDeclarationBase && additionalPredicate.test(c))
+                .forEach(d -> {
+                    PsiElement child = d.getFirstChild();
+                    if (child instanceof ElmPattern) {
+                        this.patterns.add((ElmPattern) child);
+                    } else if (child instanceof ElmFunctionDeclarationLeft) {
+                        this.ids.push(((ElmFunctionDeclarationLeft) child).getLowerCaseId());
+                    }
+                });
+    }
+
+    private void gatherDeclarationsFromOtherFiles() {
+        ((ElmFile) this.elem).getImportClauses().stream()
+                .filter(e -> e.getExposingClause() != null)
+                .forEach(this::gatherDeclarationsFromOtherFile);
+    }
+
+    private void gatherDeclarationsFromOtherFile(@NotNull ElmImportClause elem) {
+        Optional.ofNullable(elem.getModuleName())
+                .map(name -> ElmModuleIndex.getFilesByModuleName(name.getText(), elem.getProject()))
+                .ifPresent(matchingFiles -> this.gatherDeclarationsFromOtherFile(matchingFiles, elem.getExposingClause()));
+    }
+
+    private void gatherDeclarationsFromOtherFile(List<ElmFile> matchingFiles, ElmExposingClause exposingClause) {
+        matchingFiles.stream()
+                .forEach(f -> gatherDeclarationsFromOtherFile(f, exposingClause));
+    }
+
+    private void gatherDeclarationsFromOtherFile(ElmFile file, ElmExposingClause exposingClause) {
+        Predicate<ElmLowerCaseId> filter;
+        if (exposingClause.isExposingAll()) {
+            filter = x -> true;
+        } else {
+            final Set<String> set = exposingClause.getLowerCaseIdList().stream()
+                    .map(PsiElement::getText)
+                    .collect(Collectors.toSet());
+            filter = e -> set.contains(e.getText());
+        }
+
+        file.getExposedValues().stream()
+                .filter(filter)
+                .forEach(this.ids::add);
+    }
+
     private void gatherDeclarations(ElmWithPatternList elem) {
         this.patterns.addAll(elem.getPatternList());
     }
 
-    private static List<ElmLowerCaseId> getDeclarationsFromPattern(ElmPattern pattern) {
-        if (pattern == null) {
-            return Collections.emptyList();
-        }
 
-        List<ElmLowerCaseId> result = new LinkedList<>();
-
-        result.addAll(pattern.getLowerCaseIdList());
-
-        addDeclarationsToResult(
-                result,
-                pattern.getListPatternList(),
-                ElmScopeProvider::getDeclarationsFromParentPattern);
-
-        addDeclarationsToResult(
-                result,
-                pattern.getParenthesedPatternList(),
-                p -> getDeclarationsFromPattern(p.getPattern()));
-
-        addDeclarationsToResult(
-                result,
-                pattern.getRecordPatternList(),
-                ElmRecordPattern::getLowerCaseIdList);
-
-        addDeclarationsToResult(
-                result,
-                pattern.getTuplePatternList(),
-                ElmScopeProvider::getDeclarationsFromParentPattern);
-
-        addDeclarationsToResult(
-                result,
-                pattern.getUnionPatternList(),
-                ElmScopeProvider::getDeclarationsFromParentPattern);
-
-        return result;
-    }
-
-    private static <T> void addDeclarationsToResult(List<ElmLowerCaseId> result, List<T> source, Function<T, List<ElmLowerCaseId>> f) {
-        source.stream()
-                .map(f)
-                .forEach(result::addAll);
-    }
-
-    private static <T extends ElmWithPatternList> List<ElmLowerCaseId> getDeclarationsFromParentPattern(ElmWithPatternList parentPattern) {
-        List<ElmLowerCaseId> result = new LinkedList<>();
-        parentPattern.getPatternList().stream()
-                .map(ElmScopeProvider::getDeclarationsFromPattern)
-                .forEach(result::addAll);
-        return result;
-    }
 }

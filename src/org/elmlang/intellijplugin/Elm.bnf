@@ -1,41 +1,46 @@
 {
-  parserClass="org.elmlang.intellijplugin.parser.ElmParser"
-  extends="org.elmlang.intellijplugin.psi.impl.ElmPsiElement"
+    parserClass="org.elmlang.intellijplugin.parser.ElmParser"
+    extends="org.elmlang.intellijplugin.psi.impl.ElmPsiElement"
 
-  psiClassPrefix="Elm"
-  psiImplClassSuffix="Impl"
-  psiPackage="org.elmlang.intellijplugin.psi"
-  psiImplPackage="org.elmlang.intellijplugin.psi.impl"
+    psiClassPrefix="Elm"
+    psiImplClassSuffix="Impl"
+    psiPackage="org.elmlang.intellijplugin.psi"
+    psiImplPackage="org.elmlang.intellijplugin.psi.impl"
 
-  parserUtilClass="org.elmlang.intellijplugin.manualParsing.ElmParserUtil"
+    parserUtilClass="org.elmlang.intellijplugin.manualParsing.ElmParserUtil"
 
-  elementTypeHolderClass="org.elmlang.intellijplugin.psi.ElmTypes"
-  elementTypeClass="org.elmlang.intellijplugin.psi.ElmElementType"
-  tokenTypeClass="org.elmlang.intellijplugin.psi.ElmTokenType"
+    elementTypeHolderClass="org.elmlang.intellijplugin.psi.ElmTypes"
+    elementTypeClass="org.elmlang.intellijplugin.psi.ElmElementType"
+    tokenTypeClass="org.elmlang.intellijplugin.psi.ElmTokenType"
 
-  implements("(upper|lower)_case_id") = "org.elmlang.intellijplugin.psi.ElmNamedElement"
-  implements("(inner_)?value_declaration") =
-    "org.elmlang.intellijplugin.psi.ElmValueDeclarationBase"
-  implements("(function|operator)_declaration_left|(list|union|tuple)_pattern") =
-    "org.elmlang.intellijplugin.psi.ElmWithPatternList"
-  implements("if_else|non_empty_tuple|list(_range)?") =
-    "org.elmlang.intellijplugin.psi.ElmWithExpressionList"
-  implements("anonymous_function|(case_of_(branch|header))|field|parenthesed_expression") =
-    "org.elmlang.intellijplugin.psi.ElmWithExpression"
-  psiImplUtilClass="org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil"
+    implements("(upper|lower)_case_id") = "org.elmlang.intellijplugin.psi.ElmNamedElement"
+    implements("(inner_)?value_declaration") =
+        "org.elmlang.intellijplugin.psi.ElmValueDeclarationBase"
+    implements("operator_declaration_left|(list|union|tuple)_pattern") =
+        "org.elmlang.intellijplugin.psi.ElmWithPatternList"
+    implements("function_declaration_left") =
+        "org.elmlang.intellijplugin.psi.ElmWithPatternList, org.elmlang.intellijplugin.psi.ElmWithSingleId"
+    implements("port_declaration_left") =
+        "org.elmlang.intellijplugin.psi.ElmWithSingleId"
+    implements("if_else|non_empty_tuple|list(_range)?") =
+        "org.elmlang.intellijplugin.psi.ElmWithExpressionList"
+    implements("anonymous_function|(case_of_(branch|header))|field|parenthesed_expression") =
+        "org.elmlang.intellijplugin.psi.ElmWithExpression"
 
-  tokens = [
-    CASE_OF='CASE_OF'
-    LET='LET'
-    IN='IN'
-    LET_IN='LET_IN'
-    RESERVED='RESERVED'
-    UPPER_CASE_PATH='UPPER_CASE_PATH'
-    LOWER_CASE_PATH='LOWER_CASE_PATH'
-    MIXED_CASE_PATH='MIXED_CASE_PATH'
-    FIELD_ACCESS='FIELD_ACCESS'
-    DOT='DOT'
-  ]
+    psiImplUtilClass="org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil"
+
+    tokens = [
+        CASE_OF='CASE_OF'
+        LET='LET'
+        IN='IN'
+        LET_IN='LET_IN'
+        RESERVED='RESERVED'
+        UPPER_CASE_PATH='UPPER_CASE_PATH'
+        LOWER_CASE_PATH='LOWER_CASE_PATH'
+        MIXED_CASE_PATH='MIXED_CASE_PATH'
+        FIELD_ACCESS='FIELD_ACCESS'
+        DOT='DOT'
+    ]
 }
 
 // docs:
@@ -54,9 +59,9 @@ private blank ::=
     | FRESH_LINE
     | comment
 
-module_declaration ::= MODULE upper_case_path [exposed_values] WHERE
+module_declaration ::= MODULE upper_case_path [exposed_values] WHERE { methods = [getModuleName isExposingAll] }
 
-exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
+private exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
 
 private list_of_values ::= <<non_empty_list exposed_value>>
 
@@ -66,16 +71,16 @@ private exposed_value ::=
     | exposed_union
 exposed_union ::=
     upper_case_id [exposed_union_constructors]
-exposed_union_constructors ::=
+private exposed_union_constructors ::=
     LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
 private list_of_union_constructors ::=
     <<non_empty_list upper_case_id>>
 
-import_clause ::= IMPORT upper_case_path [as_clause] [exposing_clause]
+import_clause ::= IMPORT upper_case_path [as_clause] [exposing_clause] { methods = [getModuleName] }
 
 as_clause ::= AS upper_case_id
 
-exposing_clause ::= EXPOSING exposed_values
+exposing_clause ::= EXPOSING exposed_values { methods = [isExposingAll] }
 
 comment ::=
     LINE_COMMENT

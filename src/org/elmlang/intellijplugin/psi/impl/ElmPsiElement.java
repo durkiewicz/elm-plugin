@@ -2,9 +2,10 @@ package org.elmlang.intellijplugin.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiReference;
+import org.elmlang.intellijplugin.psi.ElmVisitor;
 import org.elmlang.intellijplugin.psi.references.ElmReference;
-import org.elmlang.intellijplugin.psi.references.ElmReferenceImpl;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,11 +24,18 @@ public abstract class ElmPsiElement extends ASTWrapperPsiElement {
             pure = true
     )
     public PsiReference[] getReferences() {
-        List<ElmReference> references = this.getReferencesList();
+        List<? extends ElmReference> references = this.getReferencesList();
         return references.toArray(new PsiReference[references.size()]);
     }
 
-    public List<ElmReference> getReferencesList() {
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof ElmVisitor) {
+            ((ElmVisitor)visitor).visitPsiElement(this);
+        }
+        else super.accept(visitor);
+    }
+
+    public List<? extends ElmReference> getReferencesList() {
         List<ElmReference> result = new LinkedList<>();
         Arrays.stream(this.getChildren())
                 .filter(c -> c instanceof ElmPsiElement)
@@ -36,7 +44,7 @@ public abstract class ElmPsiElement extends ASTWrapperPsiElement {
         return result;
     }
 
-    private List<ElmReference> getReferencesFromChild(ElmPsiElement element) {
+    private List<? extends ElmReference> getReferencesFromChild(ElmPsiElement element) {
         return element.getReferencesList().stream()
                 .map(r -> r.referenceInAncestor(this))
                 .collect(Collectors.toList());

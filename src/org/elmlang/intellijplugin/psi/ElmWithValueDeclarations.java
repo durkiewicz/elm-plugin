@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public interface ElmLetIn extends PsiElement, ElmWithValueDeclarations {
+public interface ElmWithValueDeclarations extends PsiElement {
     @NotNull
-    List<ElmInnerValueDeclaration> getInnerValuesList();
+    List<ElmValueDeclarationBase> getValueDeclarations();
 }

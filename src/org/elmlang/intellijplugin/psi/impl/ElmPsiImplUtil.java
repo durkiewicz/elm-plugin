@@ -3,11 +3,15 @@ package org.elmlang.intellijplugin.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.psi.*;
 import org.elmlang.intellijplugin.psi.references.ElmReference;
 import org.elmlang.intellijplugin.psi.references.ElmReferenceImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ElmPsiImplUtil {
@@ -86,8 +90,8 @@ public class ElmPsiImplUtil {
                         return ElmPsiImplUtil.getReferencesList(((ElmWithExpression)child));
                     } else if (child instanceof ElmWithExpressionList) {
                         return ElmPsiImplUtil.getReferencesList(((ElmWithExpressionList)child));
-                    } else if (child instanceof ElmPathBase) {
-                        return ((ElmPathBase)child).getReferencesList();
+                    } else if (child instanceof ElmLowerCasePathImpl) {
+                        return ((ElmLowerCasePathImpl)child).getReferencesList();
                     } else {
                         return new LinkedList<ElmReference>();
                     }
@@ -142,6 +146,100 @@ public class ElmPsiImplUtil {
                 .map(ElmPsiImplUtil::getReferencesList)
                 .forEach(result::addAll);
 
+        return result;
+    }
+
+    @Nullable
+    public static ElmUpperCasePath getModuleName(ElmModuleDeclaration module) {
+        return PsiTreeUtil.findChildOfType(module, ElmUpperCasePath.class);
+    }
+
+    @Nullable
+    public static ElmUpperCasePath getModuleName(ElmImportClause module) {
+        return PsiTreeUtil.findChildOfType(module, ElmUpperCasePath.class);
+    }
+
+    public static boolean isExposingAll(ElmModuleDeclaration element) {
+        return true;
+    }
+
+    public static boolean isExposingAll(ElmExposingClause element) {
+        return true;
+    }
+
+    @NotNull
+    public static List<ElmValueDeclarationBase> getValueDeclarations(ElmWithValueDeclarations element) {
+        return Arrays.stream(element.getChildren())
+                .filter(e -> e instanceof ElmValueDeclarationBase)
+                .map(e -> (ElmValueDeclarationBase) e)
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    public static List<ElmLowerCaseId> getDeclarationsFromPattern(@Nullable ElmPattern pattern) {
+        if (pattern == null) {
+            return Collections.emptyList();
+        }
+
+        List<ElmLowerCaseId> result = new LinkedList<>();
+
+        result.addAll(pattern.getLowerCaseIdList());
+
+        addDeclarationsToResult(
+                result,
+                pattern.getListPatternList(),
+                ElmPsiImplUtil::getDeclarationsFromParentPattern);
+
+        addDeclarationsToResult(
+                result,
+                pattern.getParenthesedPatternList(),
+                p -> getDeclarationsFromPattern(p.getPattern()));
+
+        addDeclarationsToResult(
+                result,
+                pattern.getRecordPatternList(),
+                ElmRecordPattern::getLowerCaseIdList);
+
+        addDeclarationsToResult(
+                result,
+                pattern.getTuplePatternList(),
+                ElmPsiImplUtil::getDeclarationsFromParentPattern);
+
+        addDeclarationsToResult(
+                result,
+                pattern.getUnionPatternList(),
+                ElmPsiImplUtil::getDeclarationsFromParentPattern);
+
+        return result;
+    }
+
+    private static <T> void addDeclarationsToResult(List<ElmLowerCaseId> result, List<T> source, Function<T, List<ElmLowerCaseId>> f) {
+        source.stream()
+                .map(f)
+                .forEach(result::addAll);
+    }
+
+    private static List<ElmLowerCaseId> getDeclarationsFromParentPattern(ElmWithPatternList parentPattern) {
+        List<ElmLowerCaseId> result = new LinkedList<>();
+        parentPattern.getPatternList().stream()
+                .map(ElmPsiImplUtil::getDeclarationsFromPattern)
+                .forEach(result::addAll);
+        return result;
+    }
+
+    public static List<ElmLowerCaseId> getDefinedValues(ElmValueDeclarationBase element) {
+        List<ElmLowerCaseId> result = new LinkedList<>();
+        Arrays.stream(element.getChildren())
+                .map(child -> {
+                    if (child instanceof ElmPattern) {
+                        return getDeclarationsFromPattern((ElmPattern) child);
+                    } else if (child instanceof ElmWithSingleId) {
+                        return Collections.singletonList(((ElmWithSingleId) child).getLowerCaseId());
+                    } else {
+                        return Collections.<ElmLowerCaseId>emptyList();
+                    }
+                })
+                .forEach(result::addAll);
         return result;
     }
 }
