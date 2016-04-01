@@ -240,7 +240,7 @@ inner_type_annotation ::=
 
 // patterns:
 pattern ::=
-    single_pattern (LIST_CONSTRUCTOR single_pattern)*
+    single_pattern (LIST_CONSTRUCTOR single_pattern)* [AS lower_case_id]
 private single_pattern ::=
     UNDERSCORE
     | lower_case_id
