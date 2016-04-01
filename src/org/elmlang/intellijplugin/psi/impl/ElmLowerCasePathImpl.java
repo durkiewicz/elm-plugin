@@ -4,7 +4,7 @@ import com.intellij.lang.ASTNode;
 import org.elmlang.intellijplugin.psi.ElmLowerCaseId;
 import org.elmlang.intellijplugin.psi.ElmLowerCasePath;
 import org.elmlang.intellijplugin.psi.references.ElmReference;
-import org.elmlang.intellijplugin.psi.references.ElmReferenceImpl;
+import org.elmlang.intellijplugin.psi.references.ElmValueReference;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,7 +18,7 @@ public class ElmLowerCasePathImpl extends ElmPsiElement implements ElmLowerCaseP
     public List<? extends ElmReference> getReferencesList() {
         return Arrays.stream(this.getChildren())
                 .filter(e -> e instanceof ElmLowerCaseId)
-                .map(child -> new ElmReferenceImpl(child).referenceInAncestor(this))
+                .map(child -> new ElmValueReference(child).referenceInAncestor(this))
                 .findFirst()
                 .map(Collections::singletonList)
                 .orElse(Collections.emptyList());

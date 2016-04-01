@@ -6,7 +6,7 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.psi.*;
 import org.elmlang.intellijplugin.psi.references.ElmReference;
-import org.elmlang.intellijplugin.psi.references.ElmReferenceImpl;
+import org.elmlang.intellijplugin.psi.references.ElmValueReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,14 +59,6 @@ public class ElmPsiImplUtil {
         } else {
             return null;
         }
-    }
-
-    public static PsiReference getReference(ElmLowerCaseId element) {
-        return new ElmReferenceImpl(element);
-    }
-
-    public static PsiReference getReference(ElmUpperCaseId element) {
-        return new ElmReferenceImpl(element);
     }
 
     public static List<ElmReference> getReferencesList(ElmExpression element) {
@@ -128,7 +120,7 @@ public class ElmPsiImplUtil {
         List<ElmReference> result = new LinkedList<>();
         for (PsiElement child : element.getChildren()) {
             if (child instanceof ElmLowerCaseId) {
-                result.add(new ElmReferenceImpl(child).referenceInAncestor(element));
+                result.add(new ElmValueReference(child).referenceInAncestor(element));
                 break;
             }
         }
@@ -139,7 +131,7 @@ public class ElmPsiImplUtil {
         List<ElmReference> result = new LinkedList<>();
 
         Optional.ofNullable(record.getLowerCaseId())
-                .map(id -> new ElmReferenceImpl(id).referenceInAncestor(record))
+                .map(id -> new ElmValueReference(id).referenceInAncestor(record))
                 .ifPresent(result::add);
 
         record.getFieldList().stream()

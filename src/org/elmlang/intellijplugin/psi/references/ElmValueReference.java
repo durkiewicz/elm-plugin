@@ -9,35 +9,32 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class ElmReferenceImpl extends PsiReferenceBase<PsiElement> implements ElmReference {
+public class ElmValueReference extends PsiReferenceBase<PsiElement> implements ElmReference {
     private final PsiElement referencingElement;
 
-    public ElmReferenceImpl(PsiElement element) {
+    public ElmValueReference(PsiElement element) {
         this(element, element, new TextRange(0, element.getText().length()));
     }
 
-    private ElmReferenceImpl(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
+    private ElmValueReference(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
         super(element, rangeInElement);
         this.referencingElement = referencingElement;
     }
 
-    public ElmReferenceImpl referenceInAncestor(PsiElement ancestor) {
+    public ElmReference referenceInAncestor(PsiElement ancestor) {
         int diff = this.myElement.getTextOffset() - ancestor.getTextOffset();
         TextRange range = this.getRangeInElement();
-        return new ElmReferenceImpl(ancestor, this.referencingElement, new TextRange(range.getStartOffset() + diff, range.getEndOffset() + diff));
+        return new ElmValueReference(ancestor, this.referencingElement, new TextRange(range.getStartOffset() + diff, range.getEndOffset() + diff));
     }
 
     @Nullable
     @Override
     public PsiElement resolve() {
-        if (isSimpleValueReference(this.referencingElement)) {
-            return ElmScopeProvider.scopeFor((ElmLowerCaseId)this.referencingElement)
-                    .filter(this::theSameNameOrEmpty)
-                    .findFirst()
-                    .map(o -> o.orElse(null))
-                    .orElse(null);
-        }
-        return null;
+        return ElmScopeProvider.scopeFor((ElmLowerCaseId)this.referencingElement)
+                .filter(this::theSameNameOrEmpty)
+                .findFirst()
+                .map(o -> o.orElse(null))
+                .orElse(null);
     }
 
     private boolean theSameNameOrEmpty(Optional<ElmLowerCaseId> optionalId) {
@@ -49,11 +46,5 @@ public class ElmReferenceImpl extends PsiReferenceBase<PsiElement> implements El
     @Override
     public Object[] getVariants() {
         return new Object[0];
-    }
-
-    private static boolean isSimpleValueReference(PsiElement elem) {
-        return elem instanceof ElmLowerCaseId
-                && elem.getParent() instanceof ElmLowerCasePath
-                && elem.getParent().getFirstChild() == elem;
     }
 }

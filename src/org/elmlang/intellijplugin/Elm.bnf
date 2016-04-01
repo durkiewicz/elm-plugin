@@ -278,11 +278,11 @@ private meta non_empty_list ::= <<p>> (COMMA <<p>>)*
 lower_case_id ::= LOWER_CASE_IDENTIFIER
 {
     mixin="org.elmlang.intellijplugin.psi.impl.ElmNamedElementImpl"
-    methods=[getName setName getNameIdentifier getReference]
+    methods=[getName setName getNameIdentifier]
 }
 
 upper_case_id ::= UPPER_CASE_IDENTIFIER
 {
     mixin="org.elmlang.intellijplugin.psi.impl.ElmNamedElementImpl"
-    methods=[getName setName getNameIdentifier getReference]
+    methods=[getName setName getNameIdentifier]
 }
