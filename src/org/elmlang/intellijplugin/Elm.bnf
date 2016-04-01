@@ -143,13 +143,18 @@ operator_declaration_left ::=
 port_declaration_left ::=
     PORT lower_case_id
 
-expression ::= list_of_operands (some_operator list_of_operands)* { methods = [getReferencesList] }
+expression ::= list_of_operands (any_operator list_of_operands)* { methods = [getReferencesList] }
 
 list_of_operands ::= operand+ { methods = [getReferencesList] }
 
-private some_operator ::=
+private any_operator ::=
+    real_operator
+    | backticked_function
+private real_operator ::=
     OPERATOR
     | LIST_CONSTRUCTOR
+backticked_function ::=
+    BACKTICK referenced_value BACKTICK
 
 private operand ::=
     literal
@@ -185,7 +190,7 @@ private referenced_value ::=
     | mixed_case_path
 
 operator_as_function ::=
-    LEFT_PARENTHESIS some_operator RIGHT_PARENTHESIS
+    LEFT_PARENTHESIS real_operator RIGHT_PARENTHESIS
 
 private tuple ::=
     unit
