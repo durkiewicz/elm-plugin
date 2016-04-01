@@ -32,7 +32,6 @@ STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
 CHAR_LITERAL='(\\.|\\x[[:digit:]A-Fa-f]+|[^\\'])'
 OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|"~"|-|=|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
-BACKTICKED_FUNCTION="`"{LOWER_CASE_IDENTIFIER}"`"
 RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
 
 %%
@@ -165,6 +164,9 @@ RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
     "." {
         return DOT;
     }
+    "`" {
+        return BACKTICK;
+    }
     {CRLF}*"{-" {
         commentLevel = 1;
         yybegin(IN_COMMENT);
@@ -194,7 +196,7 @@ RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
     {CRLF}*{LINE_COMMENT} {
         return LINE_COMMENT;
     }
-    {OPERATOR}|{BACKTICKED_FUNCTION} {
+    {OPERATOR} {
         return OPERATOR;
     }
     {WHITE_SPACE}+ {
