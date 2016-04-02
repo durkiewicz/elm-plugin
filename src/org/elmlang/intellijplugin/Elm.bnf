@@ -154,7 +154,7 @@ private real_operator ::=
     OPERATOR
     | LIST_CONSTRUCTOR
 backticked_function ::=
-    BACKTICK referenced_value BACKTICK
+    BACKTICK referenced_value BACKTICK { methods = [getReferencesList] }
 
 private operand ::=
     literal

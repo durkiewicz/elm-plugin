@@ -7,7 +7,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.ElmFileType;
 import org.elmlang.intellijplugin.ElmLanguage;
-import org.elmlang.intellijplugin.psi.impl.ElmPsiElement;
 import org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

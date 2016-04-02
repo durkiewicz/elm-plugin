@@ -2,7 +2,6 @@ package org.elmlang.intellijplugin.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.psi.*;
 import org.elmlang.intellijplugin.psi.references.ElmReference;
@@ -13,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ElmPsiImplUtil {
     public static String getName(ElmUpperCaseId element) {
@@ -62,12 +62,31 @@ public class ElmPsiImplUtil {
     }
 
     public static List<ElmReference> getReferencesList(ElmExpression element) {
+        return getReferencesInAncestor(
+                element,
+                Stream.concat(
+                        element.getListOfOperandsList().stream()
+                                .map(ElmPsiImplUtil::getReferencesList),
+                        element.getBacktickedFunctionList().stream()
+                                .map(ElmPsiImplUtil::getReferencesList)
+                )
+        );
+    }
+
+    public static List<ElmReference> getReferencesList(ElmBacktickedFunction element) {
+        return getReferencesInAncestor(
+                element,
+                PsiTreeUtil.findChildrenOfAnyType(element, ElmLowerCasePathImpl.class, ElmMixedCasePathImpl.class).stream()
+                        .map(ElmPsiElement::getReferencesList)
+        );
+    }
+
+    private static List<ElmReference> getReferencesInAncestor(PsiElement ancestor, Stream<? extends Collection<? extends ElmReference>> references) {
         List<ElmReference> result = new LinkedList<>();
-        element.getListOfOperandsList().stream()
-                .map(ElmPsiImplUtil::getReferencesList)
+        references
                 .map(list ->
                         list.stream()
-                                .map(r -> r.referenceInAncestor(element))
+                                .map(r -> r.referenceInAncestor(ancestor))
                                 .collect(Collectors.toList())
                 )
                 .forEach(result::addAll);
@@ -75,39 +94,27 @@ public class ElmPsiImplUtil {
     }
 
     public static List<ElmReference> getReferencesList(ElmListOfOperands element) {
-        List<ElmReference> result = new LinkedList<>();
-        Arrays.stream(element.getChildren())
+        Stream<List<? extends ElmReference>> references = Arrays.stream(element.getChildren())
                 .map(child -> {
                     if (child instanceof ElmWithExpression) {
-                        return ElmPsiImplUtil.getReferencesList(((ElmWithExpression)child));
+                        return ElmPsiImplUtil.getReferencesList(((ElmWithExpression) child));
                     } else if (child instanceof ElmWithExpressionList) {
-                        return ElmPsiImplUtil.getReferencesList(((ElmWithExpressionList)child));
+                        return ElmPsiImplUtil.getReferencesList(((ElmWithExpressionList) child));
                     } else if (child instanceof ElmLowerCasePathImpl) {
-                        return ((ElmLowerCasePathImpl)child).getReferencesList();
+                        return ((ElmLowerCasePathImpl) child).getReferencesList();
                     } else {
                         return new LinkedList<ElmReference>();
                     }
-                })
-                .map(list ->
-                        list.stream()
-                                .map(r -> r.referenceInAncestor(element))
-                                .collect(Collectors.toList())
-                )
-                .forEach(result::addAll);
-
-        return result;
+                });
+        return getReferencesInAncestor(element, references);
     }
 
     public static List<ElmReference> getReferencesList(ElmWithExpressionList element) {
-        List<ElmReference> result = new LinkedList<>();
-        element.getExpressionList().stream()
-                .map(expr ->
-                        ElmPsiImplUtil.getReferencesList(expr).stream()
-                                .map(r -> r.referenceInAncestor(element))
-                                .collect(Collectors.toList())
-                )
-                .forEach(result::addAll);
-        return result;
+        return getReferencesInAncestor(
+                element,
+                element.getExpressionList().stream()
+                        .map(ElmPsiImplUtil::getReferencesList)
+        );
     }
 
     public static List<ElmReference> getReferencesList(ElmWithExpression element) {
