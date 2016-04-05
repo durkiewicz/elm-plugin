@@ -14,7 +14,7 @@ public class ElmLowerCasePathImpl extends ElmPsiElement implements ElmLowerCaseP
         super(node);
     }
 
-    public Stream<ElmReference> getReferencesList() {
+    public Stream<ElmReference> getReferencesStream() {
         return Arrays.stream(this.getChildren())
                 .filter(e -> e instanceof ElmLowerCaseId)
                 .map(child -> new ElmValueReference(child).referenceInAncestor(this))

@@ -99,7 +99,7 @@ private declaration ::=
     recoverWhile = declaration_recover
 }
 
-value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION* { methods = [getReferencesList] }
+value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION* { methods = [getReferencesStream] }
 
 type_alias_declaration ::=
     TYPE ALIAS upper_case_id (lower_case_id)* EQ type_reference
@@ -143,9 +143,9 @@ operator_declaration_left ::=
 port_declaration_left ::=
     PORT lower_case_id
 
-expression ::= list_of_operands (any_operator list_of_operands)* { methods = [getReferencesList] }
+expression ::= list_of_operands (any_operator list_of_operands)* { methods = [getReferencesStream] }
 
-list_of_operands ::= operand+ { methods = [getReferencesList] }
+list_of_operands ::= operand+ { methods = [getReferencesStream] }
 
 private any_operator ::=
     real_operator
@@ -154,7 +154,7 @@ private real_operator ::=
     OPERATOR
     | LIST_CONSTRUCTOR
 backticked_function ::=
-    BACKTICK referenced_value BACKTICK { methods = [getReferencesList] }
+    BACKTICK referenced_value BACKTICK { methods = [getReferencesStream] }
 
 private operand ::=
     literal
@@ -172,7 +172,7 @@ private operand ::=
     | let_in
     | anonymous_function
 
-parenthesed_expression ::= LEFT_PARENTHESIS expression RIGHT_PARENTHESIS { methods = [getReferencesList] }
+parenthesed_expression ::= LEFT_PARENTHESIS expression RIGHT_PARENTHESIS { methods = [getReferencesStream] }
 
 private literal ::=
     STRING_LITERAL
@@ -196,33 +196,33 @@ private tuple ::=
     unit
     | non_empty_tuple
 non_empty_tuple ::=
-    LEFT_PARENTHESIS expression (COMMA expression)+ RIGHT_PARENTHESIS { methods = [getReferencesList] }
+    LEFT_PARENTHESIS expression (COMMA expression)+ RIGHT_PARENTHESIS { methods = [getReferencesStream] }
 tuple_constructor ::=
     LEFT_PARENTHESIS COMMA+ RIGHT_PARENTHESIS
 unit ::=
     LEFT_PARENTHESIS RIGHT_PARENTHESIS
 
 list ::=
-    LEFT_SQUARE_BRACKET [<<non_empty_list expression>>] RIGHT_SQUARE_BRACKET { methods = [getReferencesList] }
+    LEFT_SQUARE_BRACKET [<<non_empty_list expression>>] RIGHT_SQUARE_BRACKET { methods = [getReferencesStream] }
 list_range ::=
-    LEFT_SQUARE_BRACKET expression DOUBLE_DOT expression RIGHT_SQUARE_BRACKET { methods = [getReferencesList] }
+    LEFT_SQUARE_BRACKET expression DOUBLE_DOT expression RIGHT_SQUARE_BRACKET { methods = [getReferencesStream] }
 
 record ::=
-    LEFT_BRACE [[record_base] <<non_empty_list field>>] RIGHT_BRACE { methods = [getReferencesList] }
+    LEFT_BRACE [[record_base] <<non_empty_list field>>] RIGHT_BRACE { methods = [getReferencesStream] }
 private record_base ::=
     lower_case_id PIPE
 field ::=
-    lower_case_id EQ expression { methods = [getReferencesList] }
+    lower_case_id EQ expression { methods = [getReferencesStream] }
 
 if_else ::=
-    IF expression THEN expression ELSE expression { methods = [getReferencesList] }
+    IF expression THEN expression ELSE expression { methods = [getReferencesStream] }
 
 external case_of ::=
     parseCaseOf case_of_header case_of_branch one_or_more_separations
 case_of_header ::=
-    CASE expression OF { methods = [getReferencesList] }
+    CASE expression OF { methods = [getReferencesStream] }
 case_of_branch ::=
-    pattern ARROW expression { methods = [getReferencesList] }
+    pattern ARROW expression { methods = [getReferencesStream] }
 
 one_or_more_separations ::= SEPARATION_BY_INDENTATION+
 
@@ -234,7 +234,7 @@ private inner_declaration ::=
     inner_value_declaration
     | inner_type_annotation
 inner_value_declaration ::=
-    internal_value_declaration_left EQ expression { methods = [getReferencesList] }
+    internal_value_declaration_left EQ expression { methods = [getReferencesStream] }
 inner_type_annotation ::=
     lower_case_id COLON type_reference
 
@@ -262,7 +262,7 @@ tuple_pattern ::=
 parenthesed_pattern ::=
     LEFT_PARENTHESIS pattern RIGHT_PARENTHESIS
 
-anonymous_function ::= BACKSLASH pattern+ ARROW expression { methods = [getReferencesList] }
+anonymous_function ::= BACKSLASH pattern+ ARROW expression { methods = [getReferencesStream] }
 
 operator_config ::=
     operator_config_keyword NUMBER_LITERAL OPERATOR

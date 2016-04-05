@@ -61,23 +61,23 @@ public class ElmPsiImplUtil {
         }
     }
 
-    public static Stream<ElmReference> getReferencesList(ElmExpression element) {
+    public static Stream<ElmReference> getReferencesStream(ElmExpression element) {
         return getReferencesInAncestor(
                 element,
                 Stream.concat(
                         element.getListOfOperandsList().stream()
-                                .map(ElmPsiImplUtil::getReferencesList),
+                                .map(ElmPsiImplUtil::getReferencesStream),
                         element.getBacktickedFunctionList().stream()
-                                .map(ElmPsiImplUtil::getReferencesList)
+                                .map(ElmPsiImplUtil::getReferencesStream)
                 )
         );
     }
 
-    public static Stream<ElmReference> getReferencesList(ElmBacktickedFunction element) {
+    public static Stream<ElmReference> getReferencesStream(ElmBacktickedFunction element) {
         return getReferencesInAncestor(
                 element,
                 PsiTreeUtil.findChildrenOfAnyType(element, ElmLowerCasePathImpl.class, ElmMixedCasePathImpl.class).stream()
-                        .map(ElmPsiElement::getReferencesList)
+                        .map(ElmPsiElement::getReferencesStream)
         );
     }
 
@@ -87,15 +87,15 @@ public class ElmPsiImplUtil {
                 .reduce(Stream.empty(), Stream::concat);
     }
 
-    public static Stream<ElmReference> getReferencesList(ElmListOfOperands element) {
+    public static Stream<ElmReference> getReferencesStream(ElmListOfOperands element) {
         Stream<Stream<ElmReference>> references = Arrays.stream(element.getChildren())
                 .map(child -> {
                     if (child instanceof ElmWithExpression) {
-                        return ElmPsiImplUtil.getReferencesList(((ElmWithExpression) child));
+                        return ElmPsiImplUtil.getReferencesStream(((ElmWithExpression) child));
                     } else if (child instanceof ElmWithExpressionList) {
-                        return ElmPsiImplUtil.getReferencesList(((ElmWithExpressionList) child));
+                        return ElmPsiImplUtil.getReferencesStream(((ElmWithExpressionList) child));
                     } else if (child instanceof ElmLowerCasePathImpl) {
-                        return ((ElmLowerCasePathImpl) child).getReferencesList();
+                        return ((ElmLowerCasePathImpl) child).getReferencesStream();
                     } else {
                         return Stream.empty();
                     }
@@ -103,20 +103,20 @@ public class ElmPsiImplUtil {
         return getReferencesInAncestor(element, references);
     }
 
-    public static Stream<ElmReference> getReferencesList(ElmWithExpressionList element) {
+    public static Stream<ElmReference> getReferencesStream(ElmWithExpressionList element) {
         return getReferencesInAncestor(
                 element,
                 element.getExpressionList().stream()
-                        .map(ElmPsiImplUtil::getReferencesList)
+                        .map(ElmPsiImplUtil::getReferencesStream)
         );
     }
 
-    public static Stream<ElmReference> getReferencesList(ElmWithExpression element) {
-        return getReferencesList(element.getExpression())
+    public static Stream<ElmReference> getReferencesStream(ElmWithExpression element) {
+        return getReferencesStream(element.getExpression())
                 .map(r -> r.referenceInAncestor(element));
     }
 
-    public static Stream<ElmReference> getReferencesList(ElmRecord record) {
+    public static Stream<ElmReference> getReferencesStream(ElmRecord record) {
 
         Stream<ElmReference> recordBase = Optional.ofNullable(record.getLowerCaseId())
                 .map(id -> new ElmValueReference(id).referenceInAncestor(record))
@@ -124,7 +124,7 @@ public class ElmPsiImplUtil {
                 .orElse(Stream.empty());
 
         Stream<ElmReference> fields = record.getFieldList().stream()
-                .map(ElmPsiImplUtil::getReferencesList)
+                .map(ElmPsiImplUtil::getReferencesStream)
                 .reduce(Stream.empty(), Stream::concat);
 
         return Stream.concat(recordBase, fields);

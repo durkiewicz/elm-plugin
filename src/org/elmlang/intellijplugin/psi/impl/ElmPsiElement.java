@@ -22,7 +22,7 @@ public abstract class ElmPsiElement extends ASTWrapperPsiElement {
             pure = true
     )
     public PsiReference[] getReferences() {
-        return this.getReferencesList().toArray(PsiReference[]::new);
+        return this.getReferencesStream().toArray(PsiReference[]::new);
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
@@ -32,7 +32,7 @@ public abstract class ElmPsiElement extends ASTWrapperPsiElement {
         else super.accept(visitor);
     }
 
-    public Stream<ElmReference> getReferencesList() {
+    public Stream<ElmReference> getReferencesStream() {
         return Arrays.stream(this.getChildren())
                 .filter(c -> c instanceof ElmPsiElement)
                 .map(c -> getReferencesFromChild((ElmPsiElement) c))
@@ -40,7 +40,7 @@ public abstract class ElmPsiElement extends ASTWrapperPsiElement {
     }
 
     private Stream<ElmReference> getReferencesFromChild(ElmPsiElement element) {
-        return element.getReferencesList()
+        return element.getReferencesStream()
                 .map(r -> r.referenceInAncestor(this));
     }
 }
