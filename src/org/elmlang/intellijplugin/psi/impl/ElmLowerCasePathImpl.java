@@ -7,20 +7,17 @@ import org.elmlang.intellijplugin.psi.references.ElmReference;
 import org.elmlang.intellijplugin.psi.references.ElmValueReference;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.stream.Stream;
 
 public class ElmLowerCasePathImpl extends ElmPsiElement implements ElmLowerCasePath {
     public ElmLowerCasePathImpl(ASTNode node) {
         super(node);
     }
 
-    public List<? extends ElmReference> getReferencesList() {
+    public Stream<ElmReference> getReferencesList() {
         return Arrays.stream(this.getChildren())
                 .filter(e -> e instanceof ElmLowerCaseId)
                 .map(child -> new ElmValueReference(child).referenceInAncestor(this))
-                .findFirst()
-                .map(Collections::singletonList)
-                .orElse(Collections.emptyList());
+                .limit(1);
     }
 }

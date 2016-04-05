@@ -61,7 +61,7 @@ public class ElmPsiImplUtil {
         }
     }
 
-    public static List<ElmReference> getReferencesList(ElmExpression element) {
+    public static Stream<ElmReference> getReferencesList(ElmExpression element) {
         return getReferencesInAncestor(
                 element,
                 Stream.concat(
@@ -73,7 +73,7 @@ public class ElmPsiImplUtil {
         );
     }
 
-    public static List<ElmReference> getReferencesList(ElmBacktickedFunction element) {
+    public static Stream<ElmReference> getReferencesList(ElmBacktickedFunction element) {
         return getReferencesInAncestor(
                 element,
                 PsiTreeUtil.findChildrenOfAnyType(element, ElmLowerCasePathImpl.class, ElmMixedCasePathImpl.class).stream()
@@ -81,20 +81,14 @@ public class ElmPsiImplUtil {
         );
     }
 
-    private static List<ElmReference> getReferencesInAncestor(PsiElement ancestor, Stream<? extends Collection<? extends ElmReference>> references) {
-        List<ElmReference> result = new LinkedList<>();
-        references
-                .map(list ->
-                        list.stream()
-                                .map(r -> r.referenceInAncestor(ancestor))
-                                .collect(Collectors.toList())
-                )
-                .forEach(result::addAll);
-        return result;
+    private static Stream<ElmReference> getReferencesInAncestor(PsiElement ancestor, Stream<Stream<ElmReference>> references) {
+        return references
+                .map(list -> list.map(r -> r.referenceInAncestor(ancestor)))
+                .reduce(Stream.empty(), Stream::concat);
     }
 
-    public static List<ElmReference> getReferencesList(ElmListOfOperands element) {
-        Stream<List<? extends ElmReference>> references = Arrays.stream(element.getChildren())
+    public static Stream<ElmReference> getReferencesList(ElmListOfOperands element) {
+        Stream<Stream<ElmReference>> references = Arrays.stream(element.getChildren())
                 .map(child -> {
                     if (child instanceof ElmWithExpression) {
                         return ElmPsiImplUtil.getReferencesList(((ElmWithExpression) child));
@@ -103,13 +97,13 @@ public class ElmPsiImplUtil {
                     } else if (child instanceof ElmLowerCasePathImpl) {
                         return ((ElmLowerCasePathImpl) child).getReferencesList();
                     } else {
-                        return new LinkedList<ElmReference>();
+                        return Stream.empty();
                     }
                 });
         return getReferencesInAncestor(element, references);
     }
 
-    public static List<ElmReference> getReferencesList(ElmWithExpressionList element) {
+    public static Stream<ElmReference> getReferencesList(ElmWithExpressionList element) {
         return getReferencesInAncestor(
                 element,
                 element.getExpressionList().stream()
@@ -117,35 +111,23 @@ public class ElmPsiImplUtil {
         );
     }
 
-    public static List<ElmReference> getReferencesList(ElmWithExpression element) {
-        return getReferencesList(element.getExpression()).stream()
-                .map(r -> r.referenceInAncestor(element))
-                .collect(Collectors.toList());
+    public static Stream<ElmReference> getReferencesList(ElmWithExpression element) {
+        return getReferencesList(element.getExpression())
+                .map(r -> r.referenceInAncestor(element));
     }
 
-    public static List<ElmReference> getReferencesList(ElmLowerCasePath element) {
-        List<ElmReference> result = new LinkedList<>();
-        for (PsiElement child : element.getChildren()) {
-            if (child instanceof ElmLowerCaseId) {
-                result.add(new ElmValueReference(child).referenceInAncestor(element));
-                break;
-            }
-        }
-        return result;
-    }
+    public static Stream<ElmReference> getReferencesList(ElmRecord record) {
 
-    public static List<ElmReference> getReferencesList(ElmRecord record) {
-        List<ElmReference> result = new LinkedList<>();
-
-        Optional.ofNullable(record.getLowerCaseId())
+        Stream<ElmReference> recordBase = Optional.ofNullable(record.getLowerCaseId())
                 .map(id -> new ElmValueReference(id).referenceInAncestor(record))
-                .ifPresent(result::add);
+                .map(Stream::of)
+                .orElse(Stream.empty());
 
-        record.getFieldList().stream()
+        Stream<ElmReference> fields = record.getFieldList().stream()
                 .map(ElmPsiImplUtil::getReferencesList)
-                .forEach(result::addAll);
+                .reduce(Stream.empty(), Stream::concat);
 
-        return result;
+        return Stream.concat(recordBase, fields);
     }
 
     @Nullable

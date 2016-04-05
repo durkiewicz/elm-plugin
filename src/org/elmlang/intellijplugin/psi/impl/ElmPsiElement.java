@@ -10,9 +10,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class ElmPsiElement extends ASTWrapperPsiElement {
     public ElmPsiElement(@NotNull ASTNode node) {
@@ -24,8 +22,7 @@ public abstract class ElmPsiElement extends ASTWrapperPsiElement {
             pure = true
     )
     public PsiReference[] getReferences() {
-        List<? extends ElmReference> references = this.getReferencesList();
-        return references.toArray(new PsiReference[references.size()]);
+        return this.getReferencesList().toArray(PsiReference[]::new);
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
@@ -35,18 +32,15 @@ public abstract class ElmPsiElement extends ASTWrapperPsiElement {
         else super.accept(visitor);
     }
 
-    public List<? extends ElmReference> getReferencesList() {
-        List<ElmReference> result = new LinkedList<>();
-        Arrays.stream(this.getChildren())
+    public Stream<ElmReference> getReferencesList() {
+        return Arrays.stream(this.getChildren())
                 .filter(c -> c instanceof ElmPsiElement)
                 .map(c -> getReferencesFromChild((ElmPsiElement) c))
-                .forEach(result::addAll);
-        return result;
+                .reduce(Stream.empty(), Stream::concat);
     }
 
-    private List<? extends ElmReference> getReferencesFromChild(ElmPsiElement element) {
-        return element.getReferencesList().stream()
-                .map(r -> r.referenceInAncestor(this))
-                .collect(Collectors.toList());
+    private Stream<ElmReference> getReferencesFromChild(ElmPsiElement element) {
+        return element.getReferencesList()
+                .map(r -> r.referenceInAncestor(this));
     }
 }
