@@ -23,17 +23,25 @@ public class ElmTreeUtil {
     }
 
     public static boolean isAnyMatchInChildren(PsiElement element, Predicate<PsiElement> predicate) {
-        return getChildrenStream(element)
-                .filter(elem -> elem.map(predicate::test).orElse(true))
-                .findFirst()
-                .orElse(Optional.empty())
+        return findInSiblingsStream(element.getFirstChild(), predicate)
                 .isPresent();
     }
 
-    private static Stream<Optional<PsiElement>> getChildrenStream(PsiElement element) {
+    public static Optional<PsiElement> findFollowingSibling(PsiElement element, Predicate<PsiElement> predicate) {
+        return findInSiblingsStream(element.getNextSibling(), predicate);
+    }
+
+    private static Optional<PsiElement> findInSiblingsStream(PsiElement element, Predicate<PsiElement> predicate) {
+        return getSiblingsStream(element)
+                .filter(elem -> elem.map(predicate::test).orElse(true))
+                .findFirst()
+                .orElse(Optional.empty());
+    }
+
+    private static Stream<Optional<PsiElement>> getSiblingsStream(PsiElement element) {
         return Stream.iterate(
-                Optional.ofNullable(element.getFirstChild()),
+                Optional.ofNullable(element),
                 prev -> prev.map(e -> Optional.ofNullable(e.getNextSibling())).orElse(Optional.empty())
-                );
+        );
     }
 }

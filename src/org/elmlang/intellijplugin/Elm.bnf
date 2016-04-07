@@ -26,6 +26,8 @@
         "org.elmlang.intellijplugin.psi.ElmWithExpressionList"
     implements("anonymous_function|(case_of_(branch|header))|field|parenthesed_expression") =
         "org.elmlang.intellijplugin.psi.ElmWithExpression"
+    implements("(inner_)?type_annotation") =
+        "org.elmlang.intellijplugin.psi.ElmTypeAnnotationBase"
 
     psiImplUtilClass="org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil"
 
@@ -127,7 +129,7 @@ type_declaration ::=
 union_member ::=
     upper_case_id single_type_reference*
 
-type_annotation ::= ([PORT] lower_case_id | operator_as_function) COLON type_reference
+type_annotation ::= ([PORT] lower_case_id | operator_as_function) COLON type_reference { methods = [getReferencesStream] }
 
 private value_declaration_left ::=
     internal_value_declaration_left
@@ -236,7 +238,7 @@ private inner_declaration ::=
 inner_value_declaration ::=
     internal_value_declaration_left EQ expression { methods = [getReferencesStream] }
 inner_type_annotation ::=
-    lower_case_id COLON type_reference
+    lower_case_id COLON type_reference { methods = [getReferencesStream] }
 
 // patterns:
 pattern ::=

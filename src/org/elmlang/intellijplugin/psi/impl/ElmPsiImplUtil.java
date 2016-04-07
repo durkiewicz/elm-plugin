@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.psi.*;
 import org.elmlang.intellijplugin.psi.references.ElmReference;
+import org.elmlang.intellijplugin.psi.references.ElmTypeAnnotationReference;
 import org.elmlang.intellijplugin.psi.references.ElmValueReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -230,5 +231,11 @@ public class ElmPsiImplUtil {
                 })
                 .forEach(result::addAll);
         return result;
+    }
+
+    public static Stream<ElmReference> getReferencesStream(ElmTypeAnnotationBase typeAnnotation) {
+        return Optional.ofNullable(typeAnnotation.getLowerCaseId())
+                .map(e -> Stream.of((ElmReference) new ElmTypeAnnotationReference(e)))
+                .orElse(Stream.empty());
     }
 }

@@ -3,12 +3,14 @@ package org.elmlang.intellijplugin.utils;
 
 import com.intellij.util.Function;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ListUtils {
+
+    public static <T> Optional<T> head(List<T> list) {
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
     public static <T1, T2> List<T2> map(List<T1> source, Function<T1, T2> f) {
         if (source.size() == 0) {
             return Collections.emptyList();
