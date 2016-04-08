@@ -161,11 +161,10 @@ public class ElmPsiImplUtil {
     }
 
     @NotNull
-    public static List<ElmValueDeclarationBase> getValueDeclarations(ElmWithValueDeclarations element) {
+    public static Stream<ElmValueDeclarationBase> getValueDeclarations(ElmWithValueDeclarations element) {
         return Arrays.stream(element.getChildren())
                 .filter(e -> e instanceof ElmValueDeclarationBase)
-                .map(e -> (ElmValueDeclarationBase) e)
-                .collect(Collectors.toList());
+                .map(e -> (ElmValueDeclarationBase) e);
     }
 
     @NotNull
@@ -220,20 +219,18 @@ public class ElmPsiImplUtil {
         return result;
     }
 
-    public static List<ElmLowerCaseId> getDefinedValues(ElmValueDeclarationBase element) {
-        List<ElmLowerCaseId> result = new LinkedList<>();
-        Arrays.stream(element.getChildren())
+    public static Stream<ElmLowerCaseId> getDefinedValues(ElmValueDeclarationBase element) {
+        return Arrays.stream(element.getChildren())
                 .map(child -> {
                     if (child instanceof ElmPattern) {
-                        return getDeclarationsFromPattern((ElmPattern) child);
+                        return getDeclarationsFromPattern((ElmPattern) child).stream();
                     } else if (child instanceof ElmWithSingleId) {
-                        return Collections.singletonList(((ElmWithSingleId) child).getLowerCaseId());
+                        return Stream.of(((ElmWithSingleId) child).getLowerCaseId());
                     } else {
-                        return Collections.<ElmLowerCaseId>emptyList();
+                        return Stream.<ElmLowerCaseId>empty();
                     }
                 })
-                .forEach(result::addAll);
-        return result;
+                .reduce(Stream.empty(), Stream::concat);
     }
 
     public static Stream<ElmReference> getReferencesStream(ElmTypeAnnotationBase typeAnnotation) {

@@ -7,6 +7,7 @@ import org.elmlang.intellijplugin.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 
 public class ElmLetInImpl extends ElmPsiElement implements ElmLetIn {
@@ -29,7 +30,7 @@ public class ElmLetInImpl extends ElmPsiElement implements ElmLetIn {
 
     @NotNull
     @Override
-    public List<ElmValueDeclarationBase> getValueDeclarations() {
+    public Stream<ElmValueDeclarationBase> getValueDeclarations() {
         return ElmPsiImplUtil.getValueDeclarations(this);
     }
 }

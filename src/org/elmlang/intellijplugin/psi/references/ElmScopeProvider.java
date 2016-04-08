@@ -109,18 +109,8 @@ public class ElmScopeProvider {
     }
 
     private void gatherDeclarationsFromOtherFile(ElmFile file, ElmExposingClause exposingClause) {
-        Predicate<ElmLowerCaseId> filter;
-        if (exposingClause.isExposingAll()) {
-            filter = x -> true;
-        } else {
-            final Set<String> set = exposingClause.getLowerCaseIdList().stream()
-                    .map(PsiElement::getText)
-                    .collect(Collectors.toSet());
-            filter = e -> set.contains(e.getText());
-        }
-
-        file.getExposedValues().stream()
-                .filter(filter)
+        file.getExposedValues()
+                .filter(exposingClause.getLowerCaseFilter())
                 .forEach(this.ids::add);
     }
 

@@ -28,6 +28,8 @@
         "org.elmlang.intellijplugin.psi.ElmWithExpression"
     implements("(inner_)?type_annotation") =
         "org.elmlang.intellijplugin.psi.ElmTypeAnnotationBase"
+    implements("module_declaration|exposing_clause") =
+        "org.elmlang.intellijplugin.psi.ElmExposingBase"
 
     psiImplUtilClass="org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil"
 

@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
     public ElmFile(@NotNull FileViewProvider viewProvider) {
@@ -46,15 +48,15 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
 
     @NotNull
     @Override
-    public List<ElmValueDeclarationBase> getValueDeclarations() {
+    public Stream<ElmValueDeclarationBase> getValueDeclarations() {
         return ElmPsiImplUtil.getValueDeclarations(this);
     }
 
     @NotNull
-    public List<ElmLowerCaseId> getExposedValues() {
+    public Stream<ElmLowerCaseId> getExposedValues() {
         return Optional.ofNullable(this.getModuleDeclaration())
                 .map(this::getExposedValues)
-                .orElse(Collections.emptyList());
+                .orElse(Stream.empty());
     }
 
     @Nullable
@@ -67,17 +69,16 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
     }
 
     @NotNull
-    private  List<ElmLowerCaseId> getExposedValues(@NotNull ElmModuleDeclaration module) {
-        return module.isExposingAll() ? this.getAllDefinedValues() : module.getLowerCaseIdList();
+    private Stream<ElmLowerCaseId> getExposedValues(@NotNull ElmModuleDeclaration module) {
+        return this.getAllDefinedValues(module.getLowerCaseFilter());
     }
 
     @NotNull
-    private List<ElmLowerCaseId> getAllDefinedValues() {
-        List<ElmLowerCaseId> result = new LinkedList<>();
-        ElmPsiImplUtil.getValueDeclarations(this).stream()
-            .map(ElmPsiImplUtil::getDefinedValues)
-            .forEach(result::addAll);
-        return result;
+    private Stream<ElmLowerCaseId> getAllDefinedValues(Predicate<ElmLowerCaseId> predicate) {
+        return ElmPsiImplUtil.getValueDeclarations(this)
+                .map(ElmPsiImplUtil::getDefinedValues)
+                .reduce(Stream.empty(), Stream::concat)
+                .filter(predicate);
     }
 
     @Nullable
