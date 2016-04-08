@@ -126,7 +126,10 @@ public class ElmPsiImplUtil {
                 .orElse(Stream.empty());
 
         Stream<ElmReference> fields = record.getFieldList().stream()
-                .map(ElmPsiImplUtil::getReferencesStream)
+                .map(f ->
+                        ElmPsiImplUtil.getReferencesStream(f)
+                                .map(r -> r.referenceInAncestor(record))
+                )
                 .reduce(Stream.empty(), Stream::concat);
 
         return Stream.concat(recordBase, fields);
@@ -153,7 +156,7 @@ public class ElmPsiImplUtil {
     private static boolean isAnyChildDoubleDot(PsiElement element) {
         Predicate<PsiElement> predicate = e ->
                 e instanceof ASTNode
-                        && ((ASTNode)e).getElementType().equals(ElmTypes.DOUBLE_DOT);
+                        && ((ASTNode) e).getElementType().equals(ElmTypes.DOUBLE_DOT);
         return ElmTreeUtil.isAnyMatchInChildren(element, predicate);
     }
 
