@@ -21,7 +21,7 @@ public interface ElmExposingBase extends PsiElement {
 
     boolean isExposingAll();
 
-    default <T extends PsiElement> Predicate<T> getLowerCaseFilter() {
+    default Predicate<ElmLowerCaseId> getLowerCaseFilter() {
         if (this.isExposingAll()) {
             return x -> true;
         } else {

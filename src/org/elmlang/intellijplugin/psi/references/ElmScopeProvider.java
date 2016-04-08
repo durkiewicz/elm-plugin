@@ -8,12 +8,12 @@ import org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ElmScopeProvider {
+    private static final String BASICS_MODULE = "Basics";
+
     PsiElement elem;
     Stack<ElmPattern> patterns = new Stack<>();
     Stack<ElmLowerCaseId> ids = new Stack<>();
@@ -95,22 +95,25 @@ public class ElmScopeProvider {
         ((ElmFile) this.elem).getImportClauses().stream()
                 .filter(e -> e.getExposingClause() != null)
                 .forEach(this::gatherDeclarationsFromOtherFile);
+        gatherDeclarationsFromOtherFile(BASICS_MODULE, x -> true);
     }
 
     private void gatherDeclarationsFromOtherFile(@NotNull ElmImportClause elem) {
+        Predicate<ElmLowerCaseId> filter = Optional.ofNullable(elem.getExposingClause())
+                .map(ElmExposingBase::getLowerCaseFilter)
+                .orElse(x -> false);
         Optional.ofNullable(elem.getModuleName())
-                .map(name -> ElmModuleIndex.getFilesByModuleName(name.getText(), elem.getProject()))
-                .ifPresent(matchingFiles -> this.gatherDeclarationsFromOtherFile(matchingFiles, elem.getExposingClause()));
+                .ifPresent(name -> gatherDeclarationsFromOtherFile(name.getText(), filter));
     }
 
-    private void gatherDeclarationsFromOtherFile(List<ElmFile> matchingFiles, ElmExposingClause exposingClause) {
-        matchingFiles.stream()
-                .forEach(f -> gatherDeclarationsFromOtherFile(f, exposingClause));
+    private void gatherDeclarationsFromOtherFile(@NotNull String moduleName, Predicate<ElmLowerCaseId> filter) {
+        ElmModuleIndex.getFilesByModuleName(moduleName, this.elem.getProject()).stream()
+                .forEach(f -> gatherDeclarationsFromOtherFile(f, filter));
     }
 
-    private void gatherDeclarationsFromOtherFile(ElmFile file, ElmExposingClause exposingClause) {
+    private void gatherDeclarationsFromOtherFile(ElmFile file, Predicate<ElmLowerCaseId> filter) {
         file.getExposedValues()
-                .filter(exposingClause.getLowerCaseFilter())
+                .filter(filter)
                 .forEach(this.ids::add);
     }
 
