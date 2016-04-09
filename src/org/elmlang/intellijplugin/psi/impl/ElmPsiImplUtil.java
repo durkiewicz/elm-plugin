@@ -142,7 +142,7 @@ public class ElmPsiImplUtil {
     }
 
     public static boolean isExposingAll(ElmModuleDeclaration element) {
-        return isAnyChildDoubleDot(element);
+        return isAnyChildDoubleDot(element) || !ElmTreeUtil.isAnyChildOfType(element, ElmTypes.LEFT_PARENTHESIS);
     }
 
     public static boolean isExposingAll(ElmExposingClause element) {
@@ -150,10 +150,7 @@ public class ElmPsiImplUtil {
     }
 
     private static boolean isAnyChildDoubleDot(PsiElement element) {
-        Predicate<PsiElement> predicate = e ->
-                e instanceof ASTNode
-                        && ((ASTNode) e).getElementType().equals(ElmTypes.DOUBLE_DOT);
-        return ElmTreeUtil.isAnyMatchInChildren(element, predicate);
+        return ElmTreeUtil.isAnyChildOfType(element, ElmTypes.DOUBLE_DOT);
     }
 
     @NotNull

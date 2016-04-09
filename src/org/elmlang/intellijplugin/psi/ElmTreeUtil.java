@@ -1,6 +1,8 @@
 package org.elmlang.intellijplugin.psi;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +22,13 @@ public class ElmTreeUtil {
             }
         }
         return result;
+    }
+
+    public static boolean isAnyChildOfType(PsiElement element, IElementType type) {
+        Predicate<PsiElement> predicate = e ->
+                e instanceof ASTNode
+                        && ((ASTNode) e).getElementType().equals(type);
+        return ElmTreeUtil.isAnyMatchInChildren(element, predicate);
     }
 
     public static boolean isAnyMatchInChildren(PsiElement element, Predicate<PsiElement> predicate) {
