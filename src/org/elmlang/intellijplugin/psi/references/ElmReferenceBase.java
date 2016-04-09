@@ -34,4 +34,7 @@ public abstract class ElmReferenceBase extends PsiReferenceBase<PsiElement> impl
         return new Object[0];
     }
 
+    protected boolean theSameName(@NotNull PsiElement element) {
+        return element.getText().equals(this.referencingElement.getText());
+    }
 }

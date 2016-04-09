@@ -4,9 +4,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.psi.*;
-import org.elmlang.intellijplugin.psi.references.ElmReference;
-import org.elmlang.intellijplugin.psi.references.ElmTypeAnnotationReference;
-import org.elmlang.intellijplugin.psi.references.ElmValueReference;
+import org.elmlang.intellijplugin.psi.references.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -135,12 +133,10 @@ public class ElmPsiImplUtil {
         return Stream.concat(recordBase, fields);
     }
 
-    @Nullable
     public static ElmUpperCasePath getModuleName(ElmModuleDeclaration module) {
         return PsiTreeUtil.findChildOfType(module, ElmUpperCasePath.class);
     }
 
-    @Nullable
     public static ElmUpperCasePath getModuleName(ElmImportClause module) {
         return PsiTreeUtil.findChildOfType(module, ElmUpperCasePath.class);
     }
@@ -237,5 +233,27 @@ public class ElmPsiImplUtil {
         return Optional.ofNullable(typeAnnotation.getLowerCaseId())
                 .map(e -> Stream.of((ElmReference) new ElmTypeAnnotationReference(e)))
                 .orElse(Stream.empty());
+    }
+
+    public static Stream<ElmReference> getReferencesStream(ElmImportClause element) {
+        return Optional.ofNullable(element.getExposingClause())
+                .map(c ->
+                        getReferencesStream(c)
+                                .map(r -> r.referenceInAncestor(element))
+                )
+                .orElse(Stream.empty());
+    }
+
+    public static Stream<ElmReference> getReferencesStream(ElmExposingClause element) {
+        return getReferencesStream(element, ElmImportedValueReference::new);
+    }
+
+    public static Stream<ElmReference> getReferencesStream(ElmModuleDeclaration element) {
+        return getReferencesStream(element, ElmExposedValueReference::new);
+    }
+
+    private static Stream<ElmReference> getReferencesStream(ElmExposingBase element, Function<ElmLowerCaseId, ElmReference> referenceConstructor) {
+        return element.getLowerCaseIdList().stream()
+                .map(id -> referenceConstructor.apply(id).referenceInAncestor(element));
     }
 }

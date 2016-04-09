@@ -75,7 +75,7 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
 
     @NotNull
     private Stream<ElmLowerCaseId> getAllDefinedValues(Predicate<ElmLowerCaseId> predicate) {
-        return ElmPsiImplUtil.getValueDeclarations(this)
+        return this.getValueDeclarations()
                 .map(ElmPsiImplUtil::getDefinedValues)
                 .reduce(Stream.empty(), Stream::concat)
                 .filter(predicate);

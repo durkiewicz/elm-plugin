@@ -44,8 +44,4 @@ public class ElmTypeAnnotationReference extends ElmReferenceBase {
                 .filter(this::theSameName)
                 .orElse(functionName);
     }
-
-    private boolean theSameName(PsiElement element) {
-        return element.getText().equals(this.referencingElement.getText());
-    }
 }
