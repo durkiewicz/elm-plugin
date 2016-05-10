@@ -59,6 +59,11 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
                 .orElse(Stream.empty());
     }
 
+    public Optional<ElmLowerCaseId> getExposedValueByName(String name) {
+        return this.getExposedValues().filter(e -> e.getText().equals(name))
+                .findFirst();
+    }
+
     @Nullable
     private String getModuleName(String defaultValue) {
         return Optional.ofNullable(this.getModuleDeclaration())
