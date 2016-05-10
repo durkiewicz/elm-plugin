@@ -1,6 +1,7 @@
 package org.elmlang.intellijplugin.psi.references;
 
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import org.elmlang.intellijplugin.ElmModuleIndex;
 import org.elmlang.intellijplugin.psi.*;
@@ -14,9 +15,9 @@ import java.util.stream.Stream;
 public class ElmScopeProvider {
     private static final String BASICS_MODULE = "Basics";
 
-    PsiElement elem;
-    Stack<ElmPattern> patterns = new Stack<>();
-    Stack<ElmLowerCaseId> ids = new Stack<>();
+    private PsiElement elem;
+    private Stack<ElmPattern> patterns = new Stack<>();
+    private Stack<ElmLowerCaseId> ids = new Stack<>();
 
     private ElmScopeProvider(PsiElement elem) {
         this.elem = elem;
@@ -75,20 +76,44 @@ public class ElmScopeProvider {
     }
 
     private void gatherValueDeclarations() {
-        this.gatherValueDeclarations((ElmWithValueDeclarations) this.elem, x -> true);
+        this.gatherValueDeclarations((ElmWithValueDeclarations) this.elem);
     }
 
-    private void gatherValueDeclarations(ElmWithValueDeclarations element, Predicate<? super PsiElement> additionalPredicate) {
+    private void gatherValueDeclarations(ElmWithValueDeclarations element) {
         Arrays.stream(element.getChildren())
-                .filter(c -> c instanceof ElmValueDeclarationBase && additionalPredicate.test(c))
+                .filter(c -> c instanceof ElmValueDeclarationBase)
                 .forEach(d -> {
                     PsiElement child = d.getFirstChild();
                     if (child instanceof ElmPattern) {
                         this.patterns.add((ElmPattern) child);
                     } else if (child instanceof ElmFunctionDeclarationLeft) {
                         this.ids.push(((ElmFunctionDeclarationLeft) child).getLowerCaseId());
+                    } else if (d instanceof ElmValueDeclaration) {
+                        Optional.ofNullable(((ElmValueDeclaration) d).getPortDeclarationLeft())
+                                .ifPresent(e -> this.ids.push(e.getLowerCaseId()));
                     }
                 });
+        Arrays.stream(element.getChildren())
+                .filter(e -> e instanceof ElmTypeAnnotation)
+                .map(e -> (ElmTypeAnnotation) e)
+                .forEach(typeAnnotation -> {
+                    PsiElement child = typeAnnotation.getFirstChild();
+                    if (startsWithPort(child)) {
+                        Optional.ofNullable(typeAnnotation.getLowerCaseId())
+                                .ifPresent(id -> {
+                                    boolean isFollowedByPortDefinition = ElmTreeUtil.findFollowingSibling(typeAnnotation, e -> e instanceof ElmValueDeclaration)
+                                            .flatMap(e -> Optional.ofNullable(((ElmValueDeclaration) e).getPortDeclarationLeft()))
+                                            .filter(e -> e.getLowerCaseId().getText().equals(id.getText())).isPresent();
+                                    if (!isFollowedByPortDefinition) {
+                                        this.ids.push(id);
+                                    }
+                                });
+                    }
+                });
+    }
+
+    private static boolean startsWithPort(PsiElement element) {
+        return element instanceof ASTNode && ((ASTNode) element).getElementType().equals(ElmTypes.PORT);
     }
 
     private void gatherDeclarationsFromOtherFiles() {
