@@ -5,5 +5,5 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ElmTypeAnnotationBase extends PsiElement, ElmWithSingleId {
     @NotNull
-    ElmTypeReference getTypeReference();
+    ElmTypeDefinition getTypeDefinition();
 }

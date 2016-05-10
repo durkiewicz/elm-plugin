@@ -106,32 +106,32 @@ private declaration ::=
 value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION* { methods = [getReferencesStream] }
 
 type_alias_declaration ::=
-    TYPE ALIAS upper_case_id (lower_case_id)* EQ type_reference
-type_reference ::=
-    list_of_single_type_references (ARROW list_of_single_type_references)*
-list_of_single_type_references ::=
-    upper_case_path (single_type_reference)+
-    | single_type_reference
-single_type_reference ::=
+    TYPE ALIAS upper_case_id (lower_case_id)* EQ type_definition
+type_definition ::=
+    list_of_single_type_definitions (ARROW list_of_single_type_definitions)*
+list_of_single_type_definitions ::=
+    upper_case_path (single_type_definition)+
+    | single_type_definition
+single_type_definition ::=
     upper_case_path
     | lower_case_id
     | record_type
     | tuple_type
-    | LEFT_PARENTHESIS type_reference RIGHT_PARENTHESIS
+    | LEFT_PARENTHESIS type_definition RIGHT_PARENTHESIS
 record_type ::=
     LEFT_BRACE [[record_base] <<non_empty_list field_type>>] RIGHT_BRACE
 field_type ::=
-    lower_case_id COLON type_reference
+    lower_case_id COLON type_definition
 tuple_type ::=
     unit
-    | LEFT_PARENTHESIS type_reference (COMMA type_reference)+ RIGHT_PARENTHESIS
+    | LEFT_PARENTHESIS type_definition (COMMA type_definition)+ RIGHT_PARENTHESIS
 
 type_declaration ::=
     TYPE upper_case_id (lower_case_id)* EQ union_member (PIPE union_member)*
 union_member ::=
-    upper_case_id single_type_reference*
+    upper_case_id single_type_definition*
 
-type_annotation ::= ([PORT] lower_case_id | operator_as_function) COLON type_reference { methods = [getReferencesStream] }
+type_annotation ::= ([PORT] lower_case_id | operator_as_function) COLON type_definition { methods = [getReferencesStream] }
 
 private value_declaration_left ::=
     internal_value_declaration_left
@@ -240,7 +240,7 @@ private inner_declaration ::=
 inner_value_declaration ::=
     internal_value_declaration_left EQ expression { methods = [getReferencesStream] }
 inner_type_annotation ::=
-    lower_case_id COLON type_reference { methods = [getReferencesStream] }
+    lower_case_id COLON type_definition { methods = [getReferencesStream] }
 
 // patterns:
 pattern ::=
