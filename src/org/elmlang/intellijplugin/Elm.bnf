@@ -255,15 +255,15 @@ private single_pattern ::=
     | record_pattern
     | literal
     | parenthesed_pattern
-record_pattern ::=
+private record_pattern ::=
     LEFT_BRACE <<non_empty_list lower_case_id>> RIGHT_BRACE
-list_pattern ::=
+private list_pattern ::=
     LEFT_SQUARE_BRACKET [<<non_empty_list pattern>>] RIGHT_SQUARE_BRACKET
 union_pattern ::=
     upper_case_path pattern*
-tuple_pattern ::=
+private tuple_pattern ::=
     LEFT_PARENTHESIS pattern (COMMA pattern)+ RIGHT_PARENTHESIS
-parenthesed_pattern ::=
+private parenthesed_pattern ::=
     LEFT_PARENTHESIS pattern RIGHT_PARENTHESIS
 
 anonymous_function ::= BACKSLASH pattern+ ARROW expression { methods = [getReferencesStream] }

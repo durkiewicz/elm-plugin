@@ -30,7 +30,8 @@ class ElmValuesProvider
         }
 
         if (!this.patterns.isEmpty()) {
-            ids.addAll(ElmPsiImplUtil.getDeclarationsFromPattern(this.patterns.pop()));
+            ElmPsiImplUtil.getDeclarationsFromPattern(this.patterns.pop())
+                    .forEach(ids::add);
             return nextId();
         }
 
