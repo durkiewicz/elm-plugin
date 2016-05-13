@@ -64,9 +64,9 @@ public class ElmPsiImplUtil {
                 element,
                 Stream.concat(
                         element.getListOfOperandsList().stream()
-                                .map(ElmPsiImplUtil::getReferencesStream),
+                                .flatMap(ElmPsiImplUtil::getReferencesStream),
                         element.getBacktickedFunctionList().stream()
-                                .map(ElmPsiImplUtil::getReferencesStream)
+                                .flatMap(ElmPsiImplUtil::getReferencesStream)
                 )
         );
     }
@@ -75,19 +75,18 @@ public class ElmPsiImplUtil {
         return getReferencesInAncestor(
                 element,
                 PsiTreeUtil.findChildrenOfAnyType(element, ElmLowerCasePathImpl.class, ElmMixedCasePathImpl.class).stream()
-                        .map(ElmPsiElement::getReferencesStream)
+                        .flatMap(ElmPsiElement::getReferencesStream)
         );
     }
 
-    private static Stream<ElmReference> getReferencesInAncestor(PsiElement ancestor, Stream<Stream<ElmReference>> references) {
+    private static Stream<ElmReference> getReferencesInAncestor(PsiElement ancestor, Stream<ElmReference> references) {
         return references
-                .map(list -> list.map(r -> r.referenceInAncestor(ancestor)))
-                .reduce(Stream.empty(), Stream::concat);
+                .map(r -> r.referenceInAncestor(ancestor));
     }
 
     public static Stream<ElmReference> getReferencesStream(ElmListOfOperands element) {
-        Stream<Stream<ElmReference>> references = Arrays.stream(element.getChildren())
-                .map(child -> {
+        Stream<ElmReference> references = Arrays.stream(element.getChildren())
+                .flatMap(child -> {
                     if (child instanceof ElmWithExpression) {
                         return ElmPsiImplUtil.getReferencesStream(((ElmWithExpression) child));
                     } else if (child instanceof ElmWithExpressionList) {
@@ -105,7 +104,7 @@ public class ElmPsiImplUtil {
         return getReferencesInAncestor(
                 element,
                 element.getExpressionList().stream()
-                        .map(ElmPsiImplUtil::getReferencesStream)
+                        .flatMap(ElmPsiImplUtil::getReferencesStream)
         );
     }
 
