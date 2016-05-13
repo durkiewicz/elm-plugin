@@ -4,17 +4,20 @@ package org.elmlang.intellijplugin.psi.references;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
-import org.elmlang.intellijplugin.psi.ElmLowerCaseId;
+import org.elmlang.intellijplugin.ElmModuleIndex;
+import org.elmlang.intellijplugin.psi.ElmFile;
 import org.elmlang.intellijplugin.utils.Function3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<PsiElement> implements ElmReference {
     final T referencingElement;
 
     ElmReferenceBase(T element) {
-        this(element, element, new TextRange(0, element.getText().length()));
+        this(element, element, new TextRange(0, element.getTextLength()));
     }
 
     ElmReferenceBase(PsiElement element, T referencingElement, TextRange rangeInElement) {
@@ -25,7 +28,8 @@ abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<P
     public ElmReference referenceInAncestor(PsiElement ancestor) {
         int diff = this.myElement.getTextOffset() - ancestor.getTextOffset();
         TextRange range = this.getRangeInElement();
-        return constructor().apply(ancestor, this.referencingElement, new TextRange(range.getStartOffset() + diff, range.getEndOffset() + diff));
+        TextRange ancestorRange = new TextRange(range.getStartOffset() + diff, range.getEndOffset() + diff);
+        return constructor().apply(ancestor, this.referencingElement, ancestorRange);
     }
 
     protected abstract Function3<PsiElement, T, TextRange, ElmReference> constructor();
@@ -43,5 +47,14 @@ abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<P
     boolean theSameNameOrEmpty(Optional<T> optionalElem) {
         return optionalElem.map(this::theSameName)
                 .orElse(true);
+    }
+
+    @Nullable
+    <U extends PsiElement> PsiElement resolveUsingModuleIndex(String moduleName, Function<ElmFile, Optional<U>> resolver) {
+        return ElmModuleIndex.getFilesByModuleName(moduleName, this.myElement.getProject()).stream()
+                .map(resolver)
+                .findFirst()
+                .orElse(Optional.empty())
+                .orElse(null);
     }
 }

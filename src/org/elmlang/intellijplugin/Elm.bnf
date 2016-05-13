@@ -80,7 +80,7 @@ exposed_union_constructors ::=
 private list_of_union_constructors ::=
     <<non_empty_list upper_case_id>>
 
-import_clause ::= IMPORT upper_case_path [as_clause] [exposing_clause] { methods = [getModuleName getReferencesStream] }
+import_clause ::= IMPORT upper_case_path [as_clause] [exposing_clause] { methods = [getModuleName] }
 
 as_clause ::= AS upper_case_id
 

@@ -40,6 +40,20 @@ public interface TypeFilter {
         };
     }
 
+    static TypeFilter byText(String text) {
+        return new TypeFilter() {
+            @Override
+            public boolean testType(String name) {
+                return text.equals(name);
+            }
+
+            @Override
+            public boolean testTypeMember(String typeName, String memberName) {
+                return text.equals(memberName);
+            }
+        };
+    }
+
     static TypeFilter and(TypeFilter a, TypeFilter b) {
         return new TypeFilter() {
             @Override

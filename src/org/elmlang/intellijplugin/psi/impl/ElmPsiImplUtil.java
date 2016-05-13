@@ -203,15 +203,6 @@ public class ElmPsiImplUtil {
                 .orElse(Stream.empty());
     }
 
-    public static Stream<ElmReference> getReferencesStream(ElmImportClause element) {
-        return Optional.ofNullable(element.getExposingClause())
-                .map(c ->
-                        getReferencesStream(c)
-                                .map(r -> r.referenceInAncestor(element))
-                )
-                .orElse(Stream.empty());
-    }
-
     public static Stream<ElmReference> getReferencesStream(ElmExposingClause element) {
         return getReferencesStream(element, ElmImportedValueReference::new);
     }

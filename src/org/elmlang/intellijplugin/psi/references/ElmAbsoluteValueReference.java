@@ -11,17 +11,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ElmAbsoluteValueReference extends ElmReferenceBase {
+public class ElmAbsoluteValueReference extends ElmReferenceBase<ElmLowerCaseId> {
     public ElmAbsoluteValueReference(ElmLowerCaseId element) {
         super(element);
     }
 
-    private ElmAbsoluteValueReference(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
+    private ElmAbsoluteValueReference(PsiElement element, ElmLowerCaseId referencingElement, TextRange rangeInElement) {
         super(element, referencingElement, rangeInElement);
     }
 
     @Override
-    protected Function3<PsiElement, PsiElement, TextRange, ElmReference> constructor() {
+    protected Function3<PsiElement, ElmLowerCaseId, TextRange, ElmReference> constructor() {
         return ElmAbsoluteValueReference::new;
     }
 
@@ -29,11 +29,10 @@ public class ElmAbsoluteValueReference extends ElmReferenceBase {
     @Override
     public PsiElement resolve() {
         String moduleName = getModuleName((ElmMixedCasePath) this.referencingElement.getParent());
-        return ElmModuleIndex.getFilesByModuleName(moduleName, this.myElement.getProject()).stream()
-                .map(f -> f.getExposedValueByName(this.referencingElement.getText()))
-                .findFirst()
-                .orElse(Optional.empty())
-                .orElse(null);
+        return this.resolveUsingModuleIndex(
+                moduleName,
+                f -> f.getExposedValueByName(this.referencingElement.getText())
+        );
     }
 
     private String getModuleName(ElmMixedCasePath path) {
@@ -50,13 +49,7 @@ public class ElmAbsoluteValueReference extends ElmReferenceBase {
         List<ElmUpperCaseId> upperCaseIdList = path.getUpperCaseIdList();
         if (upperCaseIdList.size() == 1) {
             ElmFile file = (ElmFile) path.getContainingFile();
-            return file.getImportClauses().stream()
-                    .filter(e -> {
-                        ElmAsClause asClause = e.getAsClause();
-                        return asClause != null
-                                && asClause.getUpperCaseId().getText().equals(upperCaseIdList.get(0).getText());
-                    })
-                    .findFirst()
+            return file.getImportClauseByAlias(upperCaseIdList.get(0).getText())
                     .map(e -> e.getModuleName().getUpperCaseIdList())
                     .orElse(upperCaseIdList);
         } else {

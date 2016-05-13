@@ -47,6 +47,26 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
         return new LinkedList<>(PsiTreeUtil.findChildrenOfType(this, ElmImportClause.class));
     }
 
+    public Optional<ElmImportClause> getImportClauseByAlias(String alias) {
+        return this.getImportClauses().stream()
+                .filter(e -> {
+                    ElmAsClause asClause = e.getAsClause();
+                    return asClause != null
+                            && asClause.getUpperCaseId().getText().equals(alias);
+                })
+                .findFirst();
+    }
+
+    public Optional<ElmImportClause> getImportClauseByModuleName(String moduleName) {
+        return this.getImportClauses().stream()
+                .filter(e ->
+                        Optional.ofNullable(e.getModuleName())
+                                .map(m -> m.getText().equals(moduleName))
+                                .orElse(false)
+                )
+                .findFirst();
+    }
+
     @NotNull
     @Override
     public Stream<ElmValueDeclarationBase> getValueDeclarations() {
@@ -55,7 +75,7 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
 
     @NotNull
     public Stream<ElmLowerCaseId> getExposedValues() {
-        return Optional.ofNullable(this.getModuleDeclaration())
+        return this.getModuleDeclaration()
                 .map(this::getExposedValues)
                 .orElse(Stream.empty());
     }
@@ -77,6 +97,12 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
     }
 
     @NotNull
+    public Optional<ElmUpperCaseId> getExposedType(String name) {
+        return getExposedTypes(TypeFilter.byText(name))
+                .findFirst();
+    }
+
+    @NotNull
     private Stream<ElmUpperCaseId> getTypes(TypeFilter typeFilter) {
         return Stream.concat(
                 this.getTypeAliases(typeFilter),
@@ -85,7 +111,7 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
     }
 
     private TypeFilter getExposedTypeFilter() {
-        return Optional.ofNullable(this.getModuleDeclaration())
+        return this.getModuleDeclaration()
                 .map(ElmExposingBase::getExposedTypeFilter)
                 .orElse(TypeFilter.always(false));
     }
@@ -121,7 +147,7 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
 
     @Nullable
     private String getModuleName(String defaultValue) {
-        return Optional.ofNullable(this.getModuleDeclaration())
+        return this.getModuleDeclaration()
                 .map(ElmModuleDeclaration::getModuleName)
                 .map(Optional::ofNullable)
                 .map(m -> m.map(PsiElement::getText).orElse(defaultValue))
@@ -141,16 +167,16 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
                 .filter(predicate);
     }
 
-    @Nullable
-    private ElmModuleDeclaration getModuleDeclaration() {
+    @NotNull
+    public Optional<ElmModuleDeclaration> getModuleDeclaration() {
         for (PsiElement elem = this.getFirstChild(); elem != null; elem = elem.getNextSibling()) {
             if (elem instanceof ElmModuleDeclaration) {
-                return (ElmModuleDeclaration) elem;
+                return Optional.of((ElmModuleDeclaration) elem);
             } else if (elem instanceof ElmImportClause) {
                 break;
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 }
