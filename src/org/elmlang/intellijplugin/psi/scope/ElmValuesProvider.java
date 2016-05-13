@@ -1,5 +1,4 @@
-package org.elmlang.intellijplugin.psi.references;
-
+package org.elmlang.intellijplugin.psi.scope;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -8,27 +7,24 @@ import org.elmlang.intellijplugin.psi.*;
 import org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.Stack;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-public class ElmScopeProvider {
+class ElmValuesProvider
+{
     private static final String BASICS_MODULE = "Basics";
 
     private PsiElement elem;
     private Stack<ElmPattern> patterns = new Stack<>();
     private Stack<ElmLowerCaseId> ids = new Stack<>();
 
-    private ElmScopeProvider(PsiElement elem) {
+    ElmValuesProvider(PsiElement elem) {
         this.elem = elem;
     }
 
-    public static Stream<Optional<ElmLowerCaseId>> scopeFor(ElmLowerCaseId elem) {
-        ElmScopeProvider p = new ElmScopeProvider(elem.getParent());
-        return Stream.generate(p::nextId);
-    }
-
-    private Optional<ElmLowerCaseId> nextId() {
+    Optional<ElmLowerCaseId> nextId() {
         if (!this.ids.isEmpty()) {
             return Optional.of(ids.pop());
         }

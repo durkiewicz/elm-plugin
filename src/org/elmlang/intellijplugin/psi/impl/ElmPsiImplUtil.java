@@ -10,8 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ElmPsiImplUtil {
@@ -146,6 +144,10 @@ public class ElmPsiImplUtil {
     }
 
     public static boolean isExposingAll(ElmExposingClause element) {
+        return isAnyChildDoubleDot(element);
+    }
+
+    public static boolean isExposingAll(ElmExposedUnionConstructors element) {
         return isAnyChildDoubleDot(element);
     }
 

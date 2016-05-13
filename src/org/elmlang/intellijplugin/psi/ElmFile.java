@@ -8,6 +8,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.ElmFileType;
 import org.elmlang.intellijplugin.ElmLanguage;
 import org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil;
+import org.elmlang.intellijplugin.utils.TypeFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,9 +60,63 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
                 .orElse(Stream.empty());
     }
 
+    @NotNull
     public Optional<ElmLowerCaseId> getExposedValueByName(String name) {
         return this.getExposedValues().filter(e -> e.getText().equals(name))
                 .findFirst();
+    }
+
+    @NotNull
+    public Stream<ElmUpperCaseId> getInternalTypes() {
+        return getTypes(TypeFilter.always(true));
+    }
+
+    @NotNull
+    public Stream<ElmUpperCaseId> getExposedTypes(TypeFilter inputTypeFilter) {
+        return getTypes(TypeFilter.and(inputTypeFilter, this.getExposedTypeFilter()));
+    }
+
+    @NotNull
+    private Stream<ElmUpperCaseId> getTypes(TypeFilter typeFilter) {
+        return Stream.concat(
+                this.getTypeAliases(typeFilter),
+                this.getUnionTypesAndMembers(typeFilter)
+        );
+    }
+
+    private TypeFilter getExposedTypeFilter() {
+        return Optional.ofNullable(this.getModuleDeclaration())
+                .map(ElmExposingBase::getExposedTypeFilter)
+                .orElse(TypeFilter.always(false));
+    }
+
+    @NotNull
+    private Stream<ElmUpperCaseId> getUnionTypesAndMembers(TypeFilter typeFilter) {
+        return Arrays.stream(this.getChildren())
+                .filter(e -> e instanceof ElmTypeDeclaration)
+                .map(e -> (ElmTypeDeclaration) e)
+                .flatMap(e -> {
+                    String typeName = e.getUpperCaseId().getText();
+                    return Stream.concat(
+                            Stream.of(e.getUpperCaseId())
+                                    .filter(id -> typeFilter.testType(typeName)),
+                            getUnionMembers(e.getUnionMemberList(), typeName, typeFilter)
+                    );
+                });
+    }
+
+    private static Stream<ElmUpperCaseId> getUnionMembers(List<ElmUnionMember> unionMemberList, String typeName, TypeFilter typeFilter) {
+        return unionMemberList.stream()
+                .map(ElmUnionMember::getUpperCaseId)
+                .filter(id -> typeFilter.testTypeMember(typeName, id.getText()));
+    }
+
+    @NotNull
+    private Stream<ElmUpperCaseId> getTypeAliases(TypeFilter typeFilter) {
+        return Arrays.stream(this.getChildren())
+                .filter(e -> e instanceof ElmTypeAliasDeclaration)
+                .map(e -> ((ElmTypeAliasDeclaration) e).getUpperCaseId())
+                .filter(e -> typeFilter.testType(e.getText()));
     }
 
     @Nullable

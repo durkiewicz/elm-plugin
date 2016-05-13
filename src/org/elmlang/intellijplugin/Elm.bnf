@@ -75,8 +75,8 @@ private exposed_value ::=
     | exposed_union
 exposed_union ::=
     upper_case_id [exposed_union_constructors]
-private exposed_union_constructors ::=
-    LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS
+exposed_union_constructors ::=
+    LEFT_PARENTHESIS (DOUBLE_DOT | list_of_union_constructors) RIGHT_PARENTHESIS { methods = [isExposingAll] }
 private list_of_union_constructors ::=
     <<non_empty_list upper_case_id>>
 

@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiInvalidElementAccessException;
 import org.elmlang.intellijplugin.psi.ElmFile;
+import org.elmlang.intellijplugin.psi.ElmLowerCaseId;
 import org.elmlang.intellijplugin.utils.Function3;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,11 +13,11 @@ import java.util.Optional;
 
 public class ElmExposedValueReference extends ElmReferenceBase {
 
-    public ElmExposedValueReference(PsiElement element) {
+    public ElmExposedValueReference(ElmLowerCaseId element) {
         super(element);
     }
 
-    protected ElmExposedValueReference(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
+    ElmExposedValueReference(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
         super(element, referencingElement, rangeInElement);
     }
 
@@ -44,7 +45,7 @@ public class ElmExposedValueReference extends ElmReferenceBase {
                 .orElse(null);
     }
 
-    protected PsiElement resolve(ElmFile file) {
+    PsiElement resolve(ElmFile file) {
         return file.getExposedValues()
                 .filter(this::theSameName)
                 .findFirst()

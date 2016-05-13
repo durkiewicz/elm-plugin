@@ -4,17 +4,20 @@ package org.elmlang.intellijplugin.psi.references;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import org.elmlang.intellijplugin.psi.ElmLowerCaseId;
 import org.elmlang.intellijplugin.utils.Function3;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ElmReferenceBase extends PsiReferenceBase<PsiElement> implements ElmReference {
-    protected final PsiElement referencingElement;
+import java.util.Optional;
 
-    protected ElmReferenceBase(PsiElement element) {
+abstract class ElmReferenceBase extends PsiReferenceBase<PsiElement> implements ElmReference {
+    final PsiElement referencingElement;
+
+    ElmReferenceBase(PsiElement element) {
         this(element, element, new TextRange(0, element.getText().length()));
     }
 
-    protected ElmReferenceBase(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
+    ElmReferenceBase(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
         super(element, rangeInElement);
         this.referencingElement = referencingElement;
 
@@ -34,7 +37,12 @@ public abstract class ElmReferenceBase extends PsiReferenceBase<PsiElement> impl
         return new Object[0];
     }
 
-    protected boolean theSameName(@NotNull PsiElement element) {
+    boolean theSameName(@NotNull PsiElement element) {
         return element.getText().equals(this.referencingElement.getText());
+    }
+
+    <T extends PsiElement> boolean theSameNameOrEmpty(Optional<T> optionalElem) {
+        return optionalElem.map(this::theSameName)
+                .orElse(true);
     }
 }

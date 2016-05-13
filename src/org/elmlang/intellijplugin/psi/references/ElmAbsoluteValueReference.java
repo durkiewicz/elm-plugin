@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ElmAbsoluteValueReference extends ElmReferenceBase {
-    public ElmAbsoluteValueReference(PsiElement element) {
+    public ElmAbsoluteValueReference(ElmLowerCaseId element) {
         super(element);
     }
 
