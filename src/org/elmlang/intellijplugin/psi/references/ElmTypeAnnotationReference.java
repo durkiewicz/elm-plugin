@@ -9,18 +9,18 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class ElmTypeAnnotationReference extends ElmReferenceBase {
+public class ElmTypeAnnotationReference extends ElmReferenceBase<ElmLowerCaseId> {
 
-    public ElmTypeAnnotationReference(PsiElement element) {
+    public ElmTypeAnnotationReference(ElmLowerCaseId element) {
         super(element);
     }
 
-    private ElmTypeAnnotationReference(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
+    private ElmTypeAnnotationReference(PsiElement element, ElmLowerCaseId referencingElement, TextRange rangeInElement) {
         super(element, referencingElement, rangeInElement);
     }
 
     @Override
-    protected Function3<PsiElement, PsiElement, TextRange, ElmReference> constructor() {
+    protected Function3<PsiElement, ElmLowerCaseId, TextRange, ElmReference> constructor() {
         return ElmTypeAnnotationReference::new;
     }
 

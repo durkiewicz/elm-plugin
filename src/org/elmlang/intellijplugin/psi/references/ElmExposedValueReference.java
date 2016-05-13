@@ -11,18 +11,18 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class ElmExposedValueReference extends ElmReferenceBase {
+public class ElmExposedValueReference extends ElmReferenceBase<ElmLowerCaseId> {
 
     public ElmExposedValueReference(ElmLowerCaseId element) {
         super(element);
     }
 
-    ElmExposedValueReference(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
+    ElmExposedValueReference(PsiElement element, ElmLowerCaseId referencingElement, TextRange rangeInElement) {
         super(element, referencingElement, rangeInElement);
     }
 
     @Override
-    protected Function3<PsiElement, PsiElement, TextRange, ElmReference> constructor() {
+    protected Function3<PsiElement, ElmLowerCaseId, TextRange, ElmReference> constructor() {
         return ElmExposedValueReference::new;
     }
 

@@ -15,12 +15,12 @@ public class ElmImportedValueReference extends ElmExposedValueReference {
         super(element);
     }
 
-    private ElmImportedValueReference(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
+    private ElmImportedValueReference(PsiElement element, ElmLowerCaseId referencingElement, TextRange rangeInElement) {
         super(element, referencingElement, rangeInElement);
     }
 
     @Override
-    protected Function3<PsiElement, PsiElement, TextRange, ElmReference> constructor() {
+    protected Function3<PsiElement, ElmLowerCaseId, TextRange, ElmReference> constructor() {
         return ElmImportedValueReference::new;
     }
 

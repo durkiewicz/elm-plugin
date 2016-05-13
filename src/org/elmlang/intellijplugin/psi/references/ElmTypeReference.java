@@ -9,17 +9,17 @@ import org.elmlang.intellijplugin.psi.scope.ElmScope;
 import org.elmlang.intellijplugin.utils.Function3;
 import org.jetbrains.annotations.Nullable;
 
-public class ElmTypeReference extends ElmReferenceBase {
+public class ElmTypeReference extends ElmReferenceBase<ElmUpperCaseId> {
     public ElmTypeReference(ElmUpperCaseId element) {
         super(element);
     }
 
-    private ElmTypeReference(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
+    private ElmTypeReference(PsiElement element, ElmUpperCaseId referencingElement, TextRange rangeInElement) {
         super(element, referencingElement, rangeInElement);
     }
 
     @Override
-    protected Function3<PsiElement, PsiElement, TextRange, ElmReference> constructor() {
+    protected Function3<PsiElement, ElmUpperCaseId, TextRange, ElmReference> constructor() {
         return ElmTypeReference::new;
     }
 

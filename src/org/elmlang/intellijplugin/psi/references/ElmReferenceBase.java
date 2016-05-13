@@ -10,17 +10,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-abstract class ElmReferenceBase extends PsiReferenceBase<PsiElement> implements ElmReference {
-    final PsiElement referencingElement;
+abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<PsiElement> implements ElmReference {
+    final T referencingElement;
 
-    ElmReferenceBase(PsiElement element) {
+    ElmReferenceBase(T element) {
         this(element, element, new TextRange(0, element.getText().length()));
     }
 
-    ElmReferenceBase(PsiElement element, PsiElement referencingElement, TextRange rangeInElement) {
+    ElmReferenceBase(PsiElement element, T referencingElement, TextRange rangeInElement) {
         super(element, rangeInElement);
         this.referencingElement = referencingElement;
-
     }
 
     public ElmReference referenceInAncestor(PsiElement ancestor) {
@@ -29,7 +28,7 @@ abstract class ElmReferenceBase extends PsiReferenceBase<PsiElement> implements 
         return constructor().apply(ancestor, this.referencingElement, new TextRange(range.getStartOffset() + diff, range.getEndOffset() + diff));
     }
 
-    protected abstract Function3<PsiElement, PsiElement, TextRange, ElmReference> constructor();
+    protected abstract Function3<PsiElement, T, TextRange, ElmReference> constructor();
 
     @NotNull
     @Override
@@ -41,7 +40,7 @@ abstract class ElmReferenceBase extends PsiReferenceBase<PsiElement> implements 
         return element.getText().equals(this.referencingElement.getText());
     }
 
-    <T extends PsiElement> boolean theSameNameOrEmpty(Optional<T> optionalElem) {
+    boolean theSameNameOrEmpty(Optional<T> optionalElem) {
         return optionalElem.map(this::theSameName)
                 .orElse(true);
     }

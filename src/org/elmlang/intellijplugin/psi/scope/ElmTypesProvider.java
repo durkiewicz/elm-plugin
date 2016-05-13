@@ -66,8 +66,8 @@ class ElmTypesProvider {
     private void gatherTypesFromExposingClause(String moduleName, ElmExposingClause exposingClause) {
         ElmModuleIndex.getFilesByModuleName(moduleName, exposingClause.getProject())
                 .stream()
-                .limit(1)
-                .forEach(f -> this.gatherTypesFromExposingClause(f, exposingClause));
+                .findFirst()
+                .ifPresent(f -> this.gatherTypesFromExposingClause(f, exposingClause));
     }
 
     private void gatherTypesFromExposingClause(ElmFile file, ElmExposingClause exposingClause) {
