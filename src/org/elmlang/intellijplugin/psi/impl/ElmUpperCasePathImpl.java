@@ -35,21 +35,23 @@ public class ElmUpperCasePathImpl extends ElmPsiElement implements ElmUpperCaseP
         if (size == 1) {
             return Stream.of(new ElmTypeReference(children.get(0)));
         } else if (size >= 2) {
-            return getReferencesFromNonSinglePath(size, children.get(size - 1));
+            return getReferencesFromNonSinglePath(children);
         }
 
         return Stream.empty();
     }
 
-    private Stream<ElmReference> getReferencesFromNonSinglePath(int pathLength, ElmUpperCaseId lastChild) {
+    private Stream<ElmReference> getReferencesFromNonSinglePath(List<ElmUpperCaseId> children) {
+        ElmUpperCaseId lastChild = children.get(children.size() - 1);
+        children.remove(children.size() - 1);
         int moduleTextLength = this.getTextLength() - lastChild.getTextLength() - 1;
         if (moduleTextLength < 0) {
             moduleTextLength = 0;
         }
 
         return Stream.concat(
-                Stream.of(new ElmPartOfPathModuleReference(this, new TextRange(0, moduleTextLength), pathLength - 1)),
-                Stream.of(new ElmAbsoluteTypeReference(lastChild, this.getText().substring(0, moduleTextLength)))
+                Stream.of(new ElmPartOfPathModuleReference(this, new TextRange(0, moduleTextLength), children.size())),
+                Stream.of(new ElmAbsoluteTypeReference(lastChild, children).referenceInAncestor(this))
         );
     }
 }

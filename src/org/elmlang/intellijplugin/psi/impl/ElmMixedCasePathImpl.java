@@ -33,10 +33,9 @@ public class ElmMixedCasePathImpl extends ElmPsiElement implements ElmMixedCaseP
             );
         } else if (upperCaseIds.size() >= 2) {
             ElmUpperCaseId last = upperCaseIds.pop();
-            TextRange moduleRange = getRange(upperCaseIds);
             return Stream.concat(
-                    this.getModuleReference(moduleRange, upperCaseIds.size()),
-                    Stream.of(new ElmAbsoluteTypeReference(last, moduleRange.substring(this.getText())).referenceInAncestor(this))
+                    this.getModuleReference(upperCaseIds),
+                    Stream.of(new ElmAbsoluteTypeReference(last, upperCaseIds).referenceInAncestor(this))
             );
         } else {
             return Stream.empty();

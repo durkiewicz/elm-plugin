@@ -3,18 +3,21 @@ package org.elmlang.intellijplugin.psi.references;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import org.elmlang.intellijplugin.psi.ElmUpperCaseId;
+import org.elmlang.intellijplugin.psi.references.utils.AbsoluteReferencesHelper;
 import org.elmlang.intellijplugin.utils.Function3;
 import org.jetbrains.annotations.Nullable;
 
-public class ElmAbsoluteTypeReference extends ElmReferenceBase<ElmUpperCaseId> {
-    private final String moduleName;
+import java.util.List;
 
-    public ElmAbsoluteTypeReference(ElmUpperCaseId element, String moduleName) {
+public class ElmAbsoluteTypeReference extends ElmReferenceBase<ElmUpperCaseId> {
+    private final List<ElmUpperCaseId> moduleName;
+
+    public ElmAbsoluteTypeReference(ElmUpperCaseId element, List<ElmUpperCaseId> moduleName) {
         super(element);
         this.moduleName = moduleName;
     }
 
-    private ElmAbsoluteTypeReference(PsiElement element, ElmUpperCaseId referencingElement, TextRange rangeInElement, String moduleName) {
+    private ElmAbsoluteTypeReference(PsiElement element, ElmUpperCaseId referencingElement, TextRange rangeInElement, List<ElmUpperCaseId> moduleName) {
         super(element, referencingElement, rangeInElement);
         this.moduleName = moduleName;
     }
@@ -27,8 +30,9 @@ public class ElmAbsoluteTypeReference extends ElmReferenceBase<ElmUpperCaseId> {
     @Nullable
     @Override
     public PsiElement resolve() {
+        String moduleName = AbsoluteReferencesHelper.getModuleName(this.moduleName);
         return this.resolveUsingModuleIndex(
-                this.moduleName,
+                moduleName,
                 f -> f.getExposedType(this.referencingElement.getText())
         );
     }
