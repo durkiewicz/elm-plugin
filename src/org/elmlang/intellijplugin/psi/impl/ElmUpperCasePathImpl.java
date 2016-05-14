@@ -2,11 +2,14 @@ package org.elmlang.intellijplugin.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.psi.ElmImportClause;
+import org.elmlang.intellijplugin.psi.ElmModuleDeclaration;
 import org.elmlang.intellijplugin.psi.ElmUpperCaseId;
 import org.elmlang.intellijplugin.psi.ElmUpperCasePath;
 import org.elmlang.intellijplugin.psi.references.*;
+import org.elmlang.intellijplugin.psi.scope.BuiltInSymbols;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,8 +26,11 @@ public class ElmUpperCasePathImpl extends ElmPsiElement implements ElmUpperCaseP
     }
 
     public Stream<ElmReference> getReferencesStream() {
-        if (this.getParent() instanceof ElmImportClause) {
-            return Stream.of(new ElmFullPathModuleReference(this));
+        PsiElement parent = this.getParent();
+        if (parent instanceof ElmImportClause) {
+            return this.getReferencesInImport();
+        } else if (parent instanceof ElmModuleDeclaration) {
+            return Stream.empty();
         }
 
         List<ElmUpperCaseId> children = Arrays.stream(this.getChildren())
@@ -33,12 +39,26 @@ public class ElmUpperCasePathImpl extends ElmPsiElement implements ElmUpperCaseP
                 .collect(Collectors.toList());
         int size = children.size();
         if (size == 1) {
-            return Stream.of(new ElmTypeReference(children.get(0)));
+            return getReferencesFromSingleId(children.get(0));
         } else if (size >= 2) {
             return getReferencesFromNonSinglePath(children);
         }
 
         return Stream.empty();
+    }
+
+    private Stream<ElmReference> getReferencesInImport() {
+        return this.getText().startsWith("Native.")
+                ? Stream.empty()
+                : Stream.of(new ElmFullPathModuleReference(this));
+    }
+
+    private static Stream<ElmReference> getReferencesFromSingleId(ElmUpperCaseId element) {
+        if (BuiltInSymbols.isBuiltIn(element.getText())) {
+            return Stream.empty();
+        } else {
+            return Stream.of(new ElmTypeReference(element));
+        }
     }
 
     private Stream<ElmReference> getReferencesFromNonSinglePath(List<ElmUpperCaseId> children) {

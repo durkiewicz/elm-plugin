@@ -27,4 +27,9 @@ public class ElmFullPathModuleReference extends ElmReferenceBase<ElmUpperCasePat
         String moduleName = this.referencingElement.getText();
         return this.resolveUsingModuleIndex(moduleName, ElmFile::getModuleDeclaration);
     }
+
+    @Override
+    public String getTargetName() {
+        return "module";
+    }
 }

@@ -23,8 +23,9 @@ public class ElmMixedCasePathImpl extends ElmPsiElement implements ElmMixedCaseP
         Stack<ElmUpperCaseId> upperCaseIds = pair.getFirst();
         Stack<ElmLowerCaseId> lowerCaseIds = pair.getSecond();
 
-
-        if (upperCaseIds.size() == 1 && lowerCaseIds.size() == 0) {
+        if (upperCaseIds.size() > 0 && "Native".equals(upperCaseIds.get(0).getText())) {
+            return Stream.empty();
+        } else if (upperCaseIds.size() == 1 && lowerCaseIds.size() == 0) {
             return Stream.of(new ElmTypeReference(upperCaseIds.get(0)));
         } else if (lowerCaseIds.size() >= 1) {
             return Stream.concat(

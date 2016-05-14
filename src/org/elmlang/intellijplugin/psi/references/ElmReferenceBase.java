@@ -30,6 +30,15 @@ abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<P
         return constructor().apply(ancestor, this.referencingElement, this.getRangeInElement().shiftRight(diff));
     }
 
+    public PsiElement getReferencingElement() {
+        return this.referencingElement;
+    }
+
+    @Override
+    public String getTargetName() {
+        return "symbol";
+    }
+
     protected abstract Function3<PsiElement, T, TextRange, ElmReference> constructor();
 
     @NotNull

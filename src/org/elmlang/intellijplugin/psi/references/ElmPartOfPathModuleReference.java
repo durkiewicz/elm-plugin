@@ -42,6 +42,11 @@ public class ElmPartOfPathModuleReference extends ElmReferenceBase<PsiElement> {
         }
     }
 
+    @Override
+    public String getTargetName() {
+        return "module";
+    }
+
     @Nullable
     private PsiElement resolveAsRealModule(String moduleName, ElmFile file) {
         if (file.getImportClauseByModuleName(moduleName).isPresent()) {
