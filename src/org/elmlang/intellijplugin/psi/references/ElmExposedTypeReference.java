@@ -3,24 +3,23 @@ package org.elmlang.intellijplugin.psi.references;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import org.elmlang.intellijplugin.psi.ElmFile;
-import org.elmlang.intellijplugin.psi.ElmLowerCaseId;
+import org.elmlang.intellijplugin.psi.ElmUpperCaseId;
 import org.elmlang.intellijplugin.psi.references.utils.ExposingClauseReferenceHelper;
 import org.elmlang.intellijplugin.utils.Function3;
 import org.jetbrains.annotations.Nullable;
 
-public class ElmExposedValueReference extends ElmReferenceBase<ElmLowerCaseId> {
-
-    public ElmExposedValueReference(ElmLowerCaseId element) {
+public class ElmExposedTypeReference extends ElmReferenceBase<ElmUpperCaseId> {
+    public ElmExposedTypeReference(ElmUpperCaseId element) {
         super(element);
     }
 
-    ElmExposedValueReference(PsiElement element, ElmLowerCaseId referencingElement, TextRange rangeInElement) {
+    ElmExposedTypeReference(PsiElement element, ElmUpperCaseId referencingElement, TextRange rangeInElement) {
         super(element, referencingElement, rangeInElement);
     }
 
     @Override
-    protected Function3<PsiElement, ElmLowerCaseId, TextRange, ElmReference> constructor() {
-        return ElmExposedValueReference::new;
+    protected Function3<PsiElement, ElmUpperCaseId, TextRange, ElmReference> constructor() {
+        return ElmExposedTypeReference::new;
     }
 
     @Nullable
@@ -30,9 +29,7 @@ public class ElmExposedValueReference extends ElmReferenceBase<ElmLowerCaseId> {
     }
 
     PsiElement resolve(ElmFile file) {
-        return file.getExposedValues()
-                .filter(this::theSameName)
-                .findFirst()
+        return file.getExposedType(this.referencingElement.getText())
                 .orElse(null);
     }
 }

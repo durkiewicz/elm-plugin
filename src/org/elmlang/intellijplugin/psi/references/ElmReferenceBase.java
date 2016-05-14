@@ -27,9 +27,7 @@ abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<P
 
     public ElmReference referenceInAncestor(PsiElement ancestor) {
         int diff = this.myElement.getTextOffset() - ancestor.getTextOffset();
-        TextRange range = this.getRangeInElement();
-        TextRange ancestorRange = new TextRange(range.getStartOffset() + diff, range.getEndOffset() + diff);
-        return constructor().apply(ancestor, this.referencingElement, ancestorRange);
+        return constructor().apply(ancestor, this.referencingElement, this.getRangeInElement().shiftRight(diff));
     }
 
     protected abstract Function3<PsiElement, T, TextRange, ElmReference> constructor();

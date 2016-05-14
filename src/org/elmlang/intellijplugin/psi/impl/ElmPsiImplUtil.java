@@ -204,15 +204,40 @@ public class ElmPsiImplUtil {
     }
 
     public static Stream<ElmReference> getReferencesStream(ElmExposingClause element) {
-        return getReferencesStream(element, ElmImportedValueReference::new);
+        return getReferencesStream(element, ElmImportedValueReference::new, ElmImportedTypeReference::new);
     }
 
     public static Stream<ElmReference> getReferencesStream(ElmModuleDeclaration element) {
-        return getReferencesStream(element, ElmExposedValueReference::new);
+        return getReferencesStream(element, ElmExposedValueReference::new, ElmExposedTypeReference::new);
     }
 
-    private static Stream<ElmReference> getReferencesStream(ElmExposingBase element, Function<ElmLowerCaseId, ElmReference> referenceConstructor) {
-        return element.getLowerCaseIdList().stream()
-                .map(id -> referenceConstructor.apply(id).referenceInAncestor(element));
+    private static Stream<ElmReference> getReferencesStream(ElmExposingBase element,
+                                                            Function<ElmLowerCaseId, ElmReference> valueReferenceConstructor,
+                                                            Function<ElmUpperCaseId, ElmReference> typeReferenceConstructor) {
+        return Stream.concat(
+                getTypeReferences(element, typeReferenceConstructor),
+                element.getLowerCaseIdList().stream()
+                        .map(id -> valueReferenceConstructor.apply(id).referenceInAncestor(element))
+        );
+    }
+
+    private static Stream<ElmReference> getTypeReferences(ElmExposingBase element,
+                                                          Function<ElmUpperCaseId, ElmReference> referenceConstructor) {
+        return element.getExposedUnionList().stream()
+                .flatMap(e -> Stream.concat(
+                        Stream.of(
+                                referenceConstructor.apply(e.getUpperCaseId())
+                                        .referenceInAncestor(element)
+                        ),
+                        getExposedUnionMembersReferences(e.getExposedUnionConstructors(), referenceConstructor)
+                                .map(r -> r.referenceInAncestor(element))
+                ));
+    }
+
+    private static Stream<ElmReference> getExposedUnionMembersReferences(@Nullable ElmExposedUnionConstructors element,
+                                                                         Function<ElmUpperCaseId, ElmReference> referenceConstructor) {
+        return Optional.ofNullable(element)
+                .map(e -> e.getUpperCaseIdList().stream().map(referenceConstructor))
+                .orElse(Stream.empty());
     }
 }
