@@ -29,7 +29,7 @@ public class ElmFullPathModuleReference extends ElmReferenceBase<ElmUpperCasePat
     }
 
     @Override
-    public String getTargetName() {
-        return "module";
+    public ElmReferenceTarget getTarget() {
+        return ElmReferenceTarget.MODULE;
     }
 }

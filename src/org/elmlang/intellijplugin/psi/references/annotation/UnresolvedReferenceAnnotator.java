@@ -7,6 +7,7 @@ import org.elmlang.intellijplugin.psi.ElmMixedCasePath;
 import org.elmlang.intellijplugin.psi.ElmUpperCasePath;
 import org.elmlang.intellijplugin.psi.impl.ElmPsiElement;
 import org.elmlang.intellijplugin.psi.references.ElmReference;
+import org.elmlang.intellijplugin.psi.references.ElmReferenceTarget;
 import org.jetbrains.annotations.NotNull;
 
 public class UnresolvedReferenceAnnotator implements Annotator {
@@ -24,7 +25,16 @@ public class UnresolvedReferenceAnnotator implements Annotator {
 
     private static void annotateIfUnresolved(ElmReference reference, AnnotationHolder holder) {
         if (reference.resolve() == null) {
-            holder.createErrorAnnotation(reference.getReferencingElement(), String.format("Cannot find %s \"%s\"", reference.getTargetName(), reference.getCanonicalText()));
+            ElmReferenceTarget target = reference.getTarget();
+            String additionalMessage = target == ElmReferenceTarget.MODULE
+                    ? "Make sure you have added proper packages to the elm-package.json file, have run the `elm-package install`, and have NOT marked the `elm-stuff` directory as excluded."
+                    : "";
+            String message = String.format("Cannot find %s \"%s\".%s",
+                    target,
+                    reference.getCanonicalText(),
+                    additionalMessage
+            );
+            holder.createErrorAnnotation(reference.getReferencingElement(), message);
         }
     }
 }

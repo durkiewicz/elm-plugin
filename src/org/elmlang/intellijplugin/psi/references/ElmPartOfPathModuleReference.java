@@ -44,8 +44,8 @@ public class ElmPartOfPathModuleReference extends ElmReferenceBase<PsiElement> {
     }
 
     @Override
-    public String getTargetName() {
-        return "module";
+    public ElmReferenceTarget getTarget() {
+        return ElmReferenceTarget.MODULE;
     }
 
     @Nullable
