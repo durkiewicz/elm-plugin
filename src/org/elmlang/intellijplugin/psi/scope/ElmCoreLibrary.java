@@ -23,6 +23,8 @@ public class ElmCoreLibrary {
         add("Debug");
         add("Cmd");
         add("Sub");
+        add("Platform");
+        add(BASICS_MODULE);
     }};
 
     public static boolean isBuiltIn(String typeName) {
