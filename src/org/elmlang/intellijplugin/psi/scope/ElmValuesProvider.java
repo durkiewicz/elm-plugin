@@ -15,8 +15,6 @@ import java.util.function.Predicate;
 
 class ElmValuesProvider
 {
-    private static final String BASICS_MODULE = "Basics";
-
     private PsiElement elem;
     private Stack<ElmPattern> patterns = new Stack<>();
     private Stack<ElmLowerCaseId> ids = new Stack<>();
@@ -131,7 +129,7 @@ class ElmValuesProvider
         ((ElmFile) this.elem).getImportClauses().stream()
                 .filter(e -> e.getExposingClause() != null)
                 .forEach(this::gatherDeclarationsFromOtherFile);
-        gatherDeclarationsFromOtherFile(BASICS_MODULE, x -> true);
+        gatherDeclarationsFromOtherFile(ElmCoreLibrary.BASICS_MODULE, x -> true);
     }
 
     private void gatherDeclarationsFromOtherFile(@NotNull ElmImportClause elem) {

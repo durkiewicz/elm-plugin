@@ -35,8 +35,8 @@ abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<P
     }
 
     @Override
-    public String getTargetName() {
-        return "symbol";
+    public ElmReferenceTarget getTarget() {
+        return ElmReferenceTarget.SYMBOL;
     }
 
     protected abstract Function3<PsiElement, T, TextRange, ElmReference> constructor();
