@@ -3,8 +3,11 @@ Elm language plugin for IntelliJ IDEA.
 
 ## Features
 
+- Supports Elm 0.16.0
 - Parsing the syntax
 - Coloring keywords, comments, strings and numbers
+- Going to declaration 
+- Highlighting unresolved references
 
 This plugin is still at development phase. More features are coming soon.
 
