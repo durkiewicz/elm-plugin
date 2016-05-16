@@ -3,6 +3,7 @@ package org.elmlang.intellijplugin.psi.references;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import org.elmlang.intellijplugin.psi.ElmFile;
+import org.elmlang.intellijplugin.psi.scope.ElmCoreLibrary;
 import org.elmlang.intellijplugin.utils.Function3;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +50,7 @@ public class ElmPartOfPathModuleReference extends ElmReferenceBase<PsiElement> {
 
     @Nullable
     private PsiElement resolveAsRealModule(String moduleName, ElmFile file) {
-        if (file.getImportClauseByModuleName(moduleName).isPresent()) {
+        if (ElmCoreLibrary.isImplicitImport(moduleName) || file.getImportClauseByModuleName(moduleName).isPresent()) {
             return this.resolveUsingModuleIndex(moduleName, ElmFile::getModuleDeclaration);
         } else {
             return null;

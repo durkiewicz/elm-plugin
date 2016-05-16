@@ -9,7 +9,7 @@ import org.elmlang.intellijplugin.psi.ElmModuleDeclaration;
 import org.elmlang.intellijplugin.psi.ElmUpperCaseId;
 import org.elmlang.intellijplugin.psi.ElmUpperCasePath;
 import org.elmlang.intellijplugin.psi.references.*;
-import org.elmlang.intellijplugin.psi.scope.BuiltInSymbols;
+import org.elmlang.intellijplugin.psi.scope.ElmCoreLibrary;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +54,7 @@ public class ElmUpperCasePathImpl extends ElmPsiElement implements ElmUpperCaseP
     }
 
     private static Stream<ElmReference> getReferencesFromSingleId(ElmUpperCaseId element) {
-        if (BuiltInSymbols.isBuiltIn(element.getText())) {
+        if (ElmCoreLibrary.isBuiltIn(element.getText())) {
             return Stream.empty();
         } else {
             return Stream.of(new ElmTypeReference(element));

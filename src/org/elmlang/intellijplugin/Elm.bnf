@@ -269,7 +269,7 @@ private parenthesed_pattern ::=
 anonymous_function ::= BACKSLASH pattern+ ARROW expression { methods = [getReferencesStream] }
 
 operator_config ::=
-    operator_config_keyword NUMBER_LITERAL OPERATOR
+    operator_config_keyword NUMBER_LITERAL any_operator
 private operator_config_keyword ::=
     INFIXL
     | INFIX

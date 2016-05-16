@@ -13,14 +13,16 @@ import static org.elmlang.intellijplugin.psi.scope.ElmTypesProvider.TypesProvidi
 
 
 class ElmTypesProvider {
-    private ElmFile file;
+    private final ElmFile file;
 
-    private Stack<ElmUpperCaseId> types = new Stack<>();
-    private Stack<ElmImportClause> importClauses = new Stack<>();
+    private final Stack<ElmUpperCaseId> types = new Stack<>();
+    private final Stack<ElmImportClause> importClauses = new Stack<>();
+    private final Stack<String> implicitImports;
     private TypesProvidingPhase phase = CURRENT_FILE;
 
     ElmTypesProvider(ElmFile file) {
         this.file = file;
+        this.implicitImports = ElmCoreLibrary.getImplicitImportsCopy();
     }
 
     Optional<ElmUpperCaseId> nextType() {
@@ -34,6 +36,9 @@ class ElmTypesProvider {
                 return this.nextType();
             case IMPORTED_FILES:
                 gatherTypesFromImport();
+                return this.nextType();
+            case IMPLICIT_IMPORTS:
+                gatherTypesFromImplicitImport();
                 return this.nextType();
             case FINISHED:
                 return Optional.empty();
@@ -64,27 +69,42 @@ class ElmTypesProvider {
     }
 
     private void gatherTypesFromExposingClause(String moduleName, ElmExposingClause exposingClause) {
-        ElmModuleIndex.getFilesByModuleName(moduleName, exposingClause.getProject())
-                .stream()
-                .findFirst()
-                .ifPresent(f -> this.gatherTypesFromExposingClause(f, exposingClause));
-    }
-
-    private void gatherTypesFromExposingClause(ElmFile file, ElmExposingClause exposingClause) {
         TypeFilter filter = exposingClause.isExposingAll()
                 ? TypeFilter.always(true)
                 : exposingClause.getExposedTypeFilter();
+        this.gatherTypesFromFile(moduleName, filter);
+    }
+
+    private void gatherTypesFromImplicitImport() {
+        String module = this.implicitImports.pop();
+        this.gatherTypesFromFile(module, TypeFilter.always(true));
+        updatePhase();
+    }
+
+    private void gatherTypesFromFile(String moduleName, TypeFilter filter) {
+        ElmModuleIndex.getFilesByModuleName(moduleName, this.file.getProject())
+                .stream()
+                .findFirst()
+                .ifPresent(f -> this.gatherTypesFromFile(f, filter));
+    }
+
+    private void gatherTypesFromFile(ElmFile file, TypeFilter filter) {
         file.getExposedTypes(filter)
                 .forEach(this.types::push);
     }
 
     private void updatePhase() {
-        this.phase = this.importClauses.isEmpty() ? FINISHED : IMPORTED_FILES;
+        this.phase = this.implicitImports.isEmpty()
+                ? FINISHED
+                : this.importClauses.isEmpty()
+                ? IMPLICIT_IMPORTS
+                : IMPORTED_FILES;
     }
 
     enum TypesProvidingPhase {
         CURRENT_FILE,
         IMPORTED_FILES,
+        IMPLICIT_IMPORTS,
         FINISHED
     }
 }

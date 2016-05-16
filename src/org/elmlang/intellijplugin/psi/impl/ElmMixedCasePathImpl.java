@@ -9,6 +9,7 @@ import org.elmlang.intellijplugin.psi.ElmLowerCaseId;
 import org.elmlang.intellijplugin.psi.ElmMixedCasePath;
 import org.elmlang.intellijplugin.psi.ElmUpperCaseId;
 import org.elmlang.intellijplugin.psi.references.*;
+import org.elmlang.intellijplugin.psi.scope.ElmCoreLibrary;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -26,7 +27,7 @@ public class ElmMixedCasePathImpl extends ElmPsiElement implements ElmMixedCaseP
         if (upperCaseIds.size() > 0 && "Native".equals(upperCaseIds.get(0).getText())) {
             return Stream.empty();
         } else if (upperCaseIds.size() == 1 && lowerCaseIds.size() == 0) {
-            return Stream.of(new ElmTypeReference(upperCaseIds.get(0)));
+            return getReferencesFromSingleId(upperCaseIds.get(0));
         } else if (lowerCaseIds.size() >= 1) {
             return Stream.concat(
                     getModuleReference(upperCaseIds),
@@ -45,6 +46,14 @@ public class ElmMixedCasePathImpl extends ElmPsiElement implements ElmMixedCaseP
 
     public List<ElmUpperCaseId> getUpperCaseIdList() {
         return PsiTreeUtil.getChildrenOfTypeAsList(this, ElmUpperCaseId.class);
+    }
+
+    private static Stream<ElmReference> getReferencesFromSingleId(ElmUpperCaseId element) {
+        if (ElmCoreLibrary.isBuiltIn(element.getText())) {
+            return Stream.empty();
+        } else {
+            return Stream.of(new ElmTypeReference(element));
+        }
     }
 
     private Pair<Stack<ElmUpperCaseId>, Stack<ElmLowerCaseId>> getGroupedChildren() {
