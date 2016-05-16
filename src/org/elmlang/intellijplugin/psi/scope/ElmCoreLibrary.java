@@ -3,6 +3,8 @@ package org.elmlang.intellijplugin.psi.scope;
 import java.util.*;
 
 public class ElmCoreLibrary {
+    public static final String BASICS_MODULE = "Basics";
+
     private static final Set<String> BUILT_IN_SYMBOLS = new HashSet<String>() {{
         add("Bool");
         add("True");
