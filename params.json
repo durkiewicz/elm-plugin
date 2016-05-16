@@ -1,0 +1,6 @@
+{
+  "name": "Elm-plugin",
+  "tagline": "Elm language support plugin for IntelliJ IDEA.",
+  "body": "# elm-plugin\r\nElm language plugin for IntelliJ IDEA.\r\n\r\n## Features\r\n\r\n- Supports Elm 0.17.0\r\n- Parsing the syntax\r\n- Coloring keywords, comments, strings and numbers\r\n- Going to declaration \r\n- Highlighting unresolved references",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
