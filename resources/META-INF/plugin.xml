@@ -8,7 +8,7 @@
         Plugin for Elm language support.<br/><br/>
         Features
         <ul>
-            <li>Supports Elm 0.16.0</li>
+            <li>Supports Elm 0.17.0 (If you need to have different version supported, see <a href="http://durkiewicz.github.io/elm-plugin/#releases">this link</a>)</li>
             <li>Parsing the syntax</li>
             <li>Coloring keywords, comments, strings and numbers</li>
             <li>Going to declaration</li>
