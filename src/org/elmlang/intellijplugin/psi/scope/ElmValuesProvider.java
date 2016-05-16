@@ -8,6 +8,7 @@ import org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.function.Predicate;
@@ -59,6 +60,7 @@ class ElmValuesProvider
         } else if (this.elem instanceof ElmLetIn) {
             this.gatherValueDeclarations();
         } else if (this.elem instanceof ElmFile) {
+            this.gatherEffects();
             this.gatherValueDeclarations();
             this.gatherDeclarationsFromOtherFiles();
             return null;
@@ -74,6 +76,18 @@ class ElmValuesProvider
 
     private void gatherValueDeclarations() {
         this.gatherValueDeclarations((ElmWithValueDeclarations) this.elem);
+    }
+
+    private void gatherEffects() {
+        ((ElmFile) this.elem).getModuleDeclaration()
+                .flatMap(e -> Optional.ofNullable(e.getRecord()))
+                .ifPresent(e -> gatherEffects(e.getFieldList()));
+    }
+
+    private void gatherEffects(List<ElmField> effects) {
+        effects.stream()
+                .map(ElmField::getLowerCaseId)
+                .forEach(this.ids::push);
     }
 
     private void gatherValueDeclarations(ElmWithValueDeclarations element) {

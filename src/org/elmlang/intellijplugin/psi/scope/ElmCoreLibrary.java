@@ -18,8 +18,9 @@ public class ElmCoreLibrary {
         add("Maybe");
         add("Result");
         add("List");
-        add("Signal");
         add("Debug");
+        add("Cmd");
+        add("Sub");
     }};
 
     public static boolean isBuiltIn(String typeName) {

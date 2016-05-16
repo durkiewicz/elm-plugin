@@ -32,7 +32,7 @@ STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
 CHAR_LITERAL='(\\.|\\x[[:digit:]A-Fa-f]+|[^\\'])'
 OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|"~"|-|=|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
-RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
+RESERVED=("hiding" | "export" | "foreign" | "deriving")
 
 %%
 
@@ -64,6 +64,9 @@ RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
     }
     "where" {
         return WHERE;
+    }
+    "effect" {
+        return EFFECT;
     }
     "import" {
         return IMPORT;

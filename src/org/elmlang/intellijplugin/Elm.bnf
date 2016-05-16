@@ -63,7 +63,7 @@ private blank ::=
     | FRESH_LINE
     | comment
 
-module_declaration ::= MODULE upper_case_path [exposed_values] WHERE { methods = [getModuleName isExposingAll getReferencesStream] }
+module_declaration ::= [ EFFECT ] MODULE upper_case_path [ WHERE record ] EXPOSING exposed_values { methods = [getModuleName isExposingAll getReferencesStream] }
 
 private exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
 

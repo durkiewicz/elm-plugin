@@ -37,6 +37,7 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
 
     private static final TokenSet KEYWORDS = TokenSet.create(
             WHERE,
+            EFFECT,
             MODULE,
             IMPORT,
             AS,
