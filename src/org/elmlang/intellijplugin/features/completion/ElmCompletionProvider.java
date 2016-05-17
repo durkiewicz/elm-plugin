@@ -70,7 +70,7 @@ class ElmCompletionProvider extends CompletionProvider<CompletionParameters> {
     private static void addTypeOrModuleCompletions(PsiElement element, CompletionResultSet resultSet) {
         ElmFile file = (ElmFile) element.getContainingFile();
         if (element.getStartOffsetInParent() == 0) {
-            addTypesCompletions(file, resultSet);
+            addSingleUpperCaseIdCompletions(file, resultSet);
         } else if (Optional.ofNullable(element.getPrevSibling())
                 .flatMap(e -> Optional.ofNullable(e.getPrevSibling()))
                 .filter(e -> e instanceof ElmUpperCaseId)
@@ -151,7 +151,7 @@ class ElmCompletionProvider extends CompletionProvider<CompletionParameters> {
         if (Character.isLowerCase(firstChar)) {
             addValueCompletions(ElmScope.scopeFor(file), resultSet);
         } else if (Character.isUpperCase(firstChar)) {
-            addTypesCompletions(file, resultSet);
+            addSingleUpperCaseIdCompletions(file, resultSet);
         }
     }
 
@@ -163,11 +163,23 @@ class ElmCompletionProvider extends CompletionProvider<CompletionParameters> {
         addKeyWords(resultSet);
     }
 
-    private static void addTypesCompletions(ElmFile file, CompletionResultSet resultSet) {
+    private static void addSingleUpperCaseIdCompletions(ElmFile file, CompletionResultSet resultSet) {
         forEachUntilPresent(
                 ElmScope.typesFor(file),
                 id -> addPsiElementToResult(id, resultSet)
         );
+        ElmModuleIndex.getAllModuleNames(file.getProject()).stream()
+            .map(ElmCompletionProvider::getModulesFirstPart)
+            .forEach(s -> addStringToResult(s, resultSet));
+    }
+
+    private static String getModulesFirstPart(String moduleName) {
+        int i = moduleName.indexOf('.');
+        if (i >= 0) {
+            return moduleName.substring(0, i);
+        } else {
+            return moduleName;
+        }
     }
 
     private static <T> void forEachUntilPresent(Stream<Optional<T>> stream, Consumer<T> consumer) {
