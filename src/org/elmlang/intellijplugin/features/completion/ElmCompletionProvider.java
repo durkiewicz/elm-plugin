@@ -4,9 +4,12 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.parser.GeneratedParserUtilBase;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.util.Consumer;
 import com.intellij.util.ProcessingContext;
 import org.elmlang.intellijplugin.ElmModuleIndex;
@@ -16,6 +19,7 @@ import org.elmlang.intellijplugin.utils.TypeFilter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,15 +48,12 @@ class ElmCompletionProvider extends CompletionProvider<CompletionParameters> {
 
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull CompletionResultSet resultSet) {
-        PsiElement position = parameters.getOriginalPosition();
-        if (position == null) {
-            return;
-        }
+        PsiElement position = parameters.getPosition();
         PsiElement parent = position.getParent();
         PsiElement grandParent = Optional.ofNullable(parent)
                 .map(PsiElement::getParent)
                 .orElse(null);
-        if (parent instanceof ElmFile) {
+        if (parent instanceof ElmFile || parent instanceof GeneratedParserUtilBase.DummyBlock) {
             addCompletionsInInvalidExpression(position, resultSet);
         } else if (grandParent instanceof ElmLowerCasePath
                 && parent.getStartOffsetInParent() == 0) {
@@ -86,9 +87,7 @@ class ElmCompletionProvider extends CompletionProvider<CompletionParameters> {
     }
 
     private static void addModuleCompletions(ElmFile file, List<PsiElement> modulePrefix, CompletionResultSet resultSet) {
-        String moduleNamePrefix = modulePrefix.stream()
-                .map(PsiElement::getText)
-                .collect(Collectors.joining("."));
+        String moduleNamePrefix = ElmTreeUtil.joinUsingDot(modulePrefix);
         Project project = file.getProject();
         ElmModuleIndex.getAllModuleNames(project).stream()
                 .filter(m -> m.startsWith(moduleNamePrefix))
@@ -97,9 +96,13 @@ class ElmCompletionProvider extends CompletionProvider<CompletionParameters> {
 
     private static void addCompletionsForModule(String moduleName, String modulePrefix, Project project, CompletionResultSet resultSet) {
         if (moduleName.equals(modulePrefix)) {
-            ElmModuleIndex.getFilesByModuleName(moduleName, project).stream()
-                    .forEach(f -> addCompletionsForFile(f, resultSet));
+            addCompletionsForModule(moduleName, project, resultSet);
         }
+    }
+
+    private static void addCompletionsForModule(String moduleName, Project project, CompletionResultSet resultSet) {
+        ElmModuleIndex.getFilesByModuleName(moduleName, project).stream()
+                .forEach(f -> addCompletionsForFile(f, resultSet));
     }
 
     private static void addCompletionsForFile(ElmFile file, CompletionResultSet resultSet) {
@@ -112,8 +115,33 @@ class ElmCompletionProvider extends CompletionProvider<CompletionParameters> {
     }
 
     private void addCompletionsInInvalidExpression(@NotNull PsiElement position, @NotNull CompletionResultSet resultSet) {
-        if (position.getPrevSibling() instanceof PsiWhiteSpace) {
+        PsiElement prevSibling = position.getPrevSibling();
+        if (prevSibling instanceof PsiWhiteSpace) {
             addCompletionsAfterWhiteSpace(position, resultSet);
+        } else if (prevSibling instanceof ASTNode
+                && ((ASTNode) prevSibling).getElementType().equals(ElmTypes.DOT)) {
+            addCompletionsAfterDot(prevSibling, resultSet);
+        }
+    }
+
+    private static void addCompletionsAfterDot(PsiElement dot, @NotNull CompletionResultSet resultSet) {
+        List<PsiElement> upperCaseIds = new LinkedList<>();
+        PsiElement elem = dot.getPrevSibling();
+        while (elem instanceof ASTNode) {
+            IElementType type = ((ASTNode) elem).getElementType();
+            if (type.equals(ElmTypes.UPPER_CASE_IDENTIFIER)) {
+                upperCaseIds.add(0, elem);
+            } else if (!type.equals(ElmTypes.DOT)) {
+                break;
+            }
+            elem = elem.getPrevSibling();
+        }
+        if (upperCaseIds.size() > 0) {
+            addCompletionsForModule(
+                    ElmTreeUtil.joinUsingDot(upperCaseIds),
+                    dot.getProject(),
+                    resultSet
+            );
         }
     }
 
