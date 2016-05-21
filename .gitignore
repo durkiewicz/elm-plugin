@@ -1,5 +1,5 @@
 .idea
 /out
 /gen
-/src/org/elmlang/intellijplugin/ElmLexer.java
+/src/main/java/org/elmlang/intellijplugin/ElmLexer.java
 elm-plugin.jar
