@@ -29,7 +29,7 @@ public class ModuleParsingTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/module";
+        return "src/test/resources/testData/parsing/module";
     }
 
     @Override

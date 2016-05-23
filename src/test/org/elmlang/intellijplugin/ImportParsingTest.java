@@ -33,7 +33,7 @@ public class ImportParsingTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/import";
+        return "src/test/resources/testData/parsing/import";
     }
 
     @Override

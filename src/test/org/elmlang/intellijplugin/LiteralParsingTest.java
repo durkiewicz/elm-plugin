@@ -53,7 +53,7 @@ public class LiteralParsingTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/literals";
+        return "src/test/resources/testData/parsing/literals";
     }
 
     @Override

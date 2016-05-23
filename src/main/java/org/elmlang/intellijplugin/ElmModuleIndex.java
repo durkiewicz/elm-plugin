@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 public class ElmModuleIndex extends ScalarIndexExtension<String> {
@@ -44,6 +45,10 @@ public class ElmModuleIndex extends ScalarIndexExtension<String> {
     @NotNull
     public static List<ElmFile> getFilesByModuleName(String moduleName, Project project) {
         return getFilesByModuleName(moduleName, project, GlobalSearchScope.projectScope(project));
+    }
+
+    public static Collection<String> getAllModuleNames(Project project) {
+        return FileBasedIndex.getInstance().getAllKeys(ELM_MODULE_INDEX, project);
     }
 
     @NotNull
