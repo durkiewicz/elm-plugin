@@ -2,9 +2,7 @@ package org.elmlang.intellijplugin.psi.references.annotation;
 
 import com.intellij.lang.annotation.*;
 import com.intellij.psi.*;
-import org.elmlang.intellijplugin.psi.ElmLowerCasePath;
-import org.elmlang.intellijplugin.psi.ElmMixedCasePath;
-import org.elmlang.intellijplugin.psi.ElmUpperCasePath;
+import org.elmlang.intellijplugin.psi.*;
 import org.elmlang.intellijplugin.psi.impl.ElmPsiElement;
 import org.elmlang.intellijplugin.psi.references.ElmReference;
 import org.elmlang.intellijplugin.psi.references.ElmReferenceTarget;
@@ -13,9 +11,18 @@ import org.jetbrains.annotations.NotNull;
 public class UnresolvedReferenceAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder holder) {
-        if (psiElement instanceof ElmLowerCasePath || psiElement instanceof ElmMixedCasePath || psiElement instanceof ElmUpperCasePath) {
+        if (shouldCheckReferences(psiElement)) {
             checkReferences((ElmPsiElement) psiElement, holder);
         }
+    }
+
+    private static boolean shouldCheckReferences(PsiElement psiElement) {
+        return (isPathElement(psiElement) && !(psiElement.getParent() instanceof ElmExposingBase))
+                || psiElement instanceof ElmExposingBase;
+    }
+
+    private static boolean isPathElement(PsiElement psiElement) {
+        return psiElement instanceof ElmLowerCasePath || psiElement instanceof ElmMixedCasePath || psiElement instanceof ElmUpperCasePath;
     }
 
     private static void checkReferences(ElmPsiElement psiElement, AnnotationHolder holder) {
