@@ -97,32 +97,17 @@ class ElmValuesProvider
                         this.patterns.add((ElmPattern) child);
                     } else if (child instanceof ElmFunctionDeclarationLeft) {
                         this.ids.push(((ElmFunctionDeclarationLeft) child).getLowerCaseId());
-                    } else if (d instanceof ElmValueDeclaration) {
-                        Optional.ofNullable(((ElmValueDeclaration) d).getPortDeclarationLeft())
-                                .ifPresent(e -> this.ids.push(e.getLowerCaseId()));
                     }
                 });
         Arrays.stream(element.getChildren())
                 .filter(e -> e instanceof ElmTypeAnnotation)
                 .map(e -> (ElmTypeAnnotation) e)
                 .forEach(typeAnnotation -> {
-                    PsiElement child = typeAnnotation.getFirstChild();
-                    if (startsWithPort(child)) {
+                    if (typeAnnotation.isPortAnnotation()) {
                         Optional.ofNullable(typeAnnotation.getLowerCaseId())
-                                .ifPresent(id -> {
-                                    boolean isFollowedByPortDefinition = ElmTreeUtil.findFollowingSibling(typeAnnotation, e -> e instanceof ElmValueDeclaration)
-                                            .flatMap(e -> Optional.ofNullable(((ElmValueDeclaration) e).getPortDeclarationLeft()))
-                                            .filter(e -> e.getLowerCaseId().getText().equals(id.getText())).isPresent();
-                                    if (!isFollowedByPortDefinition) {
-                                        this.ids.push(id);
-                                    }
-                                });
+                                .ifPresent(id -> this.ids.push(id));
                     }
                 });
-    }
-
-    private static boolean startsWithPort(PsiElement element) {
-        return element instanceof ASTNode && ((ASTNode) element).getElementType().equals(ElmTypes.PORT);
     }
 
     private void gatherDeclarationsFromOtherFiles() {

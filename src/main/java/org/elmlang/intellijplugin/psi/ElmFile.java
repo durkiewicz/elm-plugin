@@ -161,9 +161,15 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
 
     @NotNull
     private Stream<ElmLowerCaseId> getAllDefinedValues(Predicate<ElmLowerCaseId> predicate) {
-        return this.getValueDeclarations()
-                .map(ElmPsiImplUtil::getDefinedValues)
-                .reduce(Stream.empty(), Stream::concat)
+        Stream<ElmLowerCaseId> portsDefinitions = Arrays.stream(this.getChildren())
+                .filter(e -> e instanceof ElmTypeAnnotation)
+                .map(e -> (ElmTypeAnnotation) e)
+                .filter(ElmTypeAnnotationBase::isPortAnnotation)
+                .map(ElmTypeAnnotation::getLowerCaseId);
+        Stream<ElmLowerCaseId> valueDefinitions = this.getValueDeclarations()
+                .flatMap(ElmPsiImplUtil::getDefinedValues);
+
+        return Stream.concat(valueDefinitions, portsDefinitions)
                 .filter(predicate);
     }
 
