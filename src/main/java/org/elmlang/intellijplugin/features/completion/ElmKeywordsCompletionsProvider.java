@@ -23,7 +23,8 @@ class ElmKeywordsCompletionsProvider {
             "infixr",
             "if",
             "then",
-            "else"
+            "else",
+            "port"
     };
 
     void addCompletions(CompletionResultSet resultSet) {

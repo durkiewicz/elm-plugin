@@ -76,7 +76,9 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
 
     private void addCompletionsInInvalidExpression(@NotNull PsiElement position, @NotNull CompletionResultSet resultSet) {
         PsiElement prevSibling = position.getPrevSibling();
-        if (prevSibling instanceof PsiWhiteSpace) {
+        if (prevSibling == null) {
+            this.keywordsProvider.addCompletions(resultSet);
+        } else if (prevSibling instanceof PsiWhiteSpace) {
             addCompletionsAfterWhiteSpace(position, resultSet);
         } else if (prevSibling instanceof ASTNode) {
             addCompletionsAfterASTNode((ASTNode) prevSibling, resultSet);
