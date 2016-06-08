@@ -17,9 +17,15 @@ class ElmModuleCompletionProvider {
     }
 
     void addCompletions(Project project, String prefix, CompletionResultSet resultSet) {
+        String matcherPrefix = resultSet.getPrefixMatcher().getPrefix();
+        int dotIndex = matcherPrefix.lastIndexOf('.');
+        CompletionResultSet newResultSet = dotIndex < 0
+                ? resultSet
+                : resultSet.withPrefixMatcher(matcherPrefix.substring(dotIndex + 1));
+
         ElmModuleIndex.getAllModuleNames(project).stream()
                 .map(s -> getModulePart(s, prefix))
-                .forEach(optionalString -> optionalString.ifPresent(s -> addStringToResult(s, resultSet)));
+                .forEach(optionalString -> optionalString.ifPresent(s -> addStringToResult(s, newResultSet)));
     }
 
     private static void addTypeAliasCompletions(ElmFile file, CompletionResultSet resultSet) {
