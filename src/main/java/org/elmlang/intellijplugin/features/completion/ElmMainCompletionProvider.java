@@ -78,9 +78,17 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         PsiElement prevSibling = position.getPrevSibling();
         if (prevSibling instanceof PsiWhiteSpace) {
             addCompletionsAfterWhiteSpace(position, resultSet);
-        } else if (prevSibling instanceof ASTNode
-                && ((ASTNode) prevSibling).getElementType().equals(ElmTypes.DOT)) {
-            addCompletionsAfterDot(prevSibling, resultSet);
+        } else if (prevSibling instanceof ASTNode) {
+            addCompletionsAfterASTNode((ASTNode) prevSibling, resultSet);
+        }
+    }
+
+    private void addCompletionsAfterASTNode(ASTNode node, CompletionResultSet resultSet) {
+        IElementType elementType = node.getElementType();
+        if (elementType.equals(ElmTypes.DOT)) {
+            addCompletionsAfterDot((PsiElement) node, resultSet);
+        } else if (elementType.equals(ElmTypes.FRESH_LINE)) {
+            this.keywordsProvider.addCompletions(resultSet);
         }
     }
 
