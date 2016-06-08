@@ -27,7 +27,7 @@ public class ElmTreeUtil {
         return findInSiblingsStream(element.getNextSibling(), predicate);
     }
 
-    public static String joinUsingDot(List<? extends PsiElement> elements){
+    public static String joinUsingDot(List<? extends PsiElement> elements) {
         return elements.stream()
                 .map(PsiElement::getText)
                 .collect(Collectors.joining("."));

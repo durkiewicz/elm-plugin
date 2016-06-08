@@ -97,6 +97,11 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
     }
 
     @NotNull
+    public Stream<ElmUpperCaseId> getExposedTypes() {
+        return getExposedTypes(TypeFilter.always(true));
+    }
+
+    @NotNull
     public Optional<ElmUpperCaseId> getExposedType(String name) {
         return getExposedTypes(TypeFilter.byText(name))
                 .findFirst();
