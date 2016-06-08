@@ -6,8 +6,8 @@ import org.elmlang.intellijplugin.psi.scope.ElmScope;
 
 import static org.elmlang.intellijplugin.features.completion.ElmCompletionHelper.*;
 
-public class ElmTypeCompletionProvider {
-    public void addCompletions(ElmFile file, CompletionResultSet resultSet) {
+class ElmTypeCompletionProvider {
+    void addCompletions(ElmFile file, CompletionResultSet resultSet) {
         forEachUntilNonPresent(
                 ElmScope.typesFor(file),
                 e -> addPsiElementToResult(e, resultSet)

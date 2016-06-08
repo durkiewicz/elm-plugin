@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 
 import static org.elmlang.intellijplugin.features.completion.ElmCompletionHelper.addStringToResult;
 
-public class ElmAbsoluteValueCompletionProvider {
-    public void addCompletions(ElmFile file, String moduleOrAlias, CompletionResultSet resultSet) {
+class ElmAbsoluteValueCompletionProvider {
+    void addCompletions(ElmFile file, String moduleOrAlias, CompletionResultSet resultSet) {
         String moduleName = file.getImportClauses().stream()
                 .filter(e -> importHasAlias(e, moduleOrAlias))
                 .findFirst()

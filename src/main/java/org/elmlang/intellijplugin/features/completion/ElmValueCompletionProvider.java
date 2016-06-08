@@ -11,12 +11,12 @@ import java.util.stream.Stream;
 
 import static org.elmlang.intellijplugin.features.completion.ElmCompletionHelper.*;
 
-public class ElmValueCompletionProvider {
-    public void addCompletions(ElmLowerCaseId element, CompletionResultSet resultSet) {
+class ElmValueCompletionProvider {
+    void addCompletions(ElmLowerCaseId element, CompletionResultSet resultSet) {
         addCompletions(ElmScope.scopeFor(element), resultSet);
     }
 
-    public void addCompletions(ElmFile element, CompletionResultSet resultSet) {
+    void addCompletions(ElmFile element, CompletionResultSet resultSet) {
         addCompletions(ElmScope.scopeFor(element), resultSet);
     }
 

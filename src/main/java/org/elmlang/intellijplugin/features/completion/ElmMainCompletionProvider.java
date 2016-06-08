@@ -16,14 +16,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters> {
+class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters> {
     private final ElmValueCompletionProvider valueProvider;
     private final ElmKeywordsCompletionsProvider keywordsProvider;
     private final ElmTypeCompletionProvider typeProvider;
     private final ElmModuleCompletionProvider moduleProvider;
     private final ElmAbsoluteValueCompletionProvider absoluteValueProvider;
 
-    public ElmMainCompletionProvider(ElmValueCompletionProvider valueProvider, ElmKeywordsCompletionsProvider keywordsProvider, ElmTypeCompletionProvider typeProvider, ElmModuleCompletionProvider moduleProvider, ElmAbsoluteValueCompletionProvider absoluteValueProvider) {
+    ElmMainCompletionProvider(ElmValueCompletionProvider valueProvider, ElmKeywordsCompletionsProvider keywordsProvider, ElmTypeCompletionProvider typeProvider, ElmModuleCompletionProvider moduleProvider, ElmAbsoluteValueCompletionProvider absoluteValueProvider) {
         this.valueProvider = valueProvider;
         this.keywordsProvider = keywordsProvider;
         this.typeProvider = typeProvider;

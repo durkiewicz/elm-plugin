@@ -5,7 +5,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import java.util.Arrays;
 import static org.elmlang.intellijplugin.features.completion.ElmCompletionHelper.*;
 
-public class ElmKeywordsCompletionsProvider {
+class ElmKeywordsCompletionsProvider {
     private static final String[] KEYWORDS = new String[] {
             "module",
             "where",
@@ -26,7 +26,7 @@ public class ElmKeywordsCompletionsProvider {
             "else"
     };
 
-    public void addCompletions(CompletionResultSet resultSet) {
+    void addCompletions(CompletionResultSet resultSet) {
         Arrays.stream(KEYWORDS)
                 .forEach(s -> addStringToResult(s, resultSet));
     }
