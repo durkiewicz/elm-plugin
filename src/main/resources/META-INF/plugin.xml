@@ -2,7 +2,8 @@
     <id>org.elmlang.intellijplugin</id>
     <name>Elm language plugin</name>
     <version>0.3.0</version>
-    <vendor email="elm.intellij.plugin@gmail.com" url="https://github.com/durkiewicz/elm-plugin">Kamil Durkiewicz</vendor>
+    <vendor email="elm.intellij.plugin@gmail.com" url="https://github.com/durkiewicz/elm-plugin">Kamil Durkiewicz
+    </vendor>
 
     <description><![CDATA[
         Plugin for Elm language support.<br/><br/>
@@ -57,7 +58,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileTypeFactory implementation="org.elmlang.intellijplugin.ElmFileTypeFactory"/>
         <fileBasedIndex implementation="org.elmlang.intellijplugin.ElmModuleIndex"/>
-        <annotator language="Elm" implementationClass="org.elmlang.intellijplugin.psi.references.annotation.UnresolvedReferenceAnnotator"/>
+        <annotator language="Elm"
+                   implementationClass="org.elmlang.intellijplugin.psi.references.annotation.UnresolvedReferenceAnnotator"/>
         <lang.parserDefinition
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.ElmParserDefinition"/>
@@ -67,6 +69,9 @@
         <lang.commenter
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.features.ElmCommenter"/>
+        <lang.braceMatcher
+                language="Elm"
+                implementationClass="org.elmlang.intellijplugin.features.ElmPairedBraceMatcher"/>
         <completion.contributor
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.features.completion.ElmCompletionContributor"/>
