@@ -89,13 +89,15 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         }
         if (prevPrevSibling instanceof ElmUpperCaseId) {
             addCompletionsAfterDot(prevSibling, resultSet);
+        } else if (prevPrevSibling instanceof ElmLowerCaseId) {
+            this.recordFieldsProvider.addCompletions((ElmFile) element.getContainingFile(), resultSet);
         }
     }
 
     private void addCompletionsInInvalidExpression(@NotNull PsiElement position, @NotNull CompletionResultSet resultSet) {
         PsiElement prevSibling = position.getPrevSibling();
 
-        if (isAfterLowerCase(position)) {
+        if (isAfterLowerCaseOrWhiteSpace(position)) {
             this.recordFieldsProvider.addCompletions((ElmFile) position.getContainingFile(), resultSet);
         } else if (prevSibling == null) {
             this.keywordsProvider.addCompletions(resultSet);
@@ -106,7 +108,7 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         }
     }
 
-    private static boolean isAfterLowerCase(PsiElement element) {
+    private static boolean isAfterLowerCaseOrWhiteSpace(PsiElement element) {
         if (!(element instanceof LeafPsiElement)) {
             return false;
         }
@@ -117,7 +119,7 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
             return false;
         }
         PsiElement prevPrev = file.findElementAt(((LeafPsiElement) prev).getStartOffset() - 1);
-        return isElementOfType(prevPrev, ElmTypes.LOWER_CASE_IDENTIFIER);
+        return prevPrev instanceof PsiWhiteSpace || isElementOfType(prevPrev, ElmTypes.LOWER_CASE_IDENTIFIER);
     }
 
     private void addCompletionsAfterASTNode(ASTNode node, CompletionResultSet resultSet) {
