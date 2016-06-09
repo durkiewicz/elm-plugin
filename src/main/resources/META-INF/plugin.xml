@@ -75,6 +75,9 @@
         <completion.contributor
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.features.completion.ElmCompletionContributor"/>
+        <spellchecker.support
+                language="Elm"
+                implementationClass="com.intellij.spellchecker.tokenizer.SpellcheckingStrategy"/>
     </extensions>
 
     <actions>
