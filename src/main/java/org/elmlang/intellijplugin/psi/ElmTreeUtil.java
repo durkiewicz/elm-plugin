@@ -12,10 +12,11 @@ import java.util.stream.Stream;
 
 public class ElmTreeUtil {
     public static boolean isAnyChildOfType(PsiElement element, IElementType type) {
-        Predicate<PsiElement> predicate = e ->
-                e instanceof ASTNode
-                        && ((ASTNode) e).getElementType().equals(type);
-        return ElmTreeUtil.isAnyMatchInChildren(element, predicate);
+        return ElmTreeUtil.isAnyMatchInChildren(element, e -> isElementOfType(e, type));
+    }
+
+    public static boolean isElementOfType(PsiElement element, IElementType type) {
+        return element instanceof ASTNode && ((ASTNode) element).getElementType().equals(type);
     }
 
     public static boolean isAnyMatchInChildren(PsiElement element, Predicate<PsiElement> predicate) {

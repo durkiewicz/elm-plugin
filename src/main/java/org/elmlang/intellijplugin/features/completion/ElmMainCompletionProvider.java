@@ -16,19 +16,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.elmlang.intellijplugin.psi.ElmTreeUtil.isElementOfType;
+
 class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters> {
     private final ElmValueCompletionProvider valueProvider;
     private final ElmKeywordsCompletionsProvider keywordsProvider;
     private final ElmTypeCompletionProvider typeProvider;
     private final ElmModuleCompletionProvider moduleProvider;
     private final ElmAbsoluteValueCompletionProvider absoluteValueProvider;
+    private final ElmCurrentModuleCompletionProvider currentModuleProvider;
 
-    ElmMainCompletionProvider(ElmValueCompletionProvider valueProvider, ElmKeywordsCompletionsProvider keywordsProvider, ElmTypeCompletionProvider typeProvider, ElmModuleCompletionProvider moduleProvider, ElmAbsoluteValueCompletionProvider absoluteValueProvider) {
+    ElmMainCompletionProvider(ElmValueCompletionProvider valueProvider, ElmKeywordsCompletionsProvider keywordsProvider, ElmTypeCompletionProvider typeProvider, ElmModuleCompletionProvider moduleProvider, ElmAbsoluteValueCompletionProvider absoluteValueProvider, ElmCurrentModuleCompletionProvider currentModuleProvider) {
         this.valueProvider = valueProvider;
         this.keywordsProvider = keywordsProvider;
         this.typeProvider = typeProvider;
         this.moduleProvider = moduleProvider;
         this.absoluteValueProvider = absoluteValueProvider;
+        this.currentModuleProvider = currentModuleProvider;
     }
 
     @Override
@@ -51,6 +55,10 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
     }
 
     private void addTypeOrModuleCompletions(PsiElement element, CompletionResultSet resultSet) {
+        if (isJustAfterModule(element)) {
+            this.currentModuleProvider.addCompletions((ElmFile) element.getContainingFile(), resultSet);
+            return;
+        }
         ElmFile file = (ElmFile) element.getContainingFile();
         if (element.getStartOffsetInParent() == 0) {
             this.typeProvider.addCompletions(file, resultSet);
@@ -65,8 +73,7 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         PsiElement prevPrevSibling = Optional.ofNullable(prevSibling)
                 .flatMap(e -> Optional.ofNullable(e.getPrevSibling()))
                 .orElse(null);
-        if (!(prevSibling instanceof ASTNode)
-                || !((ASTNode) prevSibling).getElementType().equals(ElmTypes.DOT)) {
+        if (!isElementOfType(prevSibling, ElmTypes.DOT)) {
             return;
         }
         if (prevPrevSibling instanceof ElmUpperCaseId) {
@@ -94,9 +101,13 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         }
     }
 
-    private void addCompletionsAfterWhiteSpace(PsiElement position, CompletionResultSet resultSet) {
-        char firstChar = position.getText().charAt(0);
-        ElmFile file = (ElmFile) position.getContainingFile();
+    private void addCompletionsAfterWhiteSpace(PsiElement element, CompletionResultSet resultSet) {
+        if (isJustAfterModule(element)) {
+            this.currentModuleProvider.addCompletions((ElmFile) element.getContainingFile(), resultSet);
+            return;
+        }
+        char firstChar = element.getText().charAt(0);
+        ElmFile file = (ElmFile) element.getContainingFile();
         if (Character.isLowerCase(firstChar)) {
             this.valueProvider.addCompletions(file, resultSet);
             this.keywordsProvider.addCompletions(resultSet);
@@ -104,6 +115,16 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
             this.typeProvider.addCompletions(file, resultSet);
             this.moduleProvider.addCompletions(file, resultSet);
         }
+    }
+
+    private static boolean isJustAfterModule(PsiElement element) {
+        PsiElement elementToCheck = element instanceof ElmUpperCaseId
+                ? element.getParent()
+                : element;
+        return Optional.ofNullable(elementToCheck.getPrevSibling())
+                .map(PsiElement::getPrevSibling)
+                .filter(e -> isElementOfType(e, ElmTypes.MODULE))
+                .isPresent();
     }
 
     private void addCompletionsAfterDot(PsiElement dot, @NotNull CompletionResultSet resultSet) {

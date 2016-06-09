@@ -21,6 +21,7 @@ public class ElmCompletionContributor extends CompletionContributor {
                 new ElmKeywordsCompletionsProvider(),
                 new ElmTypeCompletionProvider(),
                 new ElmModuleCompletionProvider(),
-                new ElmAbsoluteValueCompletionProvider());
+                new ElmAbsoluteValueCompletionProvider(),
+                new ElmCurrentModuleCompletionProvider());
     }
 }
