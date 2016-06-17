@@ -15,6 +15,11 @@ public class ElmScope {
         return provideValuesFor(file);
     }
 
+    public static Stream<Optional<ElmLowerCaseId>> recordFieldsFor(ElmFile file) {
+        ElmRecordFieldsProvider p = new ElmRecordFieldsProvider(file);
+        return Stream.generate(p::nextField);
+    }
+
     public static Stream<Optional<ElmUpperCaseId>> typesFor(ElmFile file) {
         ElmTypesProvider p = new ElmTypesProvider(file);
         return Stream.generate(p::nextType);

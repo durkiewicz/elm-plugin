@@ -88,12 +88,33 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
 
     @NotNull
     public Stream<ElmUpperCaseId> getInternalTypes() {
-        return getTypes(TypeFilter.always(true));
+        return this.getTypes(TypeFilter.always(true));
+    }
+
+    public Stream<ElmLowerCaseId> getRecordFields() {
+        return Arrays.stream(this.getChildren())
+                .filter(e -> e instanceof ElmTypeAliasDeclaration)
+                .flatMap(e -> getRecordFields((ElmTypeAliasDeclaration)e));
+    }
+
+    private Stream<ElmLowerCaseId> getRecordFields(ElmTypeAliasDeclaration element) {
+        return getRecordFields(element.getTypeDefinition());
+    }
+
+    private Stream<ElmLowerCaseId> getRecordFields(ElmTypeDefinition element) {
+        return element.getRecordTypeList().stream()
+                .flatMap(e -> e.getFieldTypeList().stream())
+                .flatMap(e -> Stream.concat(Stream.of(e.getLowerCaseId()), getRecordFields(e.getTypeDefinition())));
     }
 
     @NotNull
     public Stream<ElmUpperCaseId> getExposedTypes(TypeFilter inputTypeFilter) {
-        return getTypes(TypeFilter.and(inputTypeFilter, this.getExposedTypeFilter()));
+        return this.getTypes(TypeFilter.and(inputTypeFilter, this.getExposedTypeFilter()));
+    }
+
+    @NotNull
+    public Stream<ElmUpperCaseId> getExposedTypes() {
+        return getExposedTypes(TypeFilter.always(true));
     }
 
     @NotNull

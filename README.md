@@ -25,4 +25,13 @@ This plugin is still at development phase. More features are coming soon.
 
 (*) either from a context menu or by keyboard shortcut ⇧⌘G
 
+## Contributing
+
+If you would like to develop a new feature or fix a bug:
+- Please develop this change for Elm 0.16 (create a pull request to `elm-0.16` branch).
+  I'm going to support Elm 0.16 as well for some time. When your pull request is merged I will
+  merge it to the master branch (that supports Elm 0.17)
+- If you would like to do any change to the parser or a non-trivial change to resolving references,
+  please contact me before.
+
 ## License: MIT

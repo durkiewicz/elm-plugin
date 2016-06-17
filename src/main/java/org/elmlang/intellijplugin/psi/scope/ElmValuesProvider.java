@@ -1,6 +1,5 @@
 package org.elmlang.intellijplugin.psi.scope;
 
-import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import org.elmlang.intellijplugin.ElmModuleIndex;
 import org.elmlang.intellijplugin.psi.*;
@@ -12,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.function.Predicate;
+
+import static org.elmlang.intellijplugin.psi.ElmTreeUtil.isElementOfType;
 
 class ElmValuesProvider
 {
@@ -108,6 +109,10 @@ class ElmValuesProvider
                                 .ifPresent(id -> this.ids.push(id));
                     }
                 });
+    }
+
+    private static boolean startsWithPort(PsiElement element) {
+        return isElementOfType(element, ElmTypes.PORT);
     }
 
     private void gatherDeclarationsFromOtherFiles() {

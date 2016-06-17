@@ -50,15 +50,9 @@ class ElmTypesProvider {
     private void gatherTypesFromCurrentFile() {
         this.file.getInternalTypes()
                 .forEach(this.types::push);
-        Arrays.stream(this.file.getChildren())
-                .forEach(this::gatherImportClause);
+        this.file.getImportClauses()
+                .forEach(this.importClauses::push);
         this.updatePhase();
-    }
-
-    private void gatherImportClause(PsiElement element) {
-        if (element instanceof ElmImportClause) {
-            this.importClauses.push((ElmImportClause) element);
-        }
     }
 
     private void gatherTypesFromImport() {

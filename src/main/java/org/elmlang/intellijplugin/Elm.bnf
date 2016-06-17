@@ -107,10 +107,10 @@ type_alias_declaration ::=
     TYPE ALIAS upper_case_id (lower_case_id)* EQ type_definition
 type_definition ::=
     list_of_single_type_definitions (ARROW list_of_single_type_definitions)*
-list_of_single_type_definitions ::=
+private list_of_single_type_definitions ::=
     upper_case_path (single_type_definition)+
     | single_type_definition
-single_type_definition ::=
+private single_type_definition ::=
     upper_case_path
     | lower_case_id
     | record_type
