@@ -19,48 +19,48 @@ import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAtt
 import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 
 
-public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
+class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
 
-    public static final TextAttributesKey ELM_KEYWORD =
+    static final TextAttributesKey ELM_KEYWORD =
             createTextAttributesKey("ELM_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
 
-    public static final TextAttributesKey ELM_BAD_CHAR =
+    private static final TextAttributesKey ELM_BAD_CHAR =
             createTextAttributesKey("ELM_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
-    public static final TextAttributesKey ELM_COMMENT =
+    private static final TextAttributesKey ELM_COMMENT =
             createTextAttributesKey("ELM_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
 
-    public static final TextAttributesKey ELM_STRING =
+    static final TextAttributesKey ELM_STRING =
             createTextAttributesKey("ELM_STRING", DefaultLanguageHighlighterColors.STRING);
 
-    public static final TextAttributesKey ELM_NUMBER =
+    static final TextAttributesKey ELM_NUMBER =
             createTextAttributesKey("ELM_NUMBER", DefaultLanguageHighlighterColors.NUMBER);
 
-    public static final TextAttributesKey ELM_DOT =
+    static final TextAttributesKey ELM_DOT =
             createTextAttributesKey("ELM_DOT", DefaultLanguageHighlighterColors.DOT);
 
-    public static final TextAttributesKey ELM_ARROW =
+    static final TextAttributesKey ELM_ARROW =
             createTextAttributesKey("ELM_ARROW", DefaultLanguageHighlighterColors.OPERATION_SIGN);
 
-    public static final TextAttributesKey ELM_OPERATOR =
+    static final TextAttributesKey ELM_OPERATOR =
             createTextAttributesKey("ELM_OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN);
 
-    public static final TextAttributesKey ELM_PARENTHESIS =
+    static final TextAttributesKey ELM_PARENTHESIS =
             createTextAttributesKey("ELM_PARENTHESIS", DefaultLanguageHighlighterColors.PARENTHESES);
 
-    public static final TextAttributesKey ELM_BRACES =
+    static final TextAttributesKey ELM_BRACES =
             createTextAttributesKey("ELM_BRACES", DefaultLanguageHighlighterColors.BRACES);
 
-    public static final TextAttributesKey ELM_BRACKETS =
+    static final TextAttributesKey ELM_BRACKETS =
             createTextAttributesKey("ELM_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS);
 
-    public static final TextAttributesKey ELM_COMMA =
+    static final TextAttributesKey ELM_COMMA =
             createTextAttributesKey("ELM_COMMA", DefaultLanguageHighlighterColors.COMMA);
 
-    public static final TextAttributesKey ELM_EQ =
+    static final TextAttributesKey ELM_EQ =
             createTextAttributesKey("ELM_EQ", DefaultLanguageHighlighterColors.OPERATION_SIGN);
 
-    public static final TextAttributesKey ELM_PIPE =
+    static final TextAttributesKey ELM_PIPE =
             createTextAttributesKey("ELM_PIPE", DefaultLanguageHighlighterColors.OPERATION_SIGN);
 
     /**
@@ -68,14 +68,14 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
      *
      * e.g. 'foo' in 'foo x y = x * y'
      */
-    public static final TextAttributesKey ELM_DEFINITION_NAME =
+    static final TextAttributesKey ELM_DEFINITION_NAME =
             createTextAttributesKey("ELM_DEFINITION_NAME", DefaultLanguageHighlighterColors.FUNCTION_DECLARATION);
 
     /**
      * The uppercase identifier for a type in all contexts EXCEPT when appearing
      * in a type annotation.
      */
-    public static final TextAttributesKey ELM_TYPE =
+    static final TextAttributesKey ELM_TYPE =
             createTextAttributesKey("ELM_TYPE", DefaultLanguageHighlighterColors.CLASS_NAME);
 
     /**
@@ -83,7 +83,7 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
      *
      * e.g. 'foo' in 'foo : String -> Cmd msg'
      */
-    public static final TextAttributesKey ELM_TYPE_ANNOTATION_NAME =
+    static final TextAttributesKey ELM_TYPE_ANNOTATION_NAME =
             createTextAttributesKey("ELM_TYPE_ANNOTATION_NAME", DefaultLanguageHighlighterColors.FUNCTION_DECLARATION);
 
     /**
@@ -92,7 +92,7 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
      *
      * e.g. 'String' and 'Cmd msg' in 'foo : String -> Cmd msg'
      */
-    public static final TextAttributesKey ELM_TYPE_ANNOTATION_SIGNATURE_TYPES =
+    static final TextAttributesKey ELM_TYPE_ANNOTATION_SIGNATURE_TYPES =
             createTextAttributesKey("ELM_TYPE_ANNOTATION_SIGNATURE_TYPES", DefaultLanguageHighlighterColors.CLASS_REFERENCE);
 
 
@@ -150,10 +150,9 @@ public class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
             LIST_CONSTRUCTOR
     );
 
-    private static Map<IElementType, TextAttributesKey>keys;
+    private static final Map<IElementType, TextAttributesKey> keys = new HashMap<>();
 
     static {
-        keys = new HashMap<IElementType, TextAttributesKey>();
         fillMap(keys, KEYWORDS, ELM_KEYWORD);
         fillMap(keys, STRINGS, ELM_STRING);
         fillMap(keys, COMMENTS, ELM_COMMENT);
