@@ -76,12 +76,12 @@
                 implementationClass="org.elmlang.intellijplugin.ElmParserDefinition"/>
         <lang.syntaxHighlighterFactory
                 language="Elm"
-                implementationClass="org.elmlang.intellijplugin.ElmSyntaxHighlighterFactory"/>
+                implementationClass="org.elmlang.intellijplugin.features.syntaxHighlighting.ElmSyntaxHighlighterFactory"/>
         <annotator
                 language="Elm"
-                implementationClass="org.elmlang.intellijplugin.ElmSyntaxHighlightAnnotator"/>
+                implementationClass="org.elmlang.intellijplugin.features.syntaxHighlighting.ElmSyntaxHighlightAnnotator"/>
         <colorSettingsPage
-                implementation="org.elmlang.intellijplugin.ElmColorSettingsPage" />
+                implementation="org.elmlang.intellijplugin.features.syntaxHighlighting.ElmColorSettingsPage" />
         <lang.commenter
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.features.ElmCommenter"/>

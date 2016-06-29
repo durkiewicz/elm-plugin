@@ -1,4 +1,4 @@
-package org.elmlang.intellijplugin;
+package org.elmlang.intellijplugin.features.syntaxHighlighting;
 
 
 import com.intellij.lexer.Lexer;
@@ -9,6 +9,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import org.elmlang.intellijplugin.ElmLexerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

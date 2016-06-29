@@ -1,4 +1,4 @@
-package org.elmlang.intellijplugin;
+package org.elmlang.intellijplugin.features.syntaxHighlighting;
 
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.elmlang.intellijplugin.ElmSyntaxHighlighter.*;
+import static org.elmlang.intellijplugin.features.syntaxHighlighting.ElmSyntaxHighlighter.*;
 
 
 public class ElmSyntaxHighlightAnnotator implements Annotator {

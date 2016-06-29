@@ -1,10 +1,12 @@
-package org.elmlang.intellijplugin;
+package org.elmlang.intellijplugin.features.syntaxHighlighting;
 
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
 import com.intellij.openapi.options.colors.ColorDescriptor;
 import com.intellij.openapi.options.colors.ColorSettingsPage;
+import org.elmlang.intellijplugin.ElmIcons;
+import org.elmlang.intellijplugin.features.syntaxHighlighting.ElmSyntaxHighlighter;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +15,7 @@ import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.elmlang.intellijplugin.ElmSyntaxHighlighter.*;
+import static org.elmlang.intellijplugin.features.syntaxHighlighting.ElmSyntaxHighlighter.*;
 
 public class ElmColorSettingsPage implements ColorSettingsPage {
 
