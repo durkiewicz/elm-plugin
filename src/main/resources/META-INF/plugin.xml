@@ -74,6 +74,9 @@
         <lang.parserDefinition
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.ElmParserDefinition"/>
+        <lang.refactoringSupport
+                language="Elm"
+                implementationClass="org.elmlang.intellijplugin.features.ElmRefactoringSupportProvider"/>
         <lang.syntaxHighlighterFactory
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.features.syntaxHighlighting.ElmSyntaxHighlighterFactory"/>
