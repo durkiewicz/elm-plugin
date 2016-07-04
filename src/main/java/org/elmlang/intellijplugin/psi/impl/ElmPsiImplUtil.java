@@ -32,7 +32,7 @@ public class ElmPsiImplUtil {
     }
 
     public static PsiElement setName(ElmLowerCaseId element, String newName) {
-        ASTNode node = element.getNode().findChildByType(ElmTypes.UPPER_CASE_IDENTIFIER);
+        ASTNode node = element.getNode().findChildByType(ElmTypes.LOWER_CASE_IDENTIFIER);
         if (node != null) {
             ElmLowerCaseId id = ElmElementFactory.createLowerCaseId(element.getProject(), newName);
             ASTNode newNode = id.getFirstChild().getNode();

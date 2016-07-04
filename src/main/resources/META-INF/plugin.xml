@@ -77,9 +77,17 @@
         <lang.parserDefinition
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.ElmParserDefinition"/>
+        <lang.refactoringSupport
+                language="Elm"
+                implementationClass="org.elmlang.intellijplugin.features.ElmRefactoringSupportProvider"/>
         <lang.syntaxHighlighterFactory
                 language="Elm"
-                implementationClass="org.elmlang.intellijplugin.ElmSyntaxHighlighterFactory"/>
+                implementationClass="org.elmlang.intellijplugin.features.syntaxHighlighting.ElmSyntaxHighlighterFactory"/>
+        <annotator
+                language="Elm"
+                implementationClass="org.elmlang.intellijplugin.features.syntaxHighlighting.ElmSyntaxHighlightAnnotator"/>
+        <colorSettingsPage
+                implementation="org.elmlang.intellijplugin.features.syntaxHighlighting.ElmColorSettingsPage" />
         <lang.commenter
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.features.ElmCommenter"/>
@@ -92,6 +100,8 @@
         <spellchecker.support
                 language="Elm"
                 implementationClass="com.intellij.spellchecker.tokenizer.SpellcheckingStrategy"/>
+        <additionalTextAttributes scheme="Default" file="colorSchemes/ElmDefault.xml"/>
+        <additionalTextAttributes scheme="Darcula" file="colorSchemes/ElmDarcula.xml"/>
     </extensions>
 
     <actions>

@@ -4,8 +4,10 @@ package org.elmlang.intellijplugin.psi.references;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.util.IncorrectOperationException;
 import org.elmlang.intellijplugin.ElmModuleIndex;
 import org.elmlang.intellijplugin.psi.ElmFile;
+import org.elmlang.intellijplugin.psi.ElmNamedElement;
 import org.elmlang.intellijplugin.utils.Function3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +39,14 @@ abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<P
     @Override
     public ElmReferenceTarget getTarget() {
         return ElmReferenceTarget.SYMBOL;
+    }
+
+    @Override
+    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+        if (this.referencingElement instanceof ElmNamedElement) {
+            return ((ElmNamedElement)this.referencingElement).setName(newElementName);
+        }
+        return super.handleElementRename(newElementName);
     }
 
     protected abstract Function3<PsiElement, T, TextRange, ElmReference> constructor();
