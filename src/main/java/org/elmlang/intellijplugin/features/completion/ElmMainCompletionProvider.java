@@ -28,8 +28,9 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
     private final ElmAbsoluteValueCompletionProvider absoluteValueProvider;
     private final ElmCurrentModuleCompletionProvider currentModuleProvider;
     private final ElmRecordFieldsCompletionProvider recordFieldsProvider;
+    private final ElmAfterAnnotationCompletionProvider afterAnnotationProvider;
 
-    ElmMainCompletionProvider(ElmValueCompletionProvider valueProvider, ElmKeywordsCompletionsProvider keywordsProvider, ElmTypeCompletionProvider typeProvider, ElmModuleCompletionProvider moduleProvider, ElmAbsoluteValueCompletionProvider absoluteValueProvider, ElmCurrentModuleCompletionProvider currentModuleProvider, ElmRecordFieldsCompletionProvider recordFieldsProvider) {
+    ElmMainCompletionProvider(ElmValueCompletionProvider valueProvider, ElmKeywordsCompletionsProvider keywordsProvider, ElmTypeCompletionProvider typeProvider, ElmModuleCompletionProvider moduleProvider, ElmAbsoluteValueCompletionProvider absoluteValueProvider, ElmCurrentModuleCompletionProvider currentModuleProvider, ElmRecordFieldsCompletionProvider recordFieldsProvider, ElmAfterAnnotationCompletionProvider afterAnnotationProvider) {
         this.valueProvider = valueProvider;
         this.keywordsProvider = keywordsProvider;
         this.typeProvider = typeProvider;
@@ -37,6 +38,7 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         this.absoluteValueProvider = absoluteValueProvider;
         this.currentModuleProvider = currentModuleProvider;
         this.recordFieldsProvider = recordFieldsProvider;
+        this.afterAnnotationProvider = afterAnnotationProvider;
     }
 
     @Override
@@ -128,6 +130,7 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
             addCompletionsAfterDot((PsiElement) node, resultSet);
         } else if (elementType.equals(ElmTypes.FRESH_LINE)) {
             this.keywordsProvider.addCompletions(resultSet);
+            this.afterAnnotationProvider.addCompletions(node.getPsi(), resultSet);
         }
     }
 
