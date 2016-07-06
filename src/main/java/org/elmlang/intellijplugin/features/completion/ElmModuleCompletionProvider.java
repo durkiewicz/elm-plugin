@@ -36,7 +36,9 @@ class ElmModuleCompletionProvider {
     }
 
     private static Optional<String> getModulePart(String moduleName, String prefix) {
-        if (moduleName.length() <= prefix.length() || !moduleName.startsWith(prefix)) {
+        boolean isCorrectPrefix = prefix.length() == 0 || moduleName.startsWith(prefix + ".");
+
+        if (!isCorrectPrefix) {
             return Optional.empty();
         }
 
