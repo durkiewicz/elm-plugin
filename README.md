@@ -5,11 +5,15 @@ Elm language plugin for IntelliJ IDEA.
 
 - Supports Elm 0.16.0
 - Parsing the syntax
-- Coloring keywords, comments, strings and numbers
+- Syntax highlighting
 - Going to declaration 
 - Highlighting unresolved references
+- Code completion
+- Brace matching
+- Spellchecking
+- Rename refactoring
 
-This plugin is still at development phase. More features are coming soon.
+Formatting is currently not a feature of the plugin, but `elm-format` can be used instead. If you don't know how to configure IntelliJ to use `elm-format` you can find some information [here](https://github.com/durkiewicz/elm-plugin/issues/9)
 
 ## Building from sources
 
