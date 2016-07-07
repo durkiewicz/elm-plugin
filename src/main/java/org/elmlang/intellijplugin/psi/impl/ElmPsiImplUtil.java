@@ -1,7 +1,9 @@
 package org.elmlang.intellijplugin.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.psi.*;
 import org.elmlang.intellijplugin.psi.references.*;
@@ -9,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -18,13 +21,7 @@ public class ElmPsiImplUtil {
     }
 
     public static PsiElement setName(ElmUpperCaseId element, String newName) {
-        ASTNode node = element.getNode().findChildByType(ElmTypes.UPPER_CASE_IDENTIFIER);
-        if (node != null) {
-            ElmUpperCaseId id = ElmElementFactory.createUpperCaseId(element.getProject(), newName);
-            ASTNode newNode = id.getFirstChild().getNode();
-            element.getNode().replaceChild(node, newNode);
-        }
-        return element;
+        return setName(element, ElmTypes.UPPER_CASE_IDENTIFIER, ElmElementFactory::createUpperCaseId, newName);
     }
 
     public static String getName(ElmLowerCaseId element) {
@@ -32,11 +29,14 @@ public class ElmPsiImplUtil {
     }
 
     public static PsiElement setName(ElmLowerCaseId element, String newName) {
-        ASTNode node = element.getNode().findChildByType(ElmTypes.LOWER_CASE_IDENTIFIER);
+        return setName(element, ElmTypes.LOWER_CASE_IDENTIFIER, ElmElementFactory::createLowerCaseId, newName);
+    }
+
+    private static <T extends PsiElement> PsiElement setName(T element, IElementType elementType, BiFunction<Project, String, T> elementFactory, String newName) {
+        ASTNode node = element.getNode().findChildByType(elementType);
         if (node != null) {
-            ElmLowerCaseId id = ElmElementFactory.createLowerCaseId(element.getProject(), newName);
-            ASTNode newNode = id.getFirstChild().getNode();
-            element.getNode().replaceChild(node, newNode);
+            Optional.ofNullable(elementFactory.apply(element.getProject(), newName))
+                    .ifPresent(id -> element.getNode().replaceChild(node, id.getFirstChild().getNode()));
         }
         return element;
     }
