@@ -1,6 +1,7 @@
 package org.elmlang.intellijplugin.features.completion;
 
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import org.elmlang.intellijplugin.ElmModuleIndex;
 import org.elmlang.intellijplugin.psi.ElmFile;
@@ -12,13 +13,17 @@ import java.util.stream.Stream;
 import static org.elmlang.intellijplugin.features.completion.ElmCompletionHelper.addStringToResult;
 
 class ElmAbsoluteValueCompletionProvider {
-    void addCompletions(ElmFile file, String moduleOrAlias, CompletionResultSet resultSet) {
+    void addCompletionsForModuleOrAlias(ElmFile file, String moduleOrAlias, CompletionResultSet resultSet) {
         String moduleName = file.getImportClauses().stream()
                 .filter(e -> importHasAlias(e, moduleOrAlias))
                 .findFirst()
                 .map(e -> e.getModuleName().getText())
                 .orElse(moduleOrAlias);
-        ElmModuleIndex.getFilesByModuleName(moduleName, file.getProject())
+        addCompletionsForModule(file.getProject(), moduleName, resultSet);
+    }
+
+    void addCompletionsForModule(Project project, String moduleName, CompletionResultSet resultSet) {
+        ElmModuleIndex.getFilesByModuleName(moduleName, project)
                 .forEach(f -> addCompletionsFromOtherFile(f, resultSet));
     }
 

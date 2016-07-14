@@ -55,6 +55,10 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         } else if (grandParent instanceof ElmMixedCasePath
                 || grandParent instanceof ElmUpperCasePath) {
             addTypeOrModuleCompletions(parent, resultSet);
+        } else if (grandParent instanceof ElmExposingClause) {
+            this.addExposedValuesCompletion((ElmExposingClause)grandParent, resultSet);
+        } else if (parent instanceof ElmUpperCaseId) {
+            this.addExposedValuesCompletion((ElmUpperCaseId)parent, resultSet);
         }
     }
 
@@ -78,6 +82,40 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
             this.moduleProvider.addCompletions(file, resultSet);
         } else {
             addModuleCompletions(element, resultSet);
+        }
+    }
+
+    private void addExposedValuesCompletion(ElmUpperCaseId element, CompletionResultSet resultSet) {
+        Optional.ofNullable(element.getParent())
+                .flatMap(ElmMainCompletionProvider::getExposedUnion)
+                .flatMap(e -> Optional.ofNullable(e.getParent()))
+                .filter(e -> e instanceof ElmExposingClause)
+                .ifPresent(e -> addExposedValuesCompletion((ElmExposingClause)e, resultSet));
+    }
+
+    private void addExposedValuesCompletion(ElmExposingClause element, CompletionResultSet resultSet) {
+        Optional.ofNullable(element.getParent())
+                .filter(e -> e instanceof ElmImportClause)
+                .map(e -> ((ElmImportClause)e).getModuleName().getText())
+                .ifPresent(moduleName -> this.absoluteValueProvider.addCompletionsForModule(element.getProject(), moduleName, resultSet));
+    }
+
+    private static Optional<ElmExposedUnion> getExposedUnion(PsiElement element) {
+        if (element instanceof ElmExposedUnion) {
+            return Optional.of((ElmExposedUnion)element);
+        } else if (element instanceof ElmExposedUnionConstructors) {
+            return Optional.of(element.getParent())
+                .filter(e -> e instanceof ElmExposedUnion)
+                .map(e -> (ElmExposedUnion)e);
+        }
+        return Optional.empty();
+    }
+
+    private void addExposedUnionCompletion(ElmExposedUnion element, CompletionResultSet resultSet) {
+        PsiElement parent = element.getParent();
+        if (parent instanceof ElmImportClause) {
+            String moduleName = ((ElmImportClause)parent).getModuleName().getText();
+            this.absoluteValueProvider.addCompletionsForModule(element.getProject(), moduleName, resultSet);
         }
     }
 
@@ -188,7 +226,7 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         if (upperCaseIds.size() > 0) {
             String modulePart = ElmTreeUtil.joinUsingDot(upperCaseIds);
             this.moduleProvider.addCompletions(dot.getProject(), modulePart, resultSet);
-            this.absoluteValueProvider.addCompletions((ElmFile) dot.getContainingFile(), modulePart, resultSet);
+            this.absoluteValueProvider.addCompletionsForModuleOrAlias((ElmFile) dot.getContainingFile(), modulePart, resultSet);
         } else if (lowerCaseId) {
             this.recordFieldsProvider.addCompletions((ElmFile) dot.getContainingFile(), resultSet);
         }
