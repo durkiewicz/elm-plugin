@@ -2,6 +2,7 @@ package org.elmlang.intellijplugin.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -21,6 +22,11 @@ public class ElmPsiImplUtil {
     }
 
     public static PsiElement setName(ElmUpperCaseId element, String newName) {
+        Optional.ofNullable(element.getParent())
+                .filter(e -> e instanceof ElmUpperCasePath)
+                .flatMap(e -> Optional.ofNullable(e.getParent()))
+                .filter(e -> e instanceof ElmModuleDeclaration)
+                .ifPresent(e -> Messages.showWarningDialog(element.getProject(), "Unfortunately, functionality of renaming module names has not been implemented yet.", "It's not implemented yet"));
         return setName(element, ElmTypes.UPPER_CASE_IDENTIFIER, ElmElementFactory::createUpperCaseId, newName);
     }
 
