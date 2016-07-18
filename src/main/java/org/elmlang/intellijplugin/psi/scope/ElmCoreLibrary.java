@@ -1,6 +1,7 @@
 package org.elmlang.intellijplugin.psi.scope;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class ElmCoreLibrary {
     public static final String BASICS_MODULE = "Basics";
@@ -36,5 +37,9 @@ public class ElmCoreLibrary {
         Stack<String> result = new Stack<>();
         IMPLICIT_IMPORTS.forEach(result::push);
         return result;
+    }
+
+    public static Stream<String> getBuiltInSymbols(){
+        return BUILT_IN_SYMBOLS.stream();
     }
 }
