@@ -2,7 +2,6 @@ package org.elmlang.intellijplugin.features.completion;
 
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
 import org.elmlang.intellijplugin.ElmModuleIndex;
 import org.elmlang.intellijplugin.psi.ElmFile;
 import org.elmlang.intellijplugin.psi.ElmImportClause;
@@ -36,8 +35,8 @@ class ElmAbsoluteValueCompletionProvider {
 
     private static void addCompletionsFromOtherFile(ElmFile file, CompletionResultSet resultSet) {
         Stream.concat(
-                file.getExposedValues().map(e -> (PsiElement) e),
-                file.getExposedTypes().map(e -> (PsiElement) e)
+                file.getExposedValues(),
+                file.getExposedTypes()
         ).forEach(e -> addStringToResult(e.getText(), resultSet));
     }
 }

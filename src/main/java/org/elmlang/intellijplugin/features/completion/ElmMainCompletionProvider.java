@@ -29,8 +29,9 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
     private final ElmCurrentModuleCompletionProvider currentModuleProvider;
     private final ElmRecordFieldsCompletionProvider recordFieldsProvider;
     private final ElmAfterAnnotationCompletionProvider afterAnnotationProvider;
+    private final ElmSingleModuleValueCompletionProvider singleModuleValueProvider;
 
-    ElmMainCompletionProvider(ElmValueCompletionProvider valueProvider, ElmKeywordsCompletionsProvider keywordsProvider, ElmTypeCompletionProvider typeProvider, ElmModuleCompletionProvider moduleProvider, ElmAbsoluteValueCompletionProvider absoluteValueProvider, ElmCurrentModuleCompletionProvider currentModuleProvider, ElmRecordFieldsCompletionProvider recordFieldsProvider, ElmAfterAnnotationCompletionProvider afterAnnotationProvider) {
+    ElmMainCompletionProvider(ElmValueCompletionProvider valueProvider, ElmKeywordsCompletionsProvider keywordsProvider, ElmTypeCompletionProvider typeProvider, ElmModuleCompletionProvider moduleProvider, ElmAbsoluteValueCompletionProvider absoluteValueProvider, ElmCurrentModuleCompletionProvider currentModuleProvider, ElmRecordFieldsCompletionProvider recordFieldsProvider, ElmAfterAnnotationCompletionProvider afterAnnotationProvider, ElmSingleModuleValueCompletionProvider singleModuleValueProvider) {
         this.valueProvider = valueProvider;
         this.keywordsProvider = keywordsProvider;
         this.typeProvider = typeProvider;
@@ -39,6 +40,7 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         this.currentModuleProvider = currentModuleProvider;
         this.recordFieldsProvider = recordFieldsProvider;
         this.afterAnnotationProvider = afterAnnotationProvider;
+        this.singleModuleValueProvider = singleModuleValueProvider;
     }
 
     @Override
@@ -59,6 +61,8 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
             this.addExposedValuesCompletion((ElmExposingClause)grandParent, resultSet);
         } else if (parent instanceof ElmUpperCaseId) {
             this.addExposedValuesCompletion((ElmUpperCaseId)parent, resultSet);
+        } else if (parent instanceof ElmLowerCaseId && grandParent instanceof ElmModuleDeclaration) {
+            this.singleModuleValueProvider.addCompletions((ElmFile)grandParent.getContainingFile(), resultSet);
         }
     }
 
@@ -89,8 +93,13 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         Optional.ofNullable(element.getParent())
                 .flatMap(ElmMainCompletionProvider::getExposedUnion)
                 .flatMap(e -> Optional.ofNullable(e.getParent()))
-                .filter(e -> e instanceof ElmExposingClause)
-                .ifPresent(e -> addExposedValuesCompletion((ElmExposingClause)e, resultSet));
+                .ifPresent(e -> {
+                    if (e instanceof ElmExposingClause){
+                        addExposedValuesCompletion((ElmExposingClause)e, resultSet);
+                    } else if (e instanceof ElmModuleDeclaration) {
+                        this.singleModuleValueProvider.addCompletions((ElmFile)e.getContainingFile(), resultSet);
+                    }
+                });
     }
 
     private void addExposedValuesCompletion(ElmExposingClause element, CompletionResultSet resultSet) {
@@ -109,14 +118,6 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
                 .map(e -> (ElmExposedUnion)e);
         }
         return Optional.empty();
-    }
-
-    private void addExposedUnionCompletion(ElmExposedUnion element, CompletionResultSet resultSet) {
-        PsiElement parent = element.getParent();
-        if (parent instanceof ElmImportClause) {
-            String moduleName = ((ElmImportClause)parent).getModuleName().getText();
-            this.absoluteValueProvider.addCompletionsForModule(element.getProject(), moduleName, resultSet);
-        }
     }
 
     private void addModuleCompletions(PsiElement element, CompletionResultSet resultSet) {
