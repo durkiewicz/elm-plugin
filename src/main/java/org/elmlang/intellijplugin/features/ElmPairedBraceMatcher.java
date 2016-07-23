@@ -3,6 +3,7 @@ package org.elmlang.intellijplugin.features;
 import com.intellij.lang.BracePair;
 import com.intellij.lang.PairedBraceMatcher;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.elmlang.intellijplugin.psi.ElmTypes;
 import org.jetbrains.annotations.NotNull;
@@ -21,8 +22,10 @@ public class ElmPairedBraceMatcher implements PairedBraceMatcher {
     }
 
     @Override
-    public boolean isPairedBracesAllowedBeforeType(@NotNull IElementType iElementType, @Nullable IElementType iElementType1) {
-        return true;
+    public boolean isPairedBracesAllowedBeforeType(@NotNull IElementType lbraceType, @Nullable IElementType contextType) {
+        return contextType == null
+                || contextType == TokenType.WHITE_SPACE
+                || contextType == ElmTypes.FRESH_LINE;
     }
 
     @Override

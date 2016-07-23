@@ -81,6 +81,11 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
     }
 
     @NotNull
+    public Stream<ElmLowerCaseId> getAllDefinedValues() {
+        return this.getAllDefinedValues(x -> true);
+    }
+
+    @NotNull
     public Optional<ElmLowerCaseId> getExposedValueByName(String name) {
         return this.getExposedValues().filter(e -> e.getText().equals(name))
                 .findFirst();

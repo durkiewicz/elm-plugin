@@ -23,7 +23,8 @@ public class ElmCompletionContributor extends CompletionContributor {
                 new ElmModuleCompletionProvider(),
                 new ElmAbsoluteValueCompletionProvider(),
                 new ElmCurrentModuleCompletionProvider(),
-                new ElmRecordFieldsCompletionProvider()
-        );
+                new ElmRecordFieldsCompletionProvider(),
+                new ElmAfterAnnotationCompletionProvider(),
+                new ElmSingleModuleValueCompletionProvider());
     }
 }

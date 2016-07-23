@@ -8,12 +8,16 @@ import org.elmlang.intellijplugin.psi.references.ElmReference;
 import org.elmlang.intellijplugin.psi.references.ElmReferenceTarget;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 public class UnresolvedReferenceAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder holder) {
         if (shouldCheckReferences(psiElement)) {
             checkReferences((ElmPsiElement) psiElement, holder);
         }
+        checkRecord(psiElement, holder);
     }
 
     private static boolean shouldCheckReferences(PsiElement psiElement) {
@@ -28,6 +32,17 @@ public class UnresolvedReferenceAnnotator implements Annotator {
     private static void checkReferences(ElmPsiElement psiElement, AnnotationHolder holder) {
         psiElement.getReferencesStream()
                 .forEach(r -> annotateIfUnresolved(r, holder));
+    }
+
+    private static void checkRecord(PsiElement psiElement, AnnotationHolder holder) {
+        if (!(psiElement instanceof ElmRecord)) {
+            return;
+        }
+        ElmRecord record = (ElmRecord) psiElement;
+        Optional.ofNullable(record.getLowerCaseId())
+                .map(x -> record.getReferencesStream())
+                .flatMap(Stream::findFirst)
+                .ifPresent(r -> annotateIfUnresolved(r, holder));
     }
 
     private static void annotateIfUnresolved(ElmReference reference, AnnotationHolder holder) {

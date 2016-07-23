@@ -46,7 +46,7 @@ abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<P
         if (this.referencingElement instanceof ElmNamedElement) {
             return ((ElmNamedElement)this.referencingElement).setName(newElementName);
         }
-        return super.handleElementRename(newElementName);
+        return this.referencingElement;
     }
 
     protected abstract Function3<PsiElement, T, TextRange, ElmReference> constructor();

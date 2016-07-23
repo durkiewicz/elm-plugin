@@ -28,8 +28,10 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
     private final ElmAbsoluteValueCompletionProvider absoluteValueProvider;
     private final ElmCurrentModuleCompletionProvider currentModuleProvider;
     private final ElmRecordFieldsCompletionProvider recordFieldsProvider;
+    private final ElmAfterAnnotationCompletionProvider afterAnnotationProvider;
+    private final ElmSingleModuleValueCompletionProvider singleModuleValueProvider;
 
-    ElmMainCompletionProvider(ElmValueCompletionProvider valueProvider, ElmKeywordsCompletionsProvider keywordsProvider, ElmTypeCompletionProvider typeProvider, ElmModuleCompletionProvider moduleProvider, ElmAbsoluteValueCompletionProvider absoluteValueProvider, ElmCurrentModuleCompletionProvider currentModuleProvider, ElmRecordFieldsCompletionProvider recordFieldsProvider) {
+    ElmMainCompletionProvider(ElmValueCompletionProvider valueProvider, ElmKeywordsCompletionsProvider keywordsProvider, ElmTypeCompletionProvider typeProvider, ElmModuleCompletionProvider moduleProvider, ElmAbsoluteValueCompletionProvider absoluteValueProvider, ElmCurrentModuleCompletionProvider currentModuleProvider, ElmRecordFieldsCompletionProvider recordFieldsProvider, ElmAfterAnnotationCompletionProvider afterAnnotationProvider, ElmSingleModuleValueCompletionProvider singleModuleValueProvider) {
         this.valueProvider = valueProvider;
         this.keywordsProvider = keywordsProvider;
         this.typeProvider = typeProvider;
@@ -37,6 +39,8 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         this.absoluteValueProvider = absoluteValueProvider;
         this.currentModuleProvider = currentModuleProvider;
         this.recordFieldsProvider = recordFieldsProvider;
+        this.afterAnnotationProvider = afterAnnotationProvider;
+        this.singleModuleValueProvider = singleModuleValueProvider;
     }
 
     @Override
@@ -53,6 +57,12 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         } else if (grandParent instanceof ElmMixedCasePath
                 || grandParent instanceof ElmUpperCasePath) {
             addTypeOrModuleCompletions(parent, resultSet);
+        } else if (grandParent instanceof ElmExposingClause) {
+            this.addExposedValuesCompletion((ElmExposingClause)grandParent, resultSet);
+        } else if (parent instanceof ElmUpperCaseId) {
+            this.addExposedValuesCompletion((ElmUpperCaseId)parent, resultSet);
+        } else if (parent instanceof ElmLowerCaseId && grandParent instanceof ElmModuleDeclaration) {
+            this.singleModuleValueProvider.addCompletions((ElmFile)grandParent.getContainingFile(), resultSet);
         }
     }
 
@@ -77,6 +87,37 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         } else {
             addModuleCompletions(element, resultSet);
         }
+    }
+
+    private void addExposedValuesCompletion(ElmUpperCaseId element, CompletionResultSet resultSet) {
+        Optional.ofNullable(element.getParent())
+                .flatMap(ElmMainCompletionProvider::getExposedUnion)
+                .flatMap(e -> Optional.ofNullable(e.getParent()))
+                .ifPresent(e -> {
+                    if (e instanceof ElmExposingClause){
+                        addExposedValuesCompletion((ElmExposingClause)e, resultSet);
+                    } else if (e instanceof ElmModuleDeclaration) {
+                        this.singleModuleValueProvider.addCompletions((ElmFile)e.getContainingFile(), resultSet);
+                    }
+                });
+    }
+
+    private void addExposedValuesCompletion(ElmExposingClause element, CompletionResultSet resultSet) {
+        Optional.ofNullable(element.getParent())
+                .filter(e -> e instanceof ElmImportClause)
+                .map(e -> ((ElmImportClause)e).getModuleName().getText())
+                .ifPresent(moduleName -> this.absoluteValueProvider.addCompletionsForModule(element.getProject(), moduleName, resultSet));
+    }
+
+    private static Optional<ElmExposedUnion> getExposedUnion(PsiElement element) {
+        if (element instanceof ElmExposedUnion) {
+            return Optional.of((ElmExposedUnion)element);
+        } else if (element instanceof ElmExposedUnionConstructors) {
+            return Optional.of(element.getParent())
+                .filter(e -> e instanceof ElmExposedUnion)
+                .map(e -> (ElmExposedUnion)e);
+        }
+        return Optional.empty();
     }
 
     private void addModuleCompletions(PsiElement element, CompletionResultSet resultSet) {
@@ -128,6 +169,7 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
             addCompletionsAfterDot((PsiElement) node, resultSet);
         } else if (elementType.equals(ElmTypes.FRESH_LINE)) {
             this.keywordsProvider.addCompletions(resultSet);
+            this.afterAnnotationProvider.addCompletions(node.getPsi(), resultSet);
         }
     }
 
@@ -185,7 +227,7 @@ class ElmMainCompletionProvider extends CompletionProvider<CompletionParameters>
         if (upperCaseIds.size() > 0) {
             String modulePart = ElmTreeUtil.joinUsingDot(upperCaseIds);
             this.moduleProvider.addCompletions(dot.getProject(), modulePart, resultSet);
-            this.absoluteValueProvider.addCompletions((ElmFile) dot.getContainingFile(), modulePart, resultSet);
+            this.absoluteValueProvider.addCompletionsForModuleOrAlias((ElmFile) dot.getContainingFile(), modulePart, resultSet);
         } else if (lowerCaseId) {
             this.recordFieldsProvider.addCompletions((ElmFile) dot.getContainingFile(), resultSet);
         }
