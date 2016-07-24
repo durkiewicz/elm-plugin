@@ -2,6 +2,7 @@ package org.elmlang.intellijplugin.psi.references.annotation;
 
 import com.intellij.lang.annotation.*;
 import com.intellij.psi.*;
+import org.elmlang.intellijplugin.features.intention.imports.ElmImportQuickFix;
 import org.elmlang.intellijplugin.psi.*;
 import org.elmlang.intellijplugin.psi.impl.ElmPsiElement;
 import org.elmlang.intellijplugin.psi.references.ElmReference;
@@ -56,7 +57,9 @@ public class UnresolvedReferenceAnnotator implements Annotator {
                     reference.getCanonicalText(),
                     additionalMessage
             );
-            holder.createErrorAnnotation(reference.getReferencingElement(), message);
+            Annotation annotation = holder.createErrorAnnotation(reference.getReferencingElement(), message);
+            String nameToFix = reference.getReferencingElement().getText();
+            annotation.registerFix(new ElmImportQuickFix(nameToFix));
         }
     }
 }
