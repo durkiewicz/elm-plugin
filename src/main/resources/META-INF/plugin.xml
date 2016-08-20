@@ -79,6 +79,9 @@
         <fileBasedIndex implementation="org.elmlang.intellijplugin.ElmModuleIndex"/>
         <annotator language="Elm"
                    implementationClass="org.elmlang.intellijplugin.psi.references.annotation.UnresolvedReferenceAnnotator"/>
+        <lang.findUsagesProvider
+                language="Elm"
+                implementationClass="org.elmlang.intellijplugin.features.ElmFindUsagesProvider"/>
         <lang.parserDefinition
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.ElmParserDefinition"/>
