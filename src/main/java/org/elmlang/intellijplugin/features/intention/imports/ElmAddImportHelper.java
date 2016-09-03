@@ -2,10 +2,12 @@ package org.elmlang.intellijplugin.features.intention.imports;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.psi.*;
+import org.elmlang.intellijplugin.utils.ListUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -43,28 +45,42 @@ public class ElmAddImportHelper {
                               import2.getModuleName().getText());
 
         Project project = sourceFile.getProject();
-
-        // If either one of the imports has an alias clause, extract it
-        // for use in the new, merged import.
-        Optional<ElmAsClause> as1 = Optional.ofNullable(import1.getAsClause());
-        Optional<ElmAsClause> as2 = Optional.ofNullable(import2.getAsClause());
-        String aliasText = Optional.ofNullable(as1.orElse(as2.orElse(null)))
-                .map(e -> " as " + e.getUpperCaseId().getName())
-                .orElse("");
-
-        // Merge the exposing clause(s)
         Optional<ElmExposingClause> exposing1 = Optional.ofNullable(import1.getExposingClause());
         Optional<ElmExposingClause> exposing2 = Optional.ofNullable(import2.getExposingClause());
 
-        List<String> exposedValues =
+        // merge and sort each import's exposing clauses
+        List<String> exposedNames =
                 Stream.concat(
-                        exposing1.map(e -> e.getLowerCaseIdList().stream()).orElse(Stream.empty()),
-                        exposing2.map(e -> e.getLowerCaseIdList().stream()).orElse(Stream.empty())
+                        mergeExposedValues(exposing1, exposing2),
+                        mergeExposedTypes(exposing1, exposing2)
                 )
-                .sorted((e1, e2) -> e1.getText().compareTo(e2.getText()))
-                .map(PsiElement::getText)
+                .sorted(String::compareTo)
                 .collect(Collectors.toList());
 
+        // generate the new, merged import statement
+        String moduleName = import1.getModuleName().getText();
+        String modulePlusAlias = moduleName + mergeAliasClause(import1, import2);
+        return ElmElementFactory.createImportExposing(project, modulePlusAlias, exposedNames);
+    }
+
+    private static String mergeAliasClause(ElmImportClause import1, ElmImportClause import2) {
+        Optional<ElmAsClause> as1 = Optional.ofNullable(import1.getAsClause());
+        Optional<ElmAsClause> as2 = Optional.ofNullable(import2.getAsClause());
+        return Optional.ofNullable(as1.orElse(as2.orElse(null)))
+                .map(e -> " as " + e.getUpperCaseId().getName())
+                .orElse("");
+    }
+
+    private static Stream<String> mergeExposedValues(Optional<ElmExposingClause> exposing1, Optional<ElmExposingClause> exposing2) {
+        return Stream.concat(
+                    exposing1.map(e -> e.getLowerCaseIdList().stream()).orElse(Stream.empty()),
+                    exposing2.map(e -> e.getLowerCaseIdList().stream()).orElse(Stream.empty())
+               )
+               .sorted((e1, e2) -> e1.getText().compareTo(e2.getText()))
+               .map(PsiElement::getText);
+    }
+
+    private static Stream<String> mergeExposedTypes(Optional<ElmExposingClause> exposing1, Optional<ElmExposingClause> exposing2) {
         Map<String,List<ElmExposedUnion>> exposedUnionsByName =
                 Stream.concat(
                         exposing1.map(e -> e.getExposedUnionList().stream()).orElse(Stream.empty()),
@@ -76,21 +92,9 @@ public class ElmAddImportHelper {
                     )
                 );
 
-        List<String> exposedTypes = exposedUnionsByName.entrySet()
+        return exposedUnionsByName.entrySet()
                 .stream()
-                .map(entry -> mergeExposedUnionConstructors(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-
-        // combine the new exposing list and sort it
-        List<String> exposedNames = new ArrayList<>();
-        exposedNames.addAll(exposedValues);
-        exposedNames.addAll(exposedTypes);
-        exposedNames.sort(String::compareTo);
-
-        // generate the new, merged import statement
-        String moduleName = import1.getModuleName().getText();
-        String modulePlusAlias = moduleName + aliasText;
-        return ElmElementFactory.createImportExposing(project, modulePlusAlias, exposedNames);
+                .map(entry -> mergeExposedUnionConstructors(entry.getKey(), entry.getValue()));
     }
 
     private static String mergeExposedUnionConstructors(String typeName, List<ElmExposedUnion> unions) {
@@ -105,8 +109,9 @@ public class ElmAddImportHelper {
 
         String body;
         body = unions.stream()
-                .filter(e -> e.getExposedUnionConstructors() != null)
-                .flatMap(e -> e.getExposedUnionConstructors().getUpperCaseIdList().stream())
+                .map(e -> e.getExposedUnionConstructors())
+                .filter(e -> e != null)
+                .flatMap(e -> e.getUpperCaseIdList().stream())
                 .sorted((e1, e2) -> {
                     String type1 = e1.getText();
                     String type2 = e2.getText();
@@ -120,56 +125,64 @@ public class ElmAddImportHelper {
 
     private static ASTNode getInsertPosition(ElmFile sourceFile, String moduleName) {
         Project project = sourceFile.getProject();
-        ASTNode insertPosition = null;
         List<ElmImportClause> existingImportClauses = sourceFile.getImportClauses();
-        if (existingImportClauses.isEmpty()) {
-            // we need to create a new import section
-            PsiElement moduleDecl = sourceFile.getModuleDeclaration().orElse(null);
+        return existingImportClauses.isEmpty()
+                ? prepareInsertInNewSection(sourceFile, project)
+                : getSortedInsertPosition(moduleName, existingImportClauses);
+    }
 
-            if (moduleDecl == null) {
-                // source file does not have an explicit module declaration
-                // so just insert at the front of the file.
-                insertPosition = sourceFile.getNode().getFirstChildNode();
-            } else {
-                // skip over comment blocks
-                PsiElement nextNonCommentSibling = PsiTreeUtil.skipSiblingsForward(moduleDecl, PsiComment.class);
+    private static ASTNode prepareInsertInNewSection(ElmFile sourceFile, Project project) {
+        PsiElement moduleDecl = sourceFile.getModuleDeclaration().orElse(null);
 
-                // insert blanklines flanking the new import section
-                ASTNode newFreshline = ElmElementFactory.createFreshLine(project).getNode();
-                sourceFile.getNode().addChild(newFreshline, nextNonCommentSibling.getNode());
-                ASTNode newFreshline2 = ElmElementFactory.createFreshLine(project).getNode();
-                sourceFile.getNode().addChild(newFreshline2, newFreshline);
-                insertPosition = newFreshline.getTreeNext();
-            }
+        if (moduleDecl == null) {
+            // source file does not have an explicit module declaration
+            // so just insert at the front of the file.
+            return sourceFile.getNode().getFirstChildNode();
         } else {
-            // find the sorted position within the existing import section
+            // skip over comment blocks
+            PsiElement nextNonCommentSibling = PsiTreeUtil.skipSiblingsForward(moduleDecl, PsiComment.class);
 
-            // NOTE: we *assume* that the imports are already sorted and we
-            // do not make any distinction between import groups/sections
-            // (e.g. the practice of putting core libs in the first group,
-            // 3rd party libs in a second group, and project files in the
-            // final group). In the future we will likely want to revisit
-            // this shortcut as it would very frustrating for a developer
-            // who "curates" their import list to keep fighting where the
-            // quick-fix puts its imports.
-            ElmImportClause prevImport = null;
-            for (ElmImportClause currentImport : existingImportClauses) {
-                String a = prevImport == null ? "" : prevImport.getModuleName().getText();
-                String b = currentImport.getModuleName().getText();
-
-                if (a.compareTo(moduleName) < 0 && moduleName.compareTo(b) <= 0) {
-                    insertPosition = currentImport.getNode();
-                    break;
-                }
-                prevImport = currentImport;
-            }
-
-            if (insertPosition == null) {
-                // the new module belongs at the end of the list
-                insertPosition = existingImportClauses.get(existingImportClauses.size() - 1).getNode().getTreeNext();
-            }
+            // insert blanklines flanking the new import section
+            ASTNode newFreshline = ElmElementFactory.createFreshLine(project).getNode();
+            sourceFile.getNode().addChild(newFreshline, nextNonCommentSibling.getNode());
+            ASTNode newFreshline2 = ElmElementFactory.createFreshLine(project).getNode();
+            sourceFile.getNode().addChild(newFreshline2, newFreshline);
+            return newFreshline.getTreeNext();
         }
-        return insertPosition;
+    }
+
+    private static int compareImportAndModule(ElmImportClause importClause, String moduleName) {
+        return importClause.getModuleName().getText().compareTo(moduleName);
+    }
+
+    private static ASTNode getSortedInsertPosition(String moduleName, List<ElmImportClause> existingImportClauses) {
+        // NOTE: we *assume* that the imports are already sorted and we
+        // do not make any distinction between import groups/sections
+        // (e.g. the practice of putting core libs in the first group,
+        // 3rd party libs in a second group, and project files in the
+        // final group). In the future we will likely want to revisit
+        // this shortcut as it would be very frustrating for a developer
+        // who "curates" their import list to keep fighting where the
+        // quick-fix puts its imports.
+
+        ElmImportClause firstImport = existingImportClauses.get(0);
+        ElmImportClause lastImport = existingImportClauses.get(existingImportClauses.size() - 1);
+
+        if (compareImportAndModule(firstImport, moduleName) >= 0) {
+            return firstImport.getNode();
+        } else if (compareImportAndModule(lastImport, moduleName) < 0) {
+            return lastImport.getNode().getTreeNext();
+        } else {
+            // find the correct position somewhere in the middle
+            return ListUtils
+                    .zip(existingImportClauses, existingImportClauses.subList(1, existingImportClauses.size()))
+                    .stream()
+                    .filter(pair -> compareImportAndModule(pair.first, moduleName) < 0
+                                 && compareImportAndModule(pair.second, moduleName) >= 0)
+                    .map(pair -> pair.second.getNode())
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("not found in the middle"));
+        }
     }
 
     private static void insertImportClause(ElmImportClause importClause, ASTNode insertPosition) {

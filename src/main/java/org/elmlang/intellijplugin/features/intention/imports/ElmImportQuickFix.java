@@ -69,61 +69,63 @@ public class ElmImportQuickFix implements IntentionAction {
 
     private List<ElmImportCandidate> findCandidates(@NotNull Project project, List<String>refComponents) {
         String refBareName;
-        Stream<String> moduleNames;
+        Stream<String> moduleNamesToSearch;
 
         if (refComponents.size() > 1) {
             refBareName = refComponents.get(refComponents.size()-1);
             String refQualifiedModuleName = String.join(".", refComponents.subList(0, refComponents.size()-1));
-            moduleNames = Arrays.asList(refQualifiedModuleName).stream();
+            moduleNamesToSearch = Arrays.asList(refQualifiedModuleName).stream();
         } else {
             refBareName = referenceNameToFix;
-            moduleNames = ElmModuleIndex.getAllModuleNames(project).stream();
+            moduleNamesToSearch = ElmModuleIndex.getAllModuleNames(project).stream();
         }
 
-        final String refBareNameFinal = refBareName;
+        Stream<ElmImportCandidate> candidates =
+                refBareName.matches("^[A-Z].*")
+                        ? getUpperCaseCandidates(project, moduleNamesToSearch, refBareName)
+                        : getLowerCaseCandidates(project, moduleNamesToSearch, refBareName);
+        return candidates.collect(Collectors.toList());
+    }
 
-        if (refBareName.matches("^[A-Z].*")) {
-            // it's an upper-case type or type constructor that we're looking for
-            return moduleNames
-                    .flatMap(name -> ElmModuleIndex.getFilesByModuleName(name, project).stream())
-                    .map(f -> f.getExposedType(refBareNameFinal))
-                    .filter(Optional::isPresent)
-                    .map(e -> {
-                        ElmUpperCaseId value = e.get();
-                        ElmFile module = (ElmFile) value.getContainingFile();
-                        String nameForImport = value.getName();
-                        if (value.getParent() instanceof  ElmUnionMember) {
-                            ElmTypeDeclaration typeDecl = (ElmTypeDeclaration) value.getParent().getParent();
-                            String typeName = typeDecl.getUpperCaseId().getText();
-                            nameForImport = typeName + "(" + value.getName() + ")";
-                        }
-                        return new ElmImportCandidate(
-                                module.getModuleName(),
-                                value.getName(),
-                                nameForImport,
-                                value
-                        );
-                    })
-                    .collect(Collectors.toList());
-        } else {
-            // it's a lower-case value that we're looking for
-            return moduleNames
-                    .flatMap(name -> ElmModuleIndex.getFilesByModuleName(name, project).stream())
-                    .map(f -> f.getExposedValueByName(refBareNameFinal))
-                    .filter(Optional::isPresent)
-                    .map(e -> {
-                        ElmLowerCaseId value = e.get();
-                        ElmFile module = (ElmFile) value.getContainingFile();
-                        String nameForImport = value.getName();
-                        return new ElmImportCandidate(
-                                module.getModuleName(),
-                                value.getName(),
-                                nameForImport,
-                                value
-                        );
-                    })
-                    .collect(Collectors.toList());
-        }
+    private Stream<ElmImportCandidate> getLowerCaseCandidates(@NotNull Project project, Stream<String> moduleNames, String refBareName) {
+        return moduleNames
+                .flatMap(name -> ElmModuleIndex.getFilesByModuleName(name, project).stream())
+                .map(f -> f.getExposedValueByName(refBareName))
+                .filter(Optional::isPresent)
+                .map(e -> {
+                    ElmLowerCaseId value = e.get();
+                    ElmFile module = (ElmFile) value.getContainingFile();
+                    String nameForImport = value.getName();
+                    return new ElmImportCandidate(
+                            module.getModuleName(),
+                            value.getName(),
+                            nameForImport,
+                            value
+                    );
+                });
+    }
+
+    private Stream<ElmImportCandidate> getUpperCaseCandidates(@NotNull Project project, Stream<String> moduleNames, String refBareName) {
+        return moduleNames
+                .flatMap(name -> ElmModuleIndex.getFilesByModuleName(name, project).stream())
+                .map(f -> f.getExposedType(refBareName))
+                .filter(Optional::isPresent)
+                .map(e -> {
+                    ElmUpperCaseId value = e.get();
+                    ElmFile module = (ElmFile) value.getContainingFile();
+                    String nameForImport = value.getName();
+                    if (value.getParent() instanceof ElmUnionMember) {
+                        ElmTypeDeclaration typeDecl = (ElmTypeDeclaration) value.getParent().getParent();
+                        String typeName = typeDecl.getUpperCaseId().getText();
+                        nameForImport = typeName + "(" + value.getName() + ")";
+                    }
+                    return new ElmImportCandidate(
+                            module.getModuleName(),
+                            value.getName(),
+                            nameForImport,
+                            value
+                    );
+                });
     }
 
     private void promptToSelectCandidate(@NotNull final Project project, final ElmFile file, final List<String> refComponents, List<ElmImportCandidate> candidates) {
