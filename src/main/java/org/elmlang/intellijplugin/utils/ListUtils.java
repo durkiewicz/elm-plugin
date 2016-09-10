@@ -1,6 +1,7 @@
 package org.elmlang.intellijplugin.utils;
 
 
+import com.intellij.openapi.util.Pair;
 import com.intellij.util.Function;
 
 import java.util.*;
@@ -68,5 +69,14 @@ public class ListUtils {
             }
         }
         return null;
+    }
+
+    public static <T1,T2> List<Pair<T1,T2>> zip(List<T1> list1, List<T2> list2) {
+        int size = Math.min(list1.size(), list2.size());
+        ArrayList<Pair<T1,T2>> result =  new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            result.add(Pair.create(list1.get(i), list2.get(i)));
+        }
+        return result;
     }
 }
