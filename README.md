@@ -32,9 +32,8 @@ Formatting is currently not a feature of the plugin, but `elm-format` can be use
 ## Contributing
 
 If you would like to develop a new feature or fix a bug:
-- Please develop this change for Elm 0.16 (create a pull request to `elm-0.16` branch).
-  I'm going to support Elm 0.16 as well for some time. When your pull request is merged I will
-  merge it to the master branch (that supports Elm 0.17)
+- Please add an issue to Github so that everyone can share his/her opinions and ideas
+- Please create a pull request when you finish development
 - If you would like to do any change to the parser or a non-trivial change to resolving references,
   please contact me before.
 
