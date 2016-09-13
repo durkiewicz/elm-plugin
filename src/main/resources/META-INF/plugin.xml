@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>org.elmlang.intellijplugin</id>
     <name>Elm language plugin</name>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <vendor email="elm.intellij.plugin@gmail.com" url="https://durkiewicz.github.io/elm-plugin/">Kamil Durkiewicz
     </vendor>
 
@@ -13,7 +13,7 @@
             <li>Parsing the syntax</li>
             <li>Syntax highlighting and color settings page</li>
             <li>Going to declaration</li>
-            <li>Highlighting unresolved references</li>
+            <li>Highlighting unresolved references with a quick-fix option to add an import statement</li>
             <li>Code completion</li>
             <li>Spellchecking</li>
             <li>Brace matching</li>
@@ -30,10 +30,17 @@
             This plugin is still at development phase. More features are coming soon.
         </p>
         <p>
+            <b>v0.6</b>
+            <ul>
+                <li>Quick fix (alt+enter) for adding import statement,</li>
+                <li>Support for unary minus and dot as a custom operator.</li>
+            </ul>
+        </p>
+        <p>
             <b>v0.5</b>
             <ul>
                 <li>Rename refactoring,</li>
-                <li>More syntax highlighting and color settings page</li>
+                <li>More syntax highlighting and color settings page.</li>
             </ul>
         </p>
         <p>
