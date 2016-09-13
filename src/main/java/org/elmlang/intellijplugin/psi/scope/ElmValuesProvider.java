@@ -7,7 +7,6 @@ import org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.function.Predicate;
@@ -59,7 +58,6 @@ class ElmValuesProvider
         } else if (this.elem instanceof ElmLetIn) {
             this.gatherValueDeclarations();
         } else if (this.elem instanceof ElmFile) {
-            this.gatherEffects();
             this.gatherValueDeclarations();
             this.gatherDeclarationsFromOtherFiles();
             return null;
@@ -77,18 +75,6 @@ class ElmValuesProvider
         this.gatherValueDeclarations((ElmWithValueDeclarations) this.elem);
     }
 
-    private void gatherEffects() {
-        ((ElmFile) this.elem).getModuleDeclaration()
-                .flatMap(e -> Optional.ofNullable(e.getRecord()))
-                .ifPresent(e -> gatherEffects(e.getFieldList()));
-    }
-
-    private void gatherEffects(List<ElmField> effects) {
-        effects.stream()
-                .map(ElmField::getLowerCaseId)
-                .forEach(this.ids::push);
-    }
-
     private void gatherValueDeclarations(ElmWithValueDeclarations element) {
         Arrays.stream(element.getChildren())
                 .filter(c -> c instanceof ElmValueDeclarationBase)
@@ -98,15 +84,26 @@ class ElmValuesProvider
                         this.patterns.add((ElmPattern) child);
                     } else if (child instanceof ElmFunctionDeclarationLeft) {
                         this.ids.push(((ElmFunctionDeclarationLeft) child).getLowerCaseId());
+                    } else if (d instanceof ElmValueDeclaration) {
+                        Optional.ofNullable(((ElmValueDeclaration) d).getPortDeclarationLeft())
+                                .ifPresent(e -> this.ids.push(e.getLowerCaseId()));
                     }
                 });
         Arrays.stream(element.getChildren())
                 .filter(e -> e instanceof ElmTypeAnnotation)
                 .map(e -> (ElmTypeAnnotation) e)
                 .forEach(typeAnnotation -> {
-                    if (typeAnnotation.isPortAnnotation()) {
+                    PsiElement child = typeAnnotation.getFirstChild();
+                    if (startsWithPort(child)) {
                         Optional.ofNullable(typeAnnotation.getLowerCaseId())
-                                .ifPresent(id -> this.ids.push(id));
+                                .ifPresent(id -> {
+                                    boolean isFollowedByPortDefinition = ElmTreeUtil.findFollowingSibling(typeAnnotation, e -> e instanceof ElmValueDeclaration)
+                                            .flatMap(e -> Optional.ofNullable(((ElmValueDeclaration) e).getPortDeclarationLeft()))
+                                            .filter(e -> e.getLowerCaseId().getText().equals(id.getText())).isPresent();
+                                    if (!isFollowedByPortDefinition) {
+                                        this.ids.push(id);
+                                    }
+                                });
                     }
                 });
     }

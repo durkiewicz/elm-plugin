@@ -20,6 +20,8 @@
         "org.elmlang.intellijplugin.psi.ElmWithPatternList"
     implements("function_declaration_left") =
         "org.elmlang.intellijplugin.psi.ElmWithPatternList, org.elmlang.intellijplugin.psi.ElmWithSingleId"
+    implements("port_declaration_left") =
+        "org.elmlang.intellijplugin.psi.ElmWithSingleId"
     implements("if_else|non_empty_tuple|list(_range)?") =
         "org.elmlang.intellijplugin.psi.ElmWithExpressionList"
     implements("anonymous_function|(case_of_(branch|header))|field|parenthesed_expression") =
@@ -61,7 +63,7 @@ private blank ::=
     | FRESH_LINE
     | comment
 
-module_declaration ::= [ EFFECT | PORT ] MODULE upper_case_path [ WHERE record ] EXPOSING exposed_values { methods = [getModuleName isExposingAll getReferencesStream] }
+module_declaration ::= MODULE upper_case_path [exposed_values] WHERE { methods = [getModuleName isExposingAll getReferencesStream] }
 
 private exposed_values ::= LEFT_PARENTHESIS (DOUBLE_DOT | list_of_values) RIGHT_PARENTHESIS
 
@@ -133,6 +135,7 @@ type_annotation ::= ([PORT] lower_case_id | operator_as_function) COLON type_def
 
 private value_declaration_left ::=
     internal_value_declaration_left
+    | port_declaration_left
 private internal_value_declaration_left ::=
     function_declaration_left
     | operator_declaration_left
@@ -141,6 +144,8 @@ function_declaration_left ::=
     lower_case_id pattern+
 operator_declaration_left ::=
     operator_as_function pattern*
+port_declaration_left ::=
+    PORT lower_case_id
 
 expression ::= list_of_operands (any_operator list_of_operands)* { methods = [getReferencesStream] }
 

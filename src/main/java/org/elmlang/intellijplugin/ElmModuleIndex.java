@@ -14,28 +14,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
 
 public class ElmModuleIndex extends ScalarIndexExtension<String> {
     private static final ID<String, Void> ELM_MODULE_INDEX = ID.create("ElmModuleIndex");
-    private static final String PLATFORM_PREFIX = "Platform.";
 
     private static final EnumeratorStringDescriptor KEY_DESCRIPTOR = new EnumeratorStringDescriptor();
 
     private static final DataIndexer<String, Void, FileContent> INDEXER = inputData -> {
         final PsiFile psiFile = inputData.getPsiFile();
         final String moduleName = psiFile instanceof ElmFile ? ((ElmFile) psiFile).getModuleName() : null;
-        if (moduleName == null) {
-            return Collections.emptyMap();
-        } else if (moduleName.startsWith(PLATFORM_PREFIX)) {
-            return new HashMap<String, Void>() {{
-                put(moduleName, null);
-                put(moduleName.substring(PLATFORM_PREFIX.length()), null);
-            }};
-        }
+        if (moduleName == null) { return Collections.emptyMap(); }
         return Collections.singletonMap(moduleName, null);
     };
 
