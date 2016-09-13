@@ -144,7 +144,7 @@ operator_declaration_left ::=
 
 expression ::= list_of_operands (any_operator list_of_operands)* { methods = [getReferencesStream] }
 
-list_of_operands ::= operand+ { methods = [getReferencesStream] }
+list_of_operands ::= [MINUS]operand+ { methods = [getReferencesStream] }
 
 private any_operator ::=
     real_operator
@@ -152,6 +152,8 @@ private any_operator ::=
 private real_operator ::=
     OPERATOR
     | LIST_CONSTRUCTOR
+    | MINUS
+    | DOT
 backticked_function ::=
     BACKTICK referenced_value BACKTICK { methods = [getReferencesStream] }
 

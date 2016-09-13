@@ -167,6 +167,9 @@ RESERVED=("hiding" | "export" | "foreign" | "deriving")
     "." {
         return DOT;
     }
+    "-" {
+        return MINUS;
+    }
     "`" {
         return BACKTICK;
     }
