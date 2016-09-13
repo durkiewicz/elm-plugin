@@ -1,4 +1,4 @@
-module LibraryTypes
+module LibraryTypes exposing
     ( Action(..)
     , Behavior(..)
     , MyModel
@@ -6,7 +6,6 @@ module LibraryTypes
     , makeNonsense
     , nonsenseToString
     )
-    where
 
 type alias MyModel =
     { title : String

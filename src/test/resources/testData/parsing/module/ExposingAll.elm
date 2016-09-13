@@ -1,1 +1,1 @@
-module Module (..) where
+module Module exposing (..)

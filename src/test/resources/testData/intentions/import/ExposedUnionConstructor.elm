@@ -1,4 +1,4 @@
-module ExposedUnionMember where
+module ExposedUnionMember exposing (..)
 
 main =
     text "Stuff: "

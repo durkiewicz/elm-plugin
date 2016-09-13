@@ -1,4 +1,4 @@
-module LibraryB (beCool, beHereNow, bee) where
+module LibraryB exposing (beCool, beHereNow, bee)
 
 beCool = "be cool"
 

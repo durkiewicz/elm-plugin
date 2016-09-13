@@ -1,4 +1,4 @@
-module ExposedUnionMember where
+module ExposedUnionMember exposing (..)
 
 import LibraryTypes exposing (Behavior(Modal, NonModal, Overlay))
 

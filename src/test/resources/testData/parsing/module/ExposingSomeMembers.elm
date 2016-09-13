@@ -1,1 +1,1 @@
-module Module (Abc, def, Ghi(Jlm, Nop), Q(..)) where
+module Module exposing (Abc, def, Ghi(Jlm, Nop), Q(..))
