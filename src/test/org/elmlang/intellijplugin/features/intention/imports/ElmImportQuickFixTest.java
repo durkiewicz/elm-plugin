@@ -1,5 +1,6 @@
 package org.elmlang.intellijplugin.features.intention.imports;
 
+import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 
 public class ElmImportQuickFixTest extends LightPlatformCodeInsightFixtureTestCase {
@@ -11,15 +12,7 @@ public class ElmImportQuickFixTest extends LightPlatformCodeInsightFixtureTestCa
 
     public void testBasic() {
         myFixture.configureByFiles("Basic.elm", "LibraryA.elm");
-
-        // This code to find the 'quick fix' *should* work, but I get a runtime
-        // assertion "Must not start highlighting from within write action, or deadlock is imminent".
-        // So for the time being, I'm just going to new-up the quick fix myself
-        //
-        //        IntentionAction quickFix = myFixture.findSingleIntention("Add Import");
-
-        ElmImportQuickFix fix = new ElmImportQuickFix("LibraryA.avril14th");
-        myFixture.launchAction(fix);
+        myFixture.launchAction(new ElmImportQuickFix("LibraryA.avril14th"));
         myFixture.checkResultByFile("Basic_after.elm", true);
     }
 
@@ -85,5 +78,15 @@ public class ElmImportQuickFixTest extends LightPlatformCodeInsightFixtureTestCa
         myFixture.launchAction(new ElmImportQuickFix("nonsenseToString"));
         myFixture.launchAction(new ElmImportQuickFix("MyModel"));
         myFixture.checkResultByFile("Types_after.elm", true);
+    }
+
+    public void testRestrictedLocations() {
+        myFixture.configureByFiles("Restrictions.elm", "LibraryA.elm");
+        myFixture.doHighlighting();
+        for (IntentionAction fix : myFixture.getAllQuickFixes()) {
+            assertFalse("Should not suggest add import quick fix",
+                    fix instanceof ElmImportQuickFix);
+        }
+        myFixture.checkResultByFile("Restrictions_after.elm");
     }
 }
