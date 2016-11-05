@@ -25,12 +25,14 @@ CRLF= (\n|\r|\r\n)
 WHITE_SPACE=[\ \t\f]
 LINE_COMMENT=("--")[^\r\n]*
 IDENTIFIER_CHAR=[[:letter:][:digit:]_']
+HEX_CHAR=[[:digit:]A-Fa-f]
 LOWER_CASE_IDENTIFIER=[:lowercase:]{IDENTIFIER_CHAR}*
 UPPER_CASE_IDENTIFIER=[:uppercase:]{IDENTIFIER_CHAR}*
 STRING_LITERAL=\"(\\.|[^\\\"])*\"
 STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
-CHAR_LITERAL='(\\.|\\x[[:digit:]A-Fa-f]+|[^\\'])'
+HEXADECIMAL_LITERAL=0x{HEX_CHAR}+
+CHAR_LITERAL='(\\.|\\x{HEX_CHAR}+|[^\\'])'
 OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|"~"|-|=|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
 RESERVED=("hiding" | "export" | "foreign" | "deriving")
 
@@ -194,6 +196,9 @@ RESERVED=("hiding" | "export" | "foreign" | "deriving")
         return CHAR_LITERAL;
     }
     {NUMBER_LITERAL} {
+        return NUMBER_LITERAL;
+    }
+    {HEXADECIMAL_LITERAL} {
         return NUMBER_LITERAL;
     }
     ({CRLF}+{WHITE_SPACE}+)+ {
