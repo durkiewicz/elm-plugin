@@ -70,6 +70,7 @@ abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<P
     <U extends PsiElement> PsiElement resolveUsingModuleIndex(String moduleName, Function<ElmFile, Optional<U>> resolver) {
         return ElmModuleIndex.getFilesByModuleName(moduleName, this.myElement.getProject()).stream()
                 .map(resolver)
+                .filter(Optional::isPresent)
                 .findFirst()
                 .orElse(Optional.empty())
                 .orElse(null);

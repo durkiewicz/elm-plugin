@@ -69,9 +69,7 @@ public class ElmRecordFieldsProvider {
 
     private void gatherTypesFromFile(String moduleName) {
         ElmModuleIndex.getFilesByModuleName(moduleName, this.file.getProject())
-                .stream()
-                .findFirst()
-                .ifPresent(f -> f.getRecordFields().forEach(this.fields::push));
+                .forEach(f -> f.getRecordFields().forEach(this.fields::push));
     }
 
     private void gatherTypesFromImplicitImport() {

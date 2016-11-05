@@ -1,5 +1,6 @@
 package org.elmlang.intellijplugin.psi.references.utils;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiInvalidElementAccessException;
@@ -13,12 +14,11 @@ import java.util.function.Function;
 
 public class ExposingClauseReferenceHelper {
     @Nullable
-    public static PsiElement resolveImported(PsiElement element, Function<ElmFile, PsiElement> resolveInFile) {
+    public static PsiElement resolveImported(PsiElement element, Function<ElmFile, PsiElement> resolver) {
         return getImportAncestor(element)
                 .map(ElmImportClause::getModuleName)
                 .map(PsiElement::getText)
-                .flatMap(m -> ElmModuleIndex.getFilesByModuleName(m, element.getProject()).stream().findFirst())
-                .map(resolveInFile)
+                .flatMap(m -> resolveInModules(m, element.getProject(), resolver))
                 .orElse(null);
     }
 
@@ -51,5 +51,12 @@ public class ExposingClauseReferenceHelper {
         }
 
         return Optional.empty();
+    }
+
+    private static Optional<PsiElement> resolveInModules(String moduleName, Project project, Function<ElmFile, PsiElement> resolver) {
+        return ElmModuleIndex.getFilesByModuleName(moduleName, project).stream()
+                .map(resolver)
+                .filter(e -> e != null)
+                .findFirst();
     }
 }

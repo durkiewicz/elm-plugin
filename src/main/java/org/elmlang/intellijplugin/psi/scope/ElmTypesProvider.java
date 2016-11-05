@@ -1,11 +1,9 @@
 package org.elmlang.intellijplugin.psi.scope;
 
-import com.intellij.psi.PsiElement;
 import org.elmlang.intellijplugin.ElmModuleIndex;
 import org.elmlang.intellijplugin.psi.*;
 import org.elmlang.intellijplugin.utils.TypeFilter;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Stack;
 
@@ -77,9 +75,7 @@ class ElmTypesProvider {
 
     private void gatherTypesFromFile(String moduleName, TypeFilter filter) {
         ElmModuleIndex.getFilesByModuleName(moduleName, this.file.getProject())
-                .stream()
-                .findFirst()
-                .ifPresent(f -> this.gatherTypesFromFile(f, filter));
+                .forEach(f -> this.gatherTypesFromFile(f, filter));
     }
 
     private void gatherTypesFromFile(ElmFile file, TypeFilter filter) {
