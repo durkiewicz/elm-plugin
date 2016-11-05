@@ -30,9 +30,8 @@ public class ElmAbsoluteTypeReference extends ElmReferenceBase<ElmUpperCaseId> {
     @Nullable
     @Override
     public PsiElement resolve() {
-        String moduleName = AbsoluteReferencesHelper.getModuleName(this.moduleName);
-        return this.resolveUsingModuleIndex(
-                moduleName,
+        return AbsoluteReferencesHelper.resolveAbsoluteReference(
+                this.moduleName,
                 f -> f.getExposedType(this.referencingElement.getText())
         );
     }

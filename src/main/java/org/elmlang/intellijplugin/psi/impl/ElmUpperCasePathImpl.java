@@ -69,9 +69,11 @@ public class ElmUpperCasePathImpl extends ElmPsiElement implements ElmUpperCaseP
             moduleTextLength = 0;
         }
 
+        ElmReference reference = new ElmAbsoluteTypeReference(lastChild, children);
+
         return Stream.concat(
-                Stream.of(new ElmPartOfPathModuleReference(this, new TextRange(0, moduleTextLength), children.size())),
-                Stream.of(new ElmAbsoluteTypeReference(lastChild, children).referenceInAncestor(this))
+                Stream.of(new ElmContainingModuleReference(this, new TextRange(0, moduleTextLength), children.size(), reference)),
+                Stream.of(reference.referenceInAncestor(this))
         );
     }
 }

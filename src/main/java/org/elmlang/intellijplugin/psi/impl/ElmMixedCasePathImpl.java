@@ -29,15 +29,17 @@ public class ElmMixedCasePathImpl extends ElmPsiElement implements ElmMixedCaseP
         } else if (upperCaseIds.size() == 1 && lowerCaseIds.size() == 0) {
             return getReferencesFromSingleId(upperCaseIds.get(0));
         } else if (lowerCaseIds.size() >= 1) {
-            return Stream.concat(
-                    getModuleReference(upperCaseIds),
-                    Stream.of(new ElmAbsoluteValueReference(lowerCaseIds.get(0)).referenceInAncestor(this))
+            ElmReference reference = new ElmAbsoluteValueReference(lowerCaseIds.get(0));
+            return this.getReferenceAndContainingModuleReference(
+                    reference,
+                    upperCaseIds
             );
         } else if (upperCaseIds.size() >= 2) {
             ElmUpperCaseId last = upperCaseIds.pop();
-            return Stream.concat(
-                    this.getModuleReference(upperCaseIds),
-                    Stream.of(new ElmAbsoluteTypeReference(last, upperCaseIds).referenceInAncestor(this))
+            ElmReference reference = new ElmAbsoluteTypeReference(last, upperCaseIds);
+            return this.getReferenceAndContainingModuleReference(
+                    reference,
+                    upperCaseIds
             );
         } else {
             return Stream.empty();
@@ -73,12 +75,19 @@ public class ElmMixedCasePathImpl extends ElmPsiElement implements ElmMixedCaseP
         return Pair.create(upperCaseIds, lowerCaseIds);
     }
 
-    private Stream<ElmPartOfPathModuleReference> getModuleReference(Stack<ElmUpperCaseId> upperCaseIds) {
-        return this.getModuleReference(getRange(upperCaseIds), upperCaseIds.size());
+    private Stream<ElmReference> getReferenceAndContainingModuleReference(ElmReference reference, Stack<ElmUpperCaseId> upperCaseIds) {
+        return Stream.concat(
+                this.getContainingModuleReference(upperCaseIds, reference),
+                Stream.of(reference.referenceInAncestor(this))
+        );
     }
 
-    private Stream<ElmPartOfPathModuleReference> getModuleReference(TextRange textRange, int modulePartLength) {
-        return Stream.of(new ElmPartOfPathModuleReference(this, textRange, modulePartLength));
+    private Stream<ElmReference> getContainingModuleReference(Stack<ElmUpperCaseId> upperCaseIds, ElmReference reference) {
+        return this.getContainingModuleReference(getRange(upperCaseIds), upperCaseIds.size(), reference);
+    }
+
+    private Stream<ElmReference> getContainingModuleReference(TextRange textRange, int modulePartLength, ElmReference reference) {
+        return Stream.of(new ElmContainingModuleReference(this, textRange, modulePartLength, reference));
     }
 
     private static TextRange getRange(Stack<ElmUpperCaseId> upperCaseIds) {
