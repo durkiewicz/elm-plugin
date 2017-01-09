@@ -18,14 +18,16 @@ public class ElmCoreLibrary {
     }};
 
     private static final Set<String> IMPLICIT_IMPORTS = new HashSet<String>() {{
+        add(BASICS_MODULE);
+        add("List");
         add("Maybe");
         add("Result");
-        add("List");
+        add("String");
+        add("Tuple");
         add("Debug");
+        add("Platform");
         add("Cmd");
         add("Sub");
-        add("Platform");
-        add(BASICS_MODULE);
     }};
 
     public static boolean isBuiltIn(String typeName) {

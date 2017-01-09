@@ -68,20 +68,7 @@ public class ElmPsiImplUtil {
     public static Stream<ElmReference> getReferencesStream(ElmExpression element) {
         return getReferencesInAncestor(
                 element,
-                Stream.concat(
-                        element.getListOfOperandsList().stream()
-                                .flatMap(ElmPsiImplUtil::getReferencesStream),
-                        element.getBacktickedFunctionList().stream()
-                                .flatMap(ElmPsiImplUtil::getReferencesStream)
-                )
-        );
-    }
-
-    public static Stream<ElmReference> getReferencesStream(ElmBacktickedFunction element) {
-        return getReferencesInAncestor(
-                element,
-                PsiTreeUtil.findChildrenOfAnyType(element, ElmLowerCasePathImpl.class, ElmMixedCasePathImpl.class).stream()
-                        .flatMap(ElmPsiElement::getReferencesStream)
+                element.getListOfOperandsList().stream().flatMap(ElmPsiImplUtil::getReferencesStream)
         );
     }
 

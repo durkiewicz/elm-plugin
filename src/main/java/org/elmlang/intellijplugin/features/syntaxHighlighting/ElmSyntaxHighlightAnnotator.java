@@ -26,8 +26,6 @@ public class ElmSyntaxHighlightAnnotator implements Annotator {
             highlightTypeAnnotation(holder, (ElmTypeAnnotation) element);
         } else if (isTypeElement(element)) {
             highlightElement(holder, element, ELM_TYPE);
-        } else if (element instanceof ElmBacktickedFunction) {
-            highlightElement(holder, element, ELM_OPERATOR);
         }
     }
 
