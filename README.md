@@ -3,7 +3,7 @@ Elm language plugin for IntelliJ IDEA.
 
 ## Features
 
-This plugin supports Elm 0.17.0. If you need to have different version supported, see [this link](http://durkiewicz.github.io/elm-plugin/#releases).
+This plugin supports Elm 0.18.0. If you need to have different version supported, see [this link](http://durkiewicz.github.io/elm-plugin/#releases).
 
 - Parsing the syntax
 - Syntax highlighting and color settings page
