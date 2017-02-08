@@ -142,6 +142,7 @@ class ElmSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TokenSet COMMENTS = TokenSet.create(
             LINE_COMMENT,
             START_COMMENT,
+            START_DOC_COMMENT,
             END_COMMENT,
             COMMENT_CONTENT
     );

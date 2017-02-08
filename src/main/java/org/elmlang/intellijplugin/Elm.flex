@@ -17,6 +17,11 @@ import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 
 %{
     private int commentLevel = 0;
+
+    private void startComment() {
+        commentLevel = 1;
+        yybegin(IN_COMMENT);
+    }
 %}
 
 %state IN_COMMENT
@@ -58,7 +63,6 @@ RESERVED=("hiding" | "export" | "foreign" | "deriving")
         return COMMENT_CONTENT;
     }
 }
-
 
 <YYINITIAL> {
     "module" {
@@ -173,9 +177,12 @@ RESERVED=("hiding" | "export" | "foreign" | "deriving")
         return MINUS;
     }
     {CRLF}*"{-" {
-        commentLevel = 1;
-        yybegin(IN_COMMENT);
+        startComment();
         return START_COMMENT;
+    }
+    {CRLF}*"{-|" {
+        startComment();
+        return START_DOC_COMMENT;
     }
     {LOWER_CASE_IDENTIFIER} {
         return LOWER_CASE_IDENTIFIER;

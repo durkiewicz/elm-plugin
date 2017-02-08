@@ -2,9 +2,9 @@ package org.elmlang.intellijplugin.features.intention.imports;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.elmlang.intellijplugin.psi.*;
 import org.elmlang.intellijplugin.utils.ListUtils;
@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 
 public class ElmAddImportHelper {
     private ElmAddImportHelper() {
@@ -139,16 +141,30 @@ public class ElmAddImportHelper {
             // so just insert at the front of the file.
             return sourceFile.getNode().getFirstChildNode();
         } else {
-            // skip over comment blocks
-            PsiElement nextNonCommentSibling = PsiTreeUtil.skipSiblingsForward(moduleDecl, PsiComment.class);
+            // import clauses must come *after* module documentation comments
+            PsiElement importSectionAnchor = skipOverDocComments(moduleDecl);
 
             // insert blanklines flanking the new import section
             ASTNode newFreshline = ElmElementFactory.createFreshLine(project).getNode();
-            sourceFile.getNode().addChild(newFreshline, nextNonCommentSibling.getNode());
+            sourceFile.getNode().addChild(newFreshline, importSectionAnchor.getNode());
             ASTNode newFreshline2 = ElmElementFactory.createFreshLine(project).getNode();
             sourceFile.getNode().addChild(newFreshline2, newFreshline);
             return newFreshline.getTreeNext();
         }
+    }
+
+    private static PsiElement skipOverDocComments(PsiElement startElement) {
+        PsiElement elt = startElement.getNextSibling();
+        if (elt == null) {
+            return startElement;
+        } else if (elt instanceof PsiComment) {
+            IElementType commentType = ((PsiComment) elt).getTokenType();
+            if (commentType == START_DOC_COMMENT) {
+                return PsiTreeUtil.skipSiblingsForward(elt, PsiComment.class);
+            }
+        }
+
+        return elt;
     }
 
     private static int compareImportAndModule(ElmImportClause importClause, String moduleName) {
