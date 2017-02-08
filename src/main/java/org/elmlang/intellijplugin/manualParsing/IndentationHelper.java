@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class IndentationHelper {
-    private static final Pattern indentationPattern = Pattern.compile(".*[\r\n]([ \t][^\r\n]+)$", Pattern.DOTALL);
+    private static final Pattern indentationPattern = Pattern.compile(".*[\r\n]([^\r\n]+)$", Pattern.DOTALL);
 
     public static int getIndentationOfPreviousToken(PsiBuilder builder) {
         // getTokenType has some side effects. Do not remove the call.
