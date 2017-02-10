@@ -142,15 +142,20 @@ function_declaration_left ::=
 operator_declaration_left ::=
     operator_as_function pattern*
 
-expression ::= list_of_operands (operator list_of_operands)* { methods = [getReferencesStream] }
+expression ::= list_of_operands (any_operator list_of_operands)* { methods = [getReferencesStream] }
 
 list_of_operands ::= [MINUS]operand+ { methods = [getReferencesStream] }
 
-private operator ::=
+private any_operator ::=
+    real_operator
+    | backticked_function
+private real_operator ::=
     OPERATOR
     | LIST_CONSTRUCTOR
     | MINUS
     | DOT
+backticked_function ::=
+    BACKTICK referenced_value BACKTICK { methods = [getReferencesStream] }
 
 private operand ::=
     literal
@@ -161,6 +166,7 @@ private operand ::=
     | tuple_constructor
     | tuple
     | list
+    | list_range
     | record
     | if_else
     | case_of
@@ -185,7 +191,7 @@ private referenced_value ::=
     | mixed_case_path
 
 operator_as_function ::=
-    LEFT_PARENTHESIS operator RIGHT_PARENTHESIS
+    LEFT_PARENTHESIS real_operator RIGHT_PARENTHESIS
 
 private tuple ::=
     unit
@@ -199,6 +205,8 @@ unit ::=
 
 list ::=
     LEFT_SQUARE_BRACKET [<<non_empty_list expression>>] RIGHT_SQUARE_BRACKET { methods = [getReferencesStream] }
+list_range ::=
+    LEFT_SQUARE_BRACKET expression DOUBLE_DOT expression RIGHT_SQUARE_BRACKET { methods = [getReferencesStream] }
 
 record ::=
     LEFT_BRACE [[record_base] <<non_empty_list field>>] RIGHT_BRACE { methods = [getReferencesStream] }
@@ -258,7 +266,7 @@ private parenthesed_pattern ::=
 anonymous_function ::= BACKSLASH pattern+ ARROW expression { methods = [getReferencesStream] }
 
 operator_config ::=
-    operator_config_keyword NUMBER_LITERAL operator
+    operator_config_keyword NUMBER_LITERAL any_operator
 private operator_config_keyword ::=
     INFIXL
     | INFIX
