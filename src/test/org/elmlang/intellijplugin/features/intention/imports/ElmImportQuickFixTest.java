@@ -50,6 +50,18 @@ public class ElmImportQuickFixTest extends LightPlatformCodeInsightFixtureTestCa
         myFixture.checkResultByFile("HasModuleComment_after.elm", true);
     }
 
+    public void testHasLineComment() {
+        myFixture.configureByFiles("HasLineComment.elm", "LibraryA.elm");
+        myFixture.launchAction(new ElmImportQuickFix("LibraryA.avril14th"));
+        myFixture.checkResultByFile("HasLineComment_after.elm", true);
+    }
+
+    public void testHasMultiLineComment() {
+        myFixture.configureByFiles("HasMultiLineComment.elm", "LibraryA.elm");
+        myFixture.launchAction(new ElmImportQuickFix("LibraryA.avril14th"));
+        myFixture.checkResultByFile("HasMultiLineComment_after.elm", true);
+    }
+
     public void testSortedMulti() {
         myFixture.configureByFiles("SortedMulti.elm", "LibraryA.elm", "LibraryB.elm", "LibraryC.elm");
         myFixture.launchAction(new ElmImportQuickFix("LibraryB.beCool"));

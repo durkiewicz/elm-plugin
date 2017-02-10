@@ -4,6 +4,7 @@ import com.intellij.psi.PsiElement;
 import org.elmlang.intellijplugin.psi.ElmFile;
 import org.elmlang.intellijplugin.psi.ElmTreeUtil;
 import org.elmlang.intellijplugin.psi.ElmUpperCaseId;
+import org.elmlang.intellijplugin.psi.scope.ElmCoreLibrary;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -30,7 +31,11 @@ public class AbsoluteReferencesHelper {
 
     private static Stream<String> getModuleNames(List<ElmUpperCaseId> upperCaseIdList) {
         return getModuleNamesAsLists(upperCaseIdList)
-                .map(ElmTreeUtil::joinUsingDot);
+                .map(ElmTreeUtil::joinUsingDot)
+                .filter(name ->
+                        ElmCoreLibrary.isImplicitImport(name)
+                                || getContainingFile(upperCaseIdList).getImportClauseByModuleName(name).isPresent()
+                );
     }
 
     private static Stream<List<ElmUpperCaseId>> getModuleNamesAsLists(List<ElmUpperCaseId> upperCaseIdList) {
@@ -41,11 +46,15 @@ public class AbsoluteReferencesHelper {
 
     private static Stream<List<ElmUpperCaseId>> getAliasedModules(List<ElmUpperCaseId> upperCaseIdList) {
         if (upperCaseIdList.size() == 1) {
-            ElmUpperCaseId elem = upperCaseIdList.get(0);
-            ElmFile file = (ElmFile) elem.getContainingFile();
-            return file.getImportClausesByAlias(elem.getText())
+            String alias = upperCaseIdList.get(0).getText();
+            return getContainingFile(upperCaseIdList).getImportClausesByAlias(alias)
                     .map(e -> e.getModuleName().getUpperCaseIdList());
         }
         return Stream.empty();
+    }
+
+    private static ElmFile getContainingFile(List<ElmUpperCaseId> upperCaseIdList) {
+        ElmUpperCaseId elem = upperCaseIdList.get(0);
+        return (ElmFile) elem.getContainingFile();
     }
 }

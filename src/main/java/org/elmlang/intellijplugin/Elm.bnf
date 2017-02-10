@@ -87,8 +87,10 @@ exposing_clause ::= EXPOSING exposed_values { methods = [isExposingAll getRefere
 comment ::=
     LINE_COMMENT
     | level_comment
+    | doc_comment
 
 level_comment ::= START_COMMENT COMMENT_CONTENT* END_COMMENT
+doc_comment ::= START_DOC_COMMENT COMMENT_CONTENT* END_COMMENT
 
 private declaration ::=
     value_declaration
