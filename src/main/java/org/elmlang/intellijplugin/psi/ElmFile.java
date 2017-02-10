@@ -47,14 +47,13 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
         return new LinkedList<>(PsiTreeUtil.findChildrenOfType(this, ElmImportClause.class));
     }
 
-    public Optional<ElmImportClause> getImportClauseByAlias(String alias) {
+    public Stream<ElmImportClause> getImportClausesByAlias(String alias) {
         return this.getImportClauses().stream()
                 .filter(e -> {
                     ElmAsClause asClause = e.getAsClause();
                     return asClause != null
                             && asClause.getUpperCaseId().getText().equals(alias);
-                })
-                .findFirst();
+                });
     }
 
     public Optional<ElmImportClause> getImportClauseByModuleName(String moduleName) {

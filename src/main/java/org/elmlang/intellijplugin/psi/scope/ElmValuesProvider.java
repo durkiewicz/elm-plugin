@@ -128,7 +128,7 @@ class ElmValuesProvider
     }
 
     private void gatherDeclarationsFromOtherFile(@NotNull String moduleName, Predicate<ElmLowerCaseId> filter) {
-        ElmModuleIndex.getFilesByModuleName(moduleName, this.elem.getProject()).stream()
+        ElmModuleIndex.getFilesByModuleName(moduleName, this.elem.getProject())
                 .forEach(f -> gatherDeclarationsFromOtherFile(f, filter));
     }
 

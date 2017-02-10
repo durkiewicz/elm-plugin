@@ -7,10 +7,6 @@ public class ModuleParsingTest extends ParsingTestCase {
         super("", "elm", new ElmParserDefinition());
     }
 
-    public void testSimplest() {
-        doTest(true);
-    }
-
     public void testExposingAll() {
         doTest(true);
     }

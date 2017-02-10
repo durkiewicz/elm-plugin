@@ -1,4 +1,4 @@
-module LibraryA (ageispolis, avril14th, actium) where
+module LibraryA exposing (ageispolis, avril14th, actium)
 
 ageispolis = "Ageispolis"
 

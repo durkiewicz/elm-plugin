@@ -1,4 +1,4 @@
-module Types where
+module Types exposing (..)
 
 import LibraryTypes exposing (Behavior(Modal, NonModal, Overlay), MyModel, Nonsense, makeNonsense, nonsenseToString)
 

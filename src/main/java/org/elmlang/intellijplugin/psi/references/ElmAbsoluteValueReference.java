@@ -24,11 +24,8 @@ public class ElmAbsoluteValueReference extends ElmReferenceBase<ElmLowerCaseId> 
     @Nullable
     @Override
     public PsiElement resolve() {
-        String moduleName = AbsoluteReferencesHelper.getModuleName(
-                ((ElmMixedCasePath) this.referencingElement.getParent()).getUpperCaseIdList()
-        );
-        return this.resolveUsingModuleIndex(
-                moduleName,
+        return AbsoluteReferencesHelper.resolveAbsoluteReference(
+                ((ElmMixedCasePath) this.referencingElement.getParent()).getUpperCaseIdList(),
                 f -> f.getExposedValueByName(this.referencingElement.getText())
         );
     }

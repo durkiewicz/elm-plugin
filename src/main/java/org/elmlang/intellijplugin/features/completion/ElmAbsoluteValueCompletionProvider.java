@@ -13,12 +13,12 @@ import static org.elmlang.intellijplugin.features.completion.ElmCompletionHelper
 
 class ElmAbsoluteValueCompletionProvider {
     void addCompletionsForModuleOrAlias(ElmFile file, String moduleOrAlias, CompletionResultSet resultSet) {
-        String moduleName = file.getImportClauses().stream()
-                .filter(e -> importHasAlias(e, moduleOrAlias))
-                .findFirst()
-                .map(e -> e.getModuleName().getText())
-                .orElse(moduleOrAlias);
-        addCompletionsForModule(file.getProject(), moduleName, resultSet);
+        Stream.concat(
+                file.getImportClauses().stream()
+                    .filter(e -> importHasAlias(e, moduleOrAlias))
+                    .map(e -> e.getModuleName().getText()),
+                Stream.of(moduleOrAlias)
+        ).forEach(moduleName -> addCompletionsForModule(file.getProject(), moduleName, resultSet));
     }
 
     void addCompletionsForModule(Project project, String moduleName, CompletionResultSet resultSet) {

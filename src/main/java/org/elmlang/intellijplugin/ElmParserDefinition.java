@@ -24,6 +24,7 @@ public class ElmParserDefinition implements ParserDefinition {
     public static final TokenSet COMMENTS = TokenSet.create(
             ElmTypes.LINE_COMMENT,
             ElmTypes.START_COMMENT,
+            ElmTypes.START_DOC_COMMENT,
             ElmTypes.END_COMMENT,
             ElmTypes.COMMENT_CONTENT
         );

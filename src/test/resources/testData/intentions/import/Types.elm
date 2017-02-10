@@ -1,4 +1,4 @@
-module Types where
+module Types exposing (..)
 
 main =
     text "Stuff: "

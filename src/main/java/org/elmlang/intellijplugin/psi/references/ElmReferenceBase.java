@@ -5,9 +5,9 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.util.IncorrectOperationException;
-import org.elmlang.intellijplugin.ElmModuleIndex;
 import org.elmlang.intellijplugin.psi.ElmFile;
 import org.elmlang.intellijplugin.psi.ElmNamedElement;
+import org.elmlang.intellijplugin.psi.references.utils.ModuleIndexHelper;
 import org.elmlang.intellijplugin.utils.Function3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,10 +68,10 @@ abstract class ElmReferenceBase<T extends PsiElement> extends PsiReferenceBase<P
 
     @Nullable
     <U extends PsiElement> PsiElement resolveUsingModuleIndex(String moduleName, Function<ElmFile, Optional<U>> resolver) {
-        return ElmModuleIndex.getFilesByModuleName(moduleName, this.myElement.getProject()).stream()
-                .map(resolver)
-                .findFirst()
-                .orElse(Optional.empty())
-                .orElse(null);
+        return ModuleIndexHelper.resolveUsingModuleIndex(
+                moduleName,
+                this.myElement.getProject(),
+                resolver
+        );
     }
 }

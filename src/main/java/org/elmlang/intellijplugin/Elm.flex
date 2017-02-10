@@ -17,6 +17,11 @@ import static org.elmlang.intellijplugin.psi.ElmTypes.*;
 
 %{
     private int commentLevel = 0;
+
+    private void startComment() {
+        commentLevel = 1;
+        yybegin(IN_COMMENT);
+    }
 %}
 
 %state IN_COMMENT
@@ -25,12 +30,14 @@ CRLF= (\n|\r|\r\n)
 WHITE_SPACE=[\ \t\f]
 LINE_COMMENT=("--")[^\r\n]*
 IDENTIFIER_CHAR=[[:letter:][:digit:]_']
+HEX_CHAR=[[:digit:]A-Fa-f]
 LOWER_CASE_IDENTIFIER=[:lowercase:]{IDENTIFIER_CHAR}*
 UPPER_CASE_IDENTIFIER=[:uppercase:]{IDENTIFIER_CHAR}*
 STRING_LITERAL=\"(\\.|[^\\\"])*\"
 STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
-CHAR_LITERAL='(\\.|\\x[[:digit:]A-Fa-f]+|[^\\'])'
+HEXADECIMAL_LITERAL=0x{HEX_CHAR}+
+CHAR_LITERAL='(\\.|\\x{HEX_CHAR}+|[^\\'])'
 OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|"~"|-|=|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
 RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
 
@@ -56,7 +63,6 @@ RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
         return COMMENT_CONTENT;
     }
 }
-
 
 <YYINITIAL> {
     "module" {
@@ -171,9 +177,12 @@ RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
         return BACKTICK;
     }
     {CRLF}*"{-" {
-        commentLevel = 1;
-        yybegin(IN_COMMENT);
+        startComment();
         return START_COMMENT;
+    }
+    {CRLF}*"{-|" {
+        startComment();
+        return START_DOC_COMMENT;
     }
     {LOWER_CASE_IDENTIFIER} {
         return LOWER_CASE_IDENTIFIER;
@@ -191,6 +200,9 @@ RESERVED=("hiding" | "export" | "foreign" | "perform" | "deriving")
         return CHAR_LITERAL;
     }
     {NUMBER_LITERAL} {
+        return NUMBER_LITERAL;
+    }
+    {HEXADECIMAL_LITERAL} {
         return NUMBER_LITERAL;
     }
     ({CRLF}+{WHITE_SPACE}+)+ {

@@ -1,4 +1,4 @@
-module LibraryC (calamity, cauliflower, caper) where
+module LibraryC exposing (calamity, cauliflower, caper)
 
 calamity = "calamity"
 

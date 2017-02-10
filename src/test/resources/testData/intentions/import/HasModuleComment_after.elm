@@ -1,4 +1,4 @@
-module Main where
+module Main exposing (..)
 
 {-| This is the documentation for module Main.
 
