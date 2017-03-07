@@ -24,7 +24,7 @@ import static org.elmlang.intellijplugin.psi.ElmTypes.*;
     }
 %}
 
-%state IN_COMMENT
+%state IN_COMMENT,IN_GLSL_CODE
 
 CRLF= (\n|\r|\r\n)
 WHITE_SPACE=[\ \t\f]
@@ -61,6 +61,16 @@ RESERVED=("hiding" | "export" | "foreign" | "deriving")
     }
     [^] {
         return COMMENT_CONTENT;
+    }
+}
+
+<IN_GLSL_CODE> {
+    "|]" {
+        yybegin(YYINITIAL);
+        return END_GLSL_CODE;
+    }
+    [^|]+ {
+        return GLSL_CODE_CONTENT;
     }
 }
 
@@ -175,6 +185,10 @@ RESERVED=("hiding" | "export" | "foreign" | "deriving")
     }
     "-" {
         return MINUS;
+    }
+    "[glsl|" {
+        yybegin(IN_GLSL_CODE);
+        return START_GLSL_CODE;
     }
     {CRLF}*"{-" {
         startComment();

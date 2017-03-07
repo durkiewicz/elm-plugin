@@ -168,6 +168,7 @@ private operand ::=
     | case_of
     | let_in
     | anonymous_function
+    | glsl_code
 
 parenthesed_expression ::= LEFT_PARENTHESIS expression RIGHT_PARENTHESIS { methods = [getReferencesStream] }
 
@@ -218,6 +219,8 @@ case_of_header ::=
     CASE expression OF { methods = [getReferencesStream] }
 case_of_branch ::=
     pattern ARROW expression { methods = [getReferencesStream] }
+
+glsl_code ::= START_GLSL_CODE GLSL_CODE_CONTENT* END_GLSL_CODE;
 
 one_or_more_separations ::= SEPARATION_BY_INDENTATION+
 
