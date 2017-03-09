@@ -38,7 +38,7 @@ STRING_WITH_QUOTES_LITERAL=\"\"\"(\\.|[^\\\"]|\"{1,2}([^\"\\]|\\\"))*\"\"\"
 NUMBER_LITERAL=("-")?[:digit:]+(\.[:digit:]+)?
 HEXADECIMAL_LITERAL=0x{HEX_CHAR}+
 CHAR_LITERAL='(\\.|\\x{HEX_CHAR}+|[^\\'])'
-OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|"~"|-|=|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
+OPERATOR=("!"|"$"|"^"|"|"|"*"|"/"|"?"|"+"|"~"|"."|-|=|@|#|%|&|<|>|:|€|¥|¢|£|¤)+
 RESERVED=("hiding" | "export" | "foreign" | "deriving")
 
 %%
