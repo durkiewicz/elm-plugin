@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static com.intellij.openapi.editor.DefaultLanguageHighlighterColors.KEYWORD;
 import static org.elmlang.intellijplugin.features.syntaxHighlighting.ElmSyntaxHighlighter.*;
 
 
@@ -26,6 +27,8 @@ public class ElmSyntaxHighlightAnnotator implements Annotator {
             highlightTypeAnnotation(holder, (ElmTypeAnnotation) element);
         } else if (isTypeElement(element)) {
             highlightElement(holder, element, ELM_TYPE);
+        } else if (element instanceof ElmEffect) {
+            highlightElement(holder, element, KEYWORD);
         }
     }
 

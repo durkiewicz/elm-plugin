@@ -81,9 +81,6 @@ RESERVED=("hiding" | "export" | "foreign" | "deriving")
     "where" {
         return WHERE;
     }
-    "effect" {
-        return EFFECT;
-    }
     "import" {
         return IMPORT;
     }

@@ -1,12 +1,13 @@
 package org.elmlang.intellijplugin.psi.impl;
 
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElementVisitor;
-import org.elmlang.intellijplugin.psi.*;
+import org.elmlang.intellijplugin.psi.ElmEffect;
+import org.elmlang.intellijplugin.psi.ElmVisitor;
+import org.jetbrains.annotations.NotNull;
 
-public class ElmCaseOfImpl extends ElmPsiElement implements ElmCaseOf {
-    public ElmCaseOfImpl(ASTNode node) {
+public class ElmEffectImpl extends ElmPsiElement implements ElmEffect {
+    public ElmEffectImpl(ASTNode node) {
         super(node);
     }
 

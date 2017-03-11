@@ -55,4 +55,9 @@ public class ElmParserUtil extends GeneratedParserUtilBase {
         return new FieldAccessParser()
                 .parse(builder, level);
     }
+
+    public static boolean parseEffect(PsiBuilder builder, int level) {
+        return new EffectParser()
+                .parse(builder, level);
+    }
 }

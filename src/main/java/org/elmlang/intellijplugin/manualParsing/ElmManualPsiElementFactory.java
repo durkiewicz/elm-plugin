@@ -28,6 +28,9 @@ public class ElmManualPsiElementFactory {
         if (type == ElmTypes.FIELD_ACCESS) {
             return new ElmFieldAccessImpl(node);
         }
+        if (type == ElmTypes.EFFECT) {
+            return new ElmEffectImpl(node);
+        }
         return null;
     }
 }
