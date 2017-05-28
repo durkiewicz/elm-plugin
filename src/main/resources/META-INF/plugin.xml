@@ -118,6 +118,7 @@
                 implementationClass="com.intellij.spellchecker.tokenizer.SpellcheckingStrategy"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/ElmDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/ElmDarcula.xml"/>
+        <liveTemplateContext implementation="org.elmlang.intellijplugin.features.ElmTemplateContext"/>
     </extensions>
 
     <actions>
