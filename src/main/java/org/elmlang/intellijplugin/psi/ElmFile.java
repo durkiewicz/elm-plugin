@@ -143,9 +143,7 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
 
     @NotNull
     private Stream<ElmUpperCaseId> getUnionTypesAndMembers(TypeFilter typeFilter) {
-        return Arrays.stream(this.getChildren())
-                .filter(e -> e instanceof ElmTypeDeclaration)
-                .map(e -> (ElmTypeDeclaration) e)
+        return getTypeDeclarations()
                 .flatMap(e -> {
                     String typeName = e.getUpperCaseId().getText();
                     return Stream.concat(
@@ -156,6 +154,13 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
                 });
     }
 
+    @NotNull
+    public Stream<ElmTypeDeclaration> getTypeDeclarations() {
+        return Arrays.stream(this.getChildren())
+                .filter(e -> e instanceof ElmTypeDeclaration)
+                .map(e -> (ElmTypeDeclaration) e);
+    }
+
     private static Stream<ElmUpperCaseId> getUnionMembers(List<ElmUnionMember> unionMemberList, String typeName, TypeFilter typeFilter) {
         return unionMemberList.stream()
                 .map(ElmUnionMember::getUpperCaseId)
@@ -164,10 +169,16 @@ public class ElmFile extends PsiFileBase implements ElmWithValueDeclarations {
 
     @NotNull
     private Stream<ElmUpperCaseId> getTypeAliases(TypeFilter typeFilter) {
+        return getTypeAliasDeclarations()
+                .map(ElmTypeAliasDeclaration::getUpperCaseId)
+                .filter(e -> typeFilter.testType(e.getText()));
+    }
+
+    @NotNull
+    public Stream<ElmTypeAliasDeclaration> getTypeAliasDeclarations() {
         return Arrays.stream(this.getChildren())
                 .filter(e -> e instanceof ElmTypeAliasDeclaration)
-                .map(e -> ((ElmTypeAliasDeclaration) e).getUpperCaseId())
-                .filter(e -> typeFilter.testType(e.getText()));
+                .map(e -> (ElmTypeAliasDeclaration)e);
     }
 
     @Nullable

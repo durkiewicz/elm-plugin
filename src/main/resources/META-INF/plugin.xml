@@ -110,6 +110,9 @@
         <lang.braceMatcher
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.features.ElmPairedBraceMatcher"/>
+        <lang.psiStructureViewFactory
+                language="Elm"
+                implementationClass="org.elmlang.intellijplugin.features.structure.ElmStructureViewFactory"/>
         <completion.contributor
                 language="Elm"
                 implementationClass="org.elmlang.intellijplugin.features.completion.ElmCompletionContributor"/>
