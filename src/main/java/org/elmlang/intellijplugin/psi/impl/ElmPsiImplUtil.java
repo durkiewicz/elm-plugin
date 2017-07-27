@@ -106,6 +106,22 @@ public class ElmPsiImplUtil {
                 .map(r -> r.referenceInAncestor(element));
     }
 
+    public static ValueDeclarationRole getRole(ElmValueDeclarationBase element) {
+        return ElmValueDeclarationMixin.getRole(element);
+    }
+
+    public static String getDisplayName(ElmValueDeclarationBase element) {
+        return ElmValueDeclarationMixin.getDisplayName(element);
+    }
+
+    public static String getDisplayName(ElmTypeAliasDeclaration element) {
+        return element.getUpperCaseId().getName();
+    }
+
+    public static String getDisplayName(ElmTypeDeclaration element) {
+        return element.getUpperCaseId().getName();
+    }
+
     public static Stream<ElmReference> getReferencesStream(ElmRecord record) {
 
         Stream<ElmReference> recordBase = Optional.ofNullable(record.getLowerCaseId())
