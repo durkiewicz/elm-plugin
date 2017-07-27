@@ -1,4 +1,5 @@
-.idea
+.idea/*
+!.idea/modules.xml
 /out
 /gen
 /src/main/java/org/elmlang/intellijplugin/ElmLexer.java
