@@ -23,9 +23,10 @@ Formatting is currently not a feature of the plugin, but `elm-format` can be use
 0. Open it as a Plugin Project in IntelliJ IDEA (either Community or Ultimate version).
 0. Make sure you have `Grammar-Kit` and `PsiViewer` plugins installed.
 0. Delete the content of `gen` directory if you have previously generated parser code from another version of the BNF file.
-0. Open `src/main/java/org/elmlang/intellijplugin/Elm.bnf` file and generate the parser code - twice, if needed (*)
 0. Open `src/main/java/org/elmlang/intellijplugin/Elm.flex` file and generate lexer code (*)
-0. The plugin should be ready to run now.
+0. Open `src/main/java/org/elmlang/intellijplugin/Elm.bnf` file and generate the parser code - twice, if needed (*)
+0. Open `File -> Project Structure` under `Project` set the `Projekt SDK` to the (in Step 1) configured `IntelliJ Platform Plugin SDK`, the `Project language level` at least to `8` and the `Project compiler output` to `out`
+0. Create a `Plugin`-Run Configuration
 
 (*) either from a context menu or by keyboard shortcut ⇧⌘G
 
