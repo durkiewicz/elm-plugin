@@ -28,6 +28,7 @@
         "org.elmlang.intellijplugin.psi.ElmTypeAnnotationBase"
     implements("module_declaration|exposing_clause") =
         "org.elmlang.intellijplugin.psi.ElmExposingBase"
+    implements("(type|type_alias)_declaration") = "org.elmlang.intellijplugin.psi.ElmWithDisplayName"
 
     psiImplUtilClass="org.elmlang.intellijplugin.psi.impl.ElmPsiImplUtil"
 
@@ -104,10 +105,10 @@ private declaration ::=
     recoverWhile = declaration_recover
 }
 
-value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION* { methods = [getReferencesStream] }
+value_declaration ::= value_declaration_left EQ expression SEPARATION_BY_INDENTATION* { methods = [getReferencesStream getDisplayName getRole] }
 
 type_alias_declaration ::=
-    TYPE ALIAS upper_case_id (lower_case_id)* EQ type_definition
+    TYPE ALIAS upper_case_id (lower_case_id)* EQ type_definition { methods = [getDisplayName] }
 type_definition ::=
     list_of_single_type_definitions (ARROW list_of_single_type_definitions)*
 private list_of_single_type_definitions ::=
@@ -128,7 +129,7 @@ tuple_type ::=
     | LEFT_PARENTHESIS type_definition (COMMA type_definition)+ RIGHT_PARENTHESIS
 
 type_declaration ::=
-    TYPE upper_case_id (lower_case_id)* EQ union_member (PIPE union_member)*
+    TYPE upper_case_id (lower_case_id)* EQ union_member (PIPE union_member)* { methods = [getDisplayName] }
 union_member ::=
     upper_case_id single_type_definition*
 
@@ -234,7 +235,7 @@ private inner_declaration ::=
     inner_value_declaration
     | inner_type_annotation
 inner_value_declaration ::=
-    internal_value_declaration_left EQ expression { methods = [getReferencesStream] }
+    internal_value_declaration_left EQ expression { methods = [getReferencesStream getRole getDisplayName] }
 inner_type_annotation ::=
     lower_case_id COLON type_definition { methods = [getReferencesStream] }
 
