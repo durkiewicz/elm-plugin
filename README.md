@@ -1,5 +1,5 @@
 # elm-plugin
-Elm language plugin for IntelliJ IDEA.
+Elm language plugin for IntelliJ IDEA. This repository is no longer maintained due to lack of resources. If you need an Elm language support in IntelliJ - please consider using [this plugin](https://github.com/klazuka/intellij-elm) instead.
 
 ## Features
 
@@ -32,10 +32,6 @@ Formatting is currently not a feature of the plugin, but `elm-format` can be use
 
 ## Contributing
 
-If you would like to develop a new feature or fix a bug:
-- Please add an issue to Github so that everyone can share his/her opinions and ideas
-- Please create a pull request when you finish development
-- If you would like to do any change to the parser or a non-trivial change to resolving references,
-  please contact me before.
+Please do not contribute to this repository directly - fork it and contribute to your fork instead.
 
 ## License: MIT
